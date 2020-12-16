@@ -146,6 +146,7 @@ pub fn create_program_with_builtin_kernels(
 /// 
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_2_1")]
 pub fn create_program_with_il(
     context: cl_context,
     il: &[u8],
@@ -397,7 +398,7 @@ pub const CL_PROGRAM_BINARIES: cl_program_info = 0x1166;
 pub const CL_PROGRAM_NUM_KERNELS: cl_program_info = 0x1167;
 pub const CL_PROGRAM_KERNEL_NAMES: cl_program_info = 0x1168;
 // #endif
-// #ifdef CL_VERSION_2_1
+// #ifdef CL_VERSION_2_1CL_PROGRAM_IL
 pub const CL_PROGRAM_IL: cl_program_info = 0x1169;
 // endif
 // #ifdef CL_VERSION_2_2
@@ -527,7 +528,7 @@ pub fn get_program_build_info(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
+    use crate::device::{get_device_ids, get_device_info, CL_DEVICE_TYPE_GPU, CL_DEVICE_VERSION};
     use crate::platform::get_platform_ids;
     use std::ffi::CString;
 
@@ -535,11 +536,21 @@ mod tests {
     fn test_program() {
         let platform_ids = get_platform_ids().unwrap();
 
-        // Choose the platform with the most compliant GPU
-        let platform_id = platform_ids[1];
+        // Choose the first platform
+        let platform_id = platform_ids[0];
 
         let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
         assert!(0 < device_ids.len());
+
+        let device_id = device_ids[0];
+        let value = get_device_info(device_id, CL_DEVICE_VERSION).unwrap();
+        let value = value.to_str().unwrap();
+        println!("CL_DEVICE_VERSION: {:?}", value);
+        let value = value.into_string().unwrap();
+        assert!(0 < value.len());
+
+        let opencl_2_1: String = "OpenCL .1".to_string();
+        let is_opencl_2_1: bool = value.contains(&opencl_2_1);
 
         let context = create_context(&device_ids, ptr::null(), None, ptr::null_mut());
         let context = context.unwrap();
@@ -559,7 +570,27 @@ mod tests {
         let src =  CString::new(source).unwrap();
         let char_ptrs: [*const _; 1] = [src.as_ptr()];
         let program = create_program_with_source(context, 1, char_ptrs.as_ptr(), ptr::null()).unwrap();
-     
+
+        let value = get_program_info(program, CL_PROGRAM_REFERENCE_COUNT).unwrap();
+        let value = value.to_uint();
+        println!("CL_PROGRAM_REFERENCE_COUNT: {}", value);
+        assert!(0 < value);
+
+        let value = get_program_info(program, CL_PROGRAM_CONTEXT).unwrap();
+        let value = value.to_ptr();
+        println!("CL_PROGRAM_CONTEXT: {}", value);
+        assert!(0 < value);
+
+        let value = get_program_info(program, CL_PROGRAM_NUM_DEVICES).unwrap();
+        let value = value.to_uint();
+        println!("CL_PROGRAM_NUM_DEVICES: {}", value);
+        assert!(0 < value);
+
+        let value = get_program_info(program, CL_PROGRAM_DEVICES).unwrap();
+        let value = value.to_vec_intptr();
+        println!("CL_PROGRAM_DEVICES: {}", value.len());
+        assert!(0 < value.len());
+
         let value = get_program_info(program, CL_PROGRAM_SOURCE).unwrap();
         let value = value.to_str().unwrap();
         println!("CL_PROGRAM_SOURCE: {:?}", value);
@@ -574,6 +605,28 @@ mod tests {
         println!("CL_PROGRAM_BINARY_SIZES: {}", value.len());
         println!("CL_PROGRAM_BINARY_SIZES: {:?}", value);
         assert!(0 < value.len());
+
+        // TODO investigate
+        // let value = get_program_info(program, CL_PROGRAM_BINARIES).unwrap();
+        // let value = value.to_vec_uchar();
+        // println!("CL_PROGRAM_BINARIES: {}", value.len());
+
+        let value = get_program_info(program, CL_PROGRAM_NUM_KERNELS).unwrap();
+        let value = value.to_size();
+        println!("CL_PROGRAM_NUM_KERNELS: {}", value);
+        assert!(0 < value);
+
+        let value = get_program_info(program, CL_PROGRAM_KERNEL_NAMES).unwrap();
+        let value = value.to_str().unwrap();
+        println!("CL_PROGRAM_KERNEL_NAMES: {:?}", value);
+        let value = value.into_string().unwrap();
+        assert!(0 < value.len());
+
+        if is_opencl_2_1 {
+            let value = get_program_info(program, CL_PROGRAM_IL).unwrap();
+            let value = value.to_str().unwrap();
+            println!("CL_PROGRAM_IL: {:?}", value);
+        }
 
         release_program(program).unwrap();
 

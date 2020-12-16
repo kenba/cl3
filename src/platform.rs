@@ -158,8 +158,8 @@ mod tests {
         println!("Number of platforms: {}", platform_ids.len());
         assert!(0 < platform_ids.len());
 
-        // Choose a platform which is CL_VERSION_2_1 compliant
-        let platform_id = platform_ids[1];
+        // Choose the first platform
+        let platform_id= platform_ids[0];
 
         let value = get_platform_info(platform_id, CL_PLATFORM_PROFILE).unwrap();
         let value = value.to_str().unwrap();
@@ -172,6 +172,9 @@ mod tests {
         println!("CL_PLATFORM_VERSION: {:?}", value);
         let value = value.into_string().unwrap();
         assert!(0 < value.len());
+
+        let opencl_2_1: String = "OpenCL 2.1".to_string();
+        let is_opencl_2_1: bool = value.contains(&opencl_2_1);
 
         let value = get_platform_info(platform_id, CL_PLATFORM_NAME).unwrap();
         let value = value.to_str().unwrap();
@@ -191,10 +194,12 @@ mod tests {
         let value = value.into_string().unwrap();
         assert!(0 < value.len());
 
-        let value = get_platform_info(platform_id, CL_PLATFORM_HOST_TIMER_RESOLUTION).unwrap();
-        let value = value.to_ulong();
-        println!("CL_PLATFORM_HOST_TIMER_RESOLUTION: {}", value);
-        assert!(0 < value);
+        if is_opencl_2_1 {
+           let value = get_platform_info(platform_id, CL_PLATFORM_HOST_TIMER_RESOLUTION).unwrap();
+           let value = value.to_ulong();
+           println!("CL_PLATFORM_HOST_TIMER_RESOLUTION: {}", value);
+           assert!(0 < value);
+        }
     }
 
     #[test]
@@ -202,18 +207,29 @@ mod tests {
     fn test_get_platform_info_3_0() {
         let platform_ids = get_platform_ids().unwrap();
 
-        // Choose a platform which is CL_VERSION_2_1 compliant
-        let platform_id = platform_ids[1];
+        // Choose the first platform
+        let platform_id = platform_ids[0];
 
-        let value = get_platform_info(platform_id, CL_PLATFORM_NUMERIC_VERSION).unwrap();
-        let value = value.to_uint();
-        println!("CL_PLATFORM_NUMERIC_VERSION: {}", value);
-        assert!(0 < value);
-
-        let value = get_platform_info(platform_id, CL_PLATFORM_EXTENSIONS_WITH_VERSION).unwrap();
-        let value = value.to_vec_name_version();
-        println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {}", value.len());
-        println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {:?}", value);
+        let value = get_platform_info(platform_id, CL_PLATFORM_VERSION).unwrap();
+        let value = value.to_str().unwrap();
+        println!("CL_PLATFORM_VERSION: {:?}", value);
+        let value = value.into_string().unwrap();
         assert!(0 < value.len());
+
+        let opencl_3: String = "OpenCL 3".to_string();
+        let is_opencl_3: bool = value.contains(&opencl_3);
+
+        if is_opencl_3 {
+            let value = get_platform_info(platform_id, CL_PLATFORM_NUMERIC_VERSION).unwrap();
+            let value = value.to_uint();
+            println!("CL_PLATFORM_NUMERIC_VERSION: {}", value);
+            assert!(0 < value);
+
+            let value = get_platform_info(platform_id, CL_PLATFORM_EXTENSIONS_WITH_VERSION).unwrap();
+            let value = value.to_vec_name_version();
+            println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {}", value.len());
+            println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {:?}", value);
+            assert!(0 < value.len());
+        }
     }
 }

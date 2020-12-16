@@ -15,15 +15,18 @@
 //! OpenCL Device API.
 
 use super::error_codes::{CL_DEVICE_NOT_FOUND, CL_INVALID_VALUE, CL_SUCCESS};
+#[allow(unused_imports)]
 use super::ffi::cl::{clGetDeviceIDs, clGetDeviceInfo, clCreateSubDevices,
     clRetainDevice, clReleaseDevice, clSetDefaultDeviceCommandQueue,
     clGetDeviceAndHostTimer, clGetHostTimer,
 };
 use super::info_type::InfoType;
+#[allow(unused_imports)]
 use super::types::{
     cl_device_id, cl_device_info, cl_device_type, cl_int, cl_name_version,
     cl_platform_id, cl_uint, cl_ulong, cl_device_partition_property, cl_device_affinity_domain,
-    cl_context, cl_command_queue, cl_device_svm_capabilities,
+    cl_context, cl_command_queue, cl_device_svm_capabilities, cl_device_fp_config,
+    cl_device_mem_cache_type, cl_device_local_mem_type, cl_device_exec_capabilities,
 };
 use super::{api_info_size, api_info_value, api_info_vector};
 
@@ -100,6 +103,37 @@ pub fn get_device_ids(
         }
     }
 }
+
+// cl_device_fp_config
+pub const CL_FP_DENORM: cl_device_fp_config = 1 << 0;
+pub const CL_FP_INF_NAN: cl_device_fp_config = 1 << 1;
+pub const CL_FP_ROUND_TO_NEAREST: cl_device_fp_config = 1 << 2;
+pub const CL_FP_ROUND_TO_ZERO: cl_device_fp_config = 1 << 3;
+pub const CL_FP_ROUND_TO_INF: cl_device_fp_config = 1 << 4;
+pub const CL_FP_FMA: cl_device_fp_config = 1 << 5;
+pub const CL_FP_SOFT_FLOAT: cl_device_fp_config = 1 << 6;
+pub const CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT: cl_device_fp_config = 1 << 7;
+
+// cl_device_mem_cache_type
+pub const CL_NONE: cl_device_mem_cache_type = 0x0;
+pub const CL_READ_ONLY_CACHE: cl_device_mem_cache_type = 0x1;
+pub const CL_READ_WRITE_CACHE: cl_device_mem_cache_type = 0x2;
+
+// cl_device_local_mem_type
+pub const CL_LOCAL: cl_device_local_mem_type = 0x1;
+pub const CL_GLOBAL: cl_device_local_mem_type = 0x2;
+
+// cl_device_exec_capabilities
+pub const CL_EXEC_KERNEL: cl_device_exec_capabilities = 1 << 0;
+pub const CL_EXEC_NATIVE_KERNEL: cl_device_exec_capabilities = 1 << 1;
+
+// cl_device_affinity_domain
+pub const CL_DEVICE_AFFINITY_DOMAIN_NUMA: cl_device_affinity_domain = 1 << 0;
+pub const CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE: cl_device_affinity_domain = 1 << 1;
+pub const CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE: cl_device_affinity_domain = 1 << 2;
+pub const CL_DEVICE_AFFINITY_DOMAIN_L2_CACHE: cl_device_affinity_domain = 1 << 3;
+pub const CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE: cl_device_affinity_domain = 1 << 4;
+pub const CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE: cl_device_affinity_domain = 1 << 5;
 
 // cl_device_svm_capabilities
 pub const CL_DEVICE_SVM_COARSE_GRAIN_BUFFER: cl_device_svm_capabilities = 1 << 0;
@@ -444,10 +478,10 @@ pub fn get_device_info(
 }
 
 // cl_device_partition_property:
-pub const CL_DEVICE_PARTITION_EQUALLY:cl_uint = 0x1086;
-pub const CL_DEVICE_PARTITION_BY_COUNTS: cl_uint = 0x1087;
-pub const CL_DEVICE_PARTITION_BY_COUNTS_LIST_END: cl_uint = 0x0;
-pub const CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN: cl_device_affinity_domain = 0x1088;
+pub const CL_DEVICE_PARTITION_EQUALLY: cl_device_partition_property = 0x1086;
+pub const CL_DEVICE_PARTITION_BY_COUNTS: cl_device_partition_property = 0x1087;
+pub const CL_DEVICE_PARTITION_BY_COUNTS_LIST_END: cl_device_partition_property = 0x0;
+pub const CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN: cl_device_partition_property = 0x1088;
 
 // helper function for create_sub_devices
 fn count_sub_devices(
@@ -619,8 +653,8 @@ mod tests {
     fn test_get_device_info() {
         let platform_ids = get_platform_ids().unwrap();
 
-        // Choose the platform with the most compliant GPU
-        let platform_id = platform_ids[1];
+        // Choose the first platform
+        let platform_id = platform_ids[0];
 
         let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
         println!("CL_DEVICE_TYPE_GPU count: {}", device_ids.len());
@@ -635,8 +669,24 @@ mod tests {
 
         let value = get_device_info(device_id, CL_DEVICE_VENDOR_ID).unwrap();
         let value = value.to_uint();
-        println!("CL_DEVICE_VENDOR_ID: {}", value);
+        println!("CL_DEVICE_VENDOR_ID: {:X}", value);
         assert!(0 < value);
+
+        let _is_amd = 0x1002 == value;
+        let _is_intel = 0x8086 == value;
+        let is_nvidia = 0x10DE == value;
+
+        let value = get_device_info(device_id, CL_DEVICE_VERSION).unwrap();
+        let value = value.to_str().unwrap();
+        println!("CL_DEVICE_VERSION: {:?}", value);
+        let value = value.into_string().unwrap();
+        assert!(0 < value.len());
+
+        let opencl_2: String = "OpenCL 2".to_string();
+        let is_opencl_2: bool = value.contains(&opencl_2);
+
+        let opencl_2_1: String = "OpenCL 2.1".to_string();
+        let is_opencl_2_1: bool = value.contains(&opencl_2_1);
 
         let value = get_device_info(device_id, CL_DEVICE_MAX_COMPUTE_UNITS).unwrap();
         let value = value.to_uint();
@@ -838,10 +888,12 @@ mod tests {
         println!("CL_DEVICE_EXECUTION_CAPABILITIES: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_QUEUE_ON_HOST_PROPERTIES).unwrap();
-        let value = value.to_ulong();
-        println!("CL_DEVICE_QUEUE_ON_HOST_PROPERTIES: {}", value);
-        assert!(0 < value);
+        if is_opencl_2 {
+            let value = get_device_info(device_id, CL_DEVICE_QUEUE_ON_HOST_PROPERTIES).unwrap();
+            let value = value.to_ulong();
+            println!("CL_DEVICE_QUEUE_ON_HOST_PROPERTIES: {}", value);
+            assert!(0 < value);
+        }
 
         let value = get_device_info(device_id, CL_DEVICE_NAME).unwrap();
         let value = value.to_str().unwrap();
@@ -867,12 +919,6 @@ mod tests {
         let value = value.into_string().unwrap();
         assert!(0 < value.len());
 
-        let value = get_device_info(device_id, CL_DEVICE_VERSION).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_VERSION: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
-
         let value = get_device_info(device_id, CL_DEVICE_EXTENSIONS).unwrap();
         let value = value.to_str().unwrap();
         println!("CL_DEVICE_EXTENSIONS: {:?}", value);
@@ -889,15 +935,16 @@ mod tests {
         println!("CL_DEVICE_DOUBLE_FP_CONFIG: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_HALF_FP_CONFIG).unwrap();
-        let value = value.to_ulong();
-        println!("CL_DEVICE_HALF_FP_CONFIG: {}", value);
-        assert!(0 < value);
+        if !is_nvidia {
+            // "0x1033 reserved for CL_DEVICE_HALF_FP_CONFIG" defined in cl_ext.h
+            let value = get_device_info(device_id, CL_DEVICE_HALF_FP_CONFIG).unwrap();
+            let value = value.to_ulong();
+            println!("CL_DEVICE_HALF_FP_CONFIG: {}", value);
+        }
 
         let value = get_device_info(device_id, CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF).unwrap();
         let value = value.to_uint();
         println!("CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF: {}", value);
-        assert!(0 < value);
 
         let value = get_device_info(device_id, CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR).unwrap();
         let value = value.to_uint();
@@ -932,7 +979,6 @@ mod tests {
         let value = get_device_info(device_id, CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF).unwrap();
         let value = value.to_uint();
         println!("CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF: {}", value);
-        assert!(0 < value);
 
         let value = get_device_info(device_id, CL_DEVICE_OPENCL_C_VERSION).unwrap();
         let value = value.to_str().unwrap();
@@ -948,8 +994,6 @@ mod tests {
         let value = get_device_info(device_id, CL_DEVICE_BUILT_IN_KERNELS).unwrap();
         let value = value.to_str().unwrap();
         println!("CL_DEVICE_BUILT_IN_KERNELS: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
 
         let value = get_device_info(device_id, CL_DEVICE_IMAGE_MAX_BUFFER_SIZE).unwrap();
         let value = value.to_size();
@@ -969,7 +1013,6 @@ mod tests {
         let value = get_device_info(device_id, CL_DEVICE_PARTITION_MAX_SUB_DEVICES).unwrap();
         let value = value.to_uint();
         println!("CL_DEVICE_PARTITION_MAX_SUB_DEVICES: {}", value);
-        assert!(0 == value);
 
         let value = get_device_info(device_id, CL_DEVICE_PARTITION_PROPERTIES).unwrap();
         let value = value.to_vec_intptr();
@@ -994,126 +1037,133 @@ mod tests {
         println!("CL_DEVICE_REFERENCE_COUNT: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_PREFERRED_INTEROP_USER_SYNC).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_PREFERRED_INTEROP_USER_SYNC: {}", value);
-        assert!(0 < value);
+        if !is_nvidia {
+            let value = get_device_info(device_id, CL_DEVICE_PREFERRED_INTEROP_USER_SYNC).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_PREFERRED_INTEROP_USER_SYNC: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_PRINTF_BUFFER_SIZE).unwrap();
-        let value = value.to_size();
-        println!("CL_DEVICE_PRINTF_BUFFER_SIZE: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_PRINTF_BUFFER_SIZE).unwrap();
+            let value = value.to_size();
+            println!("CL_DEVICE_PRINTF_BUFFER_SIZE: {}", value);
+            assert!(0 < value);
+        }
 
         // CL_VERSION_2_0
-        let value = get_device_info(device_id, CL_DEVICE_IMAGE_PITCH_ALIGNMENT).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_IMAGE_PITCH_ALIGNMENT: {}", value);
-        assert!(0 < value);
+        if is_opencl_2 {
+            let value = get_device_info(device_id, CL_DEVICE_IMAGE_PITCH_ALIGNMENT).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_IMAGE_PITCH_ALIGNMENT: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_MAX_READ_WRITE_IMAGE_ARGS).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_MAX_READ_WRITE_IMAGE_ARGS: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_MAX_READ_WRITE_IMAGE_ARGS).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_MAX_READ_WRITE_IMAGE_ARGS: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_MAX_GLOBAL_VARIABLE_SIZE).unwrap();
-        let value = value.to_size();
-        println!("CL_DEVICE_MAX_GLOBAL_VARIABLE_SIZE: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_MAX_GLOBAL_VARIABLE_SIZE).unwrap();
+            let value = value.to_size();
+            println!("CL_DEVICE_MAX_GLOBAL_VARIABLE_SIZE: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES).unwrap();
-        let value = value.to_vec_intptr();
-        println!("CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES: {}", value.len());
-        println!("CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES: {:?}", value);
-        assert!(0 < value.len());
+            let value = get_device_info(device_id, CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES).unwrap();
+            let value = value.to_vec_intptr();
+            println!("CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES: {}", value.len());
+            println!("CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES: {:?}", value);
+            assert!(0 < value.len());
 
-        let value = get_device_info(device_id, CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE).unwrap();
-        let value = value.to_size();
-        println!("CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE).unwrap();
+            let value = value.to_size();
+            println!("CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE).unwrap();
-        let value = value.to_size();
-        println!("CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE).unwrap();
+            let value = value.to_size();
+            println!("CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_MAX_ON_DEVICE_QUEUES).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_MAX_ON_DEVICE_QUEUES: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_MAX_ON_DEVICE_QUEUES).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_MAX_ON_DEVICE_QUEUES: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_MAX_ON_DEVICE_EVENTS).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_MAX_ON_DEVICE_EVENTS: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_MAX_ON_DEVICE_EVENTS).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_MAX_ON_DEVICE_EVENTS: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_SVM_CAPABILITIES).unwrap();
-        let value = value.to_ulong();
-        println!("CL_DEVICE_SVM_CAPABILITIES: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_SVM_CAPABILITIES).unwrap();
+            let value = value.to_ulong();
+            println!("CL_DEVICE_SVM_CAPABILITIES: {}", value);
+            assert!(0 < value);
 
-        let value =
-            get_device_info(device_id, CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE).unwrap();
-        let value = value.to_size();
-        println!("CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE: {}", value);
-        assert!(0 < value);
+            let value =
+                get_device_info(device_id, CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE).unwrap();
+            let value = value.to_size();
+            println!("CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_MAX_PIPE_ARGS).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_MAX_PIPE_ARGS: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_MAX_PIPE_ARGS).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_MAX_PIPE_ARGS: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_PIPE_MAX_PACKET_SIZE).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_PIPE_MAX_PACKET_SIZE: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_PIPE_MAX_PACKET_SIZE).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_PIPE_MAX_PACKET_SIZE: {}", value);
+            assert!(0 < value);
 
-        let value =
-            get_device_info(device_id, CL_DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT: {}", value);
-        assert!(0 < value);
+            let value =
+                get_device_info(device_id, CL_DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT: {}", value);
+            // assert!(0 < value);
 
-        let value =
-            get_device_info(device_id, CL_DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT: {}", value);
-        assert!(0 < value);
+            let value =
+                get_device_info(device_id, CL_DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT: {}", value);
+            // assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT).unwrap();
+            let value = value.to_uint();
+            println!("CL_DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT: {}", value);
+            // assert!(0 < value);
 
-        // CL_VERSION_2_1
-        let value = get_device_info(device_id, CL_DEVICE_IL_VERSION).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_IL_VERSION: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
 
-        let value = get_device_info(device_id, CL_DEVICE_MAX_NUM_SUB_GROUPS).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_MAX_NUM_SUB_GROUPS: {}", value);
-        assert!(0 < value);
+            // CL_VERSION_2_1
+            if is_opencl_2_1 {
+                let value = get_device_info(device_id, CL_DEVICE_IL_VERSION).unwrap();
+                let value = value.to_str().unwrap();
+                println!("CL_DEVICE_IL_VERSION: {:?}", value);
+                let value = value.into_string().unwrap();
+                assert!(0 < value.len());
 
-        let value =
-            get_device_info(device_id, CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS).unwrap();
-        let value = value.to_uint();
-        println!(
-            "CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS: {}",
-            value
-        );
-        assert!(0 < value);
+                let value = get_device_info(device_id, CL_DEVICE_MAX_NUM_SUB_GROUPS).unwrap();
+                let value = value.to_uint();
+                println!("CL_DEVICE_MAX_NUM_SUB_GROUPS: {}", value);
+                assert!(0 < value);
+
+                let value =
+                    get_device_info(device_id, CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS).unwrap();
+                let value = value.to_uint();
+                println!(
+                    "CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS: {}",
+                    value
+                );
+                assert!(0 < value);
+            }
+        }
     }
 
     #[test]

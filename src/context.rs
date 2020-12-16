@@ -202,8 +202,8 @@ mod tests {
     fn test_context() {
         let platform_ids = get_platform_ids().unwrap();
 
-        // Choose the platform with the most compliant GPU
-        let platform_id = platform_ids[1];
+        // Choose the first platform
+        let platform_id = platform_ids[0];
 
         let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
         assert!(0 < device_ids.len());

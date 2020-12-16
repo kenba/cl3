@@ -274,11 +274,16 @@ pub fn get_kernel_arg_info(
     param_name: cl_kernel_arg_info,
 ) -> Result<InfoType, cl_int> {
     match param_name {
-        CL_KERNEL_ARG_ADDRESS_QUALIFIER
-        | CL_KERNEL_ARG_ACCESS_QUALIFIER
-        | CL_KERNEL_ARG_TYPE_QUALIFIER => {
+        CL_KERNEL_ARG_ADDRESS_QUALIFIER | CL_KERNEL_ARG_ACCESS_QUALIFIER => {
             api2_info_value!(get_index_value, cl_uint, cl_uint, clGetKernelArgInfo);
             Ok(InfoType::Uint(get_index_value(
+                kernel, arg_indx, param_name,
+            )?))
+        }
+
+        CL_KERNEL_ARG_TYPE_QUALIFIER => {
+            api2_info_value!(get_index_value, cl_uint, cl_ulong, clGetKernelArgInfo);
+            Ok(InfoType::Ulong(get_index_value(
                 kernel, arg_indx, param_name,
             )?))
         }
@@ -443,7 +448,7 @@ pub fn get_kernel_sub_group_info(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
+    use crate::device::{get_device_ids, get_device_info, CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR_ID};
     use crate::platform::get_platform_ids;
     use crate::program::{build_program, create_program_with_source, release_program};
     use std::ffi::CString;
@@ -452,11 +457,20 @@ mod tests {
     fn test_kernel() {
         let platform_ids = get_platform_ids().unwrap();
 
-        // Choose the platform with the most compliant GPU
-        let platform_id = platform_ids[1];
+        // Choose the first platform
+        let platform_id = platform_ids[0];
 
         let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
         assert!(0 < device_ids.len());
+
+        let device_id = device_ids[0];
+
+        let value = get_device_info(device_id, CL_DEVICE_VENDOR_ID).unwrap();
+        let value = value.to_uint();
+        println!("CL_DEVICE_VENDOR_ID: {:X}", value);
+        assert!(0 < value);
+
+        let is_nvidia = 0x10DE == value;
 
         let context = create_context(&device_ids, ptr::null(), None, ptr::null_mut());
         let context = context.unwrap();
@@ -490,6 +504,92 @@ mod tests {
         println!("CL_KERNEL_FUNCTION_NAME: {:?}", value);
         let value = value.into_string().unwrap();
         assert!(0 < value.len());
+
+        let value = get_kernel_info(kernel, CL_KERNEL_NUM_ARGS).unwrap();
+        let value = value.to_uint();
+        println!("CL_KERNEL_NUM_ARGS: {}", value);
+        assert!(0 < value);
+
+        let value = get_kernel_info(kernel, CL_KERNEL_REFERENCE_COUNT).unwrap();
+        let value = value.to_uint();
+        println!("CL_KERNEL_REFERENCE_COUNT: {}", value);
+        assert!(0 < value);
+
+        let value = get_kernel_info(kernel, CL_KERNEL_CONTEXT).unwrap();
+        let value = value.to_ptr();
+        println!("CL_KERNEL_CONTEXT: {}", value);
+        assert!(0 < value);
+
+        let value = get_kernel_info(kernel, CL_KERNEL_PROGRAM).unwrap();
+        let value = value.to_ptr();
+        println!("CL_KERNEL_PROGRAM: {}", value);
+        assert!(0 < value);
+
+        let value = get_kernel_info(kernel, CL_KERNEL_ATTRIBUTES).unwrap();
+        let value = value.to_str().unwrap();
+        println!("CL_KERNEL_ATTRIBUTES: {:?}", value);
+
+        if !is_nvidia {
+            // Nvidia returns: -19, CL_KERNEL_ARG_INFO_NOT_AVAILABLE
+            let value = get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_ADDRESS_QUALIFIER).unwrap();
+            let value = value.to_uint();
+            println!("CL_KERNEL_ARG_ADDRESS_QUALIFIER: {:X}", value);
+
+            let value = get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_ACCESS_QUALIFIER).unwrap();
+            let value = value.to_uint();
+            println!("CL_KERNEL_ARG_ACCESS_QUALIFIER: {:X}", value);
+
+            let value = get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_TYPE_NAME).unwrap();
+            let value = value.to_str().unwrap();
+            println!("CL_KERNEL_ARG_TYPE_NAME: {:?}", value);
+            let value = value.into_string().unwrap();
+            assert!(0 < value.len());
+
+            let value = get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_TYPE_QUALIFIER).unwrap();
+            let value = value.to_ulong();
+            println!("CL_KERNEL_ARG_TYPE_QUALIFIER: {}", value);
+
+            let value = get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_NAME).unwrap();
+            let value = value.to_str().unwrap();
+            println!("CL_KERNEL_ARG_NAME: {:?}", value);
+            let value = value.into_string().unwrap();
+            assert!(0 < value.len());
+        }
+
+        let value =
+            get_kernel_work_group_info(kernel, device_id, CL_KERNEL_WORK_GROUP_SIZE).unwrap();
+        let value = value.to_size();
+        println!("CL_KERNEL_WORK_GROUP_SIZE: {}", value);
+
+        let value =
+            get_kernel_work_group_info(kernel, device_id, CL_KERNEL_COMPILE_WORK_GROUP_SIZE)
+                .unwrap();
+        let value = value.to_vec_size();
+        println!("CL_KERNEL_COMPILE_WORK_GROUP_SIZE: {}", value.len());
+
+        let value =
+            get_kernel_work_group_info(kernel, device_id, CL_KERNEL_LOCAL_MEM_SIZE).unwrap();
+        let value = value.to_ulong();
+        println!("CL_KERNEL_LOCAL_MEM_SIZE: {}", value);
+
+        let value = get_kernel_work_group_info(
+            kernel,
+            device_id,
+            CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE,
+        )
+        .unwrap();
+        let value = value.to_size();
+        println!("CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE: {}", value);
+
+        let value =
+            get_kernel_work_group_info(kernel, device_id, CL_KERNEL_PRIVATE_MEM_SIZE).unwrap();
+        let value = value.to_ulong();
+        println!("CL_KERNEL_PRIVATE_MEM_SIZE: {}", value);
+
+        // TODO
+        // let value = get_kernel_work_group_info(kernel, device_id, CL_KERNEL_GLOBAL_WORK_SIZE).unwrap();
+        // let value = value.to_vec_size();
+        // println!("CL_KERNEL_GLOBAL_WORK_SIZE: {}", value.len());
 
         release_kernel(kernel).unwrap();
         release_program(program).unwrap();
