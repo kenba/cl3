@@ -14,6 +14,8 @@
 
 //! OpenCL Context API.
 
+#![allow(non_camel_case_types)]
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 #[allow(unused_imports)]
 use super::ffi::cl::{
@@ -129,13 +131,14 @@ pub fn release_context(context: cl_context) -> Result<(), cl_int> {
     }
 }
 
-// cl_context_info:
-pub const CL_CONTEXT_REFERENCE_COUNT: cl_context_info = 0x1080;
-pub const CL_CONTEXT_DEVICES: cl_context_info = 0x1081;
-pub const CL_CONTEXT_PROPERTIES: cl_context_info = 0x1082;
-// #ifdef CL_VERSION_1_1
-pub const CL_CONTEXT_NUM_DEVICES: cl_context_info = 0x1083;
-// #endif
+// cl_context_info
+#[derive(Clone, Copy, Debug)]
+pub enum ContextInfo {
+    CL_CONTEXT_REFERENCE_COUNT = 0x1080,
+    CL_CONTEXT_DEVICES = 0x1081,
+    CL_CONTEXT_PROPERTIES = 0x1082,
+    CL_CONTEXT_NUM_DEVICES = 0x1083,
+}
 
 /// Get specific information about an OpenCL context.  
 /// Calls clGetContextInfo to get the desired information about the context.
@@ -146,24 +149,21 @@ pub const CL_CONTEXT_NUM_DEVICES: cl_context_info = 0x1083;
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
-pub fn get_context_info(
-    context: cl_context,
-    param_name: cl_context_info,
-) -> Result<InfoType, cl_int> {
+pub fn get_context_info(context: cl_context, param_name: ContextInfo) -> Result<InfoType, cl_int> {
     api_info_size!(get_size, clGetContextInfo);
 
+    let param_id = param_name as cl_context_info;
     match param_name {
-        CL_CONTEXT_REFERENCE_COUNT | CL_CONTEXT_NUM_DEVICES => {
+        ContextInfo::CL_CONTEXT_REFERENCE_COUNT | ContextInfo::CL_CONTEXT_NUM_DEVICES => {
             api_info_value!(get_value, cl_uint, clGetContextInfo);
-            Ok(InfoType::Uint(get_value(context, param_name)?))
+            Ok(InfoType::Uint(get_value(context, param_id)?))
         }
 
-        CL_CONTEXT_DEVICES | CL_CONTEXT_PROPERTIES => {
+        ContextInfo::CL_CONTEXT_DEVICES | ContextInfo::CL_CONTEXT_PROPERTIES => {
             api_info_vector!(get_vec, intptr_t, clGetContextInfo);
-            let size = get_size(context, param_name)?;
-            Ok(InfoType::VecIntPtr(get_vec(context, param_name, size)?))
+            let size = get_size(context, param_id)?;
+            Ok(InfoType::VecIntPtr(get_vec(context, param_id, size)?))
         }
-        _ => Err(CL_INVALID_VALUE),
     }
 }
 
@@ -211,24 +211,24 @@ mod tests {
         let context = create_context(&device_ids, ptr::null(), None, ptr::null_mut());
         let context = context.unwrap();
 
-        let value = get_context_info(context, CL_CONTEXT_REFERENCE_COUNT).unwrap();
+        let value = get_context_info(context, ContextInfo::CL_CONTEXT_REFERENCE_COUNT).unwrap();
         let value = value.to_uint();
         println!("CL_CONTEXT_REFERENCE_COUNT: {}", value);
         assert!(0 < value);
 
-        let value = get_context_info(context, CL_CONTEXT_DEVICES).unwrap();
+        let value = get_context_info(context, ContextInfo::CL_CONTEXT_DEVICES).unwrap();
         let value = value.to_vec_intptr();
         println!("CL_CONTEXT_DEVICES: {}", value.len());
         println!("CL_CONTEXT_DEVICES: {:?}", value);
         assert!(0 < value.len());
 
-        let value = get_context_info(context, CL_CONTEXT_PROPERTIES).unwrap();
+        let value = get_context_info(context, ContextInfo::CL_CONTEXT_PROPERTIES).unwrap();
         let value = value.to_vec_intptr();
         println!("CL_CONTEXT_PROPERTIES: {}", value.len());
         println!("CL_CONTEXT_PROPERTIES: {:?}", value);
         // assert!(0 < value.len());
 
-        let value = get_context_info(context, CL_CONTEXT_NUM_DEVICES).unwrap();
+        let value = get_context_info(context, ContextInfo::CL_CONTEXT_NUM_DEVICES).unwrap();
         let value = value.to_uint();
         println!("CL_CONTEXT_NUM_DEVICES: {}", value);
         assert!(0 < value);

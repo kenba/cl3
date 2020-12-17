@@ -14,6 +14,8 @@
 
 //! OpenCL Event Object API.
 
+#![allow(non_camel_case_types)]
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::ffi::cl::{
     clCreateUserEvent, clGetEventInfo, clGetEventProfilingInfo, clReleaseEvent, clRetainEvent,
@@ -45,14 +47,15 @@ pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
     }
 }
 
-// cl_event_info:
-pub const CL_EVENT_COMMAND_QUEUE: cl_event_info = 0x11D0;
-pub const CL_EVENT_COMMAND_TYPE: cl_event_info = 0x11D1;
-pub const CL_EVENT_REFERENCE_COUNT: cl_event_info = 0x11D2;
-pub const CL_EVENT_COMMAND_EXECUTION_STATUS: cl_event_info = 0x11D3;
-// #ifdef CL_VERSION_1_1
-pub const CL_EVENT_CONTEXT: cl_event_info = 0x11D4;
-// #endif
+// cl_event_info
+#[derive(Clone, Copy, Debug)]
+pub enum EventInfo {
+    CL_EVENT_COMMAND_QUEUE = 0x11D0,
+    CL_EVENT_COMMAND_TYPE = 0x11D1,
+    CL_EVENT_REFERENCE_COUNT = 0x11D2,
+    CL_EVENT_COMMAND_EXECUTION_STATUS = 0x11D3,
+    CL_EVENT_CONTEXT = 0x11D4,
+}
 
 /// Get specific information about an OpenCL event.  
 /// Calls clGetEventInfo to get the desired information about the event.
@@ -63,24 +66,23 @@ pub const CL_EVENT_CONTEXT: cl_event_info = 0x11D4;
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
-pub fn get_event_info(event: cl_event, param_name: cl_event_info) -> Result<InfoType, cl_int> {
+pub fn get_event_info(event: cl_event, param_name: EventInfo) -> Result<InfoType, cl_int> {
+    let param_id = param_name as cl_event_info;
     match param_name {
-        CL_EVENT_COMMAND_EXECUTION_STATUS => {
+        EventInfo::CL_EVENT_COMMAND_EXECUTION_STATUS => {
             api_info_value!(get_value, cl_int, clGetEventInfo);
-            Ok(InfoType::Int(get_value(event, param_name)?))
+            Ok(InfoType::Int(get_value(event, param_id)?))
         }
 
-        CL_EVENT_COMMAND_TYPE | CL_EVENT_REFERENCE_COUNT => {
+        EventInfo::CL_EVENT_COMMAND_TYPE | EventInfo::CL_EVENT_REFERENCE_COUNT => {
             api_info_value!(get_value, cl_uint, clGetEventInfo);
-            Ok(InfoType::Uint(get_value(event, param_name)?))
+            Ok(InfoType::Uint(get_value(event, param_id)?))
         }
 
-        CL_EVENT_COMMAND_QUEUE | CL_EVENT_CONTEXT => {
+        EventInfo::CL_EVENT_COMMAND_QUEUE | EventInfo::CL_EVENT_CONTEXT => {
             api_info_value!(get_value, intptr_t, clGetEventInfo);
-            Ok(InfoType::Ptr(get_value(event, param_name)?))
+            Ok(InfoType::Ptr(get_value(event, param_id)?))
         }
-
-        _ => Err(CL_INVALID_VALUE),
     }
 }
 
@@ -171,13 +173,15 @@ pub fn set_event_callback(
 }
 
 // cl_profiling_info
-pub const CL_PROFILING_COMMAND_QUEUED: cl_profiling_info = 0x1280;
-pub const CL_PROFILING_COMMAND_SUBMIT: cl_profiling_info = 0x1281;
-pub const CL_PROFILING_COMMAND_START: cl_profiling_info = 0x1282;
-pub const CL_PROFILING_COMMAND_END: cl_profiling_info = 0x1283;
-// #ifdef CL_VERSION_2_0
-pub const CL_PROFILING_COMMAND_COMPLETE: cl_profiling_info = 0x1284;
-//#endif
+#[derive(Clone, Copy, Debug)]
+pub enum ProfilingInfo {
+    CL_PROFILING_COMMAND_QUEUED = 0x1280,
+    CL_PROFILING_COMMAND_SUBMIT = 0x1281,
+    CL_PROFILING_COMMAND_START = 0x1282,
+    CL_PROFILING_COMMAND_END = 0x1283,
+    // CL_VERSION_2_0
+    CL_PROFILING_COMMAND_COMPLETE = 0x1284,
+}
 
 /// Get profiling information for a command associated with an event when
 /// profiling is enabled.  
@@ -191,19 +195,18 @@ pub const CL_PROFILING_COMMAND_COMPLETE: cl_profiling_info = 0x1284;
 /// or the error code from the OpenCL C API function.
 pub fn get_event_profiling_info(
     event: cl_event,
-    param_name: cl_profiling_info,
+    param_name: ProfilingInfo,
 ) -> Result<InfoType, cl_int> {
+    let param_id = param_name as cl_profiling_info;
     match param_name {
-        CL_PROFILING_COMMAND_QUEUED
-        | CL_PROFILING_COMMAND_SUBMIT
-        | CL_PROFILING_COMMAND_START
-        | CL_PROFILING_COMMAND_END
-        | CL_PROFILING_COMMAND_COMPLETE // CL_VERSION_2_0
+        ProfilingInfo::CL_PROFILING_COMMAND_QUEUED
+        | ProfilingInfo::CL_PROFILING_COMMAND_SUBMIT
+        | ProfilingInfo::CL_PROFILING_COMMAND_START
+        | ProfilingInfo::CL_PROFILING_COMMAND_END
+        | ProfilingInfo::CL_PROFILING_COMMAND_COMPLETE // CL_VERSION_2_0
          => {
             api_info_value!(get_value, cl_ulong, clGetEventProfilingInfo);
-            Ok(InfoType::Ulong(get_value(event, param_name)?))
+            Ok(InfoType::Ulong(get_value(event, param_id)?))
         }
-
-        _ => Err(CL_INVALID_VALUE),
     }
 }

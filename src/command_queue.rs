@@ -14,6 +14,8 @@
 
 //! OpenCL Command Queue API.
 
+#![allow(non_camel_case_types)]
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 #[allow(unused_imports)]
 use super::ffi::cl::{
@@ -131,20 +133,20 @@ pub fn release_command_queue(command_queue: cl_command_queue) -> Result<(), cl_i
     }
 }
 
-// cl_command_queue_info:
-pub const CL_QUEUE_CONTEXT: cl_command_queue_info = 0x1090;
-pub const CL_QUEUE_DEVICE: cl_command_queue_info = 0x1091;
-pub const CL_QUEUE_REFERENCE_COUNT: cl_command_queue_info = 0x1092;
-pub const CL_QUEUE_PROPERTIES: cl_command_queue_info = 0x1093;
-// #ifdef CL_VERSION_2_0
-pub const CL_QUEUE_SIZE: cl_command_queue_info = 0x1094;
-// #endif
-// #ifdef CL_VERSION_2_1
-pub const CL_QUEUE_DEVICE_DEFAULT: cl_command_queue_info = 0x1095;
-// #endif
-// #ifdef CL_VERSION_3_0
-pub const CL_QUEUE_PROPERTIES_ARRAY: cl_command_queue_info = 0x1098;
-// #endif
+// cl_command_queue_info
+#[derive(Clone, Copy, Debug)]
+pub enum CommandQueueInfo {
+    CL_QUEUE_CONTEXT = 0x1090,
+    CL_QUEUE_DEVICE = 0x1091,
+    CL_QUEUE_REFERENCE_COUNT = 0x1092,
+    CL_QUEUE_PROPERTIES = 0x1093,
+    // CL_VERSION_2_0
+    CL_QUEUE_SIZE = 0x1094,
+    // CL_VERSION_2_1
+    CL_QUEUE_DEVICE_DEFAULT = 0x1095,
+    // CL_VERSION_3_0
+    CL_QUEUE_PROPERTIES_ARRAY = 0x1098,
+}
 
 /// Get specific information about an OpenCL command-queue.  
 /// Calls clGetCommandQueueInfo to get the desired information about the command-queue.
@@ -157,42 +159,41 @@ pub const CL_QUEUE_PROPERTIES_ARRAY: cl_command_queue_info = 0x1098;
 /// or the error code from the OpenCL C API function.
 pub fn get_command_queue_info(
     command_queue: cl_command_queue,
-    param_name: cl_command_queue_info,
+    param_name: CommandQueueInfo,
 ) -> Result<InfoType, cl_int> {
+    let param_id = param_name as cl_command_queue_info;
     match param_name {
-        CL_QUEUE_REFERENCE_COUNT
-        | CL_QUEUE_SIZE // CL_VERSION_2_0
+        CommandQueueInfo::CL_QUEUE_REFERENCE_COUNT
+        | CommandQueueInfo::CL_QUEUE_SIZE // CL_VERSION_2_0
          => {
             api_info_value!(get_value, cl_uint, clGetCommandQueueInfo);
-            Ok(InfoType::Uint(get_value(command_queue, param_name)?))
+            Ok(InfoType::Uint(get_value(command_queue, param_id)?))
         }
 
-        CL_QUEUE_PROPERTIES => {
+        CommandQueueInfo::CL_QUEUE_PROPERTIES => {
             api_info_value!(get_value, cl_ulong, clGetCommandQueueInfo);
-            Ok(InfoType::Ulong(get_value(command_queue, param_name)?))
+            Ok(InfoType::Ulong(get_value(command_queue, param_id)?))
         }
 
-        CL_QUEUE_CONTEXT
-        | CL_QUEUE_DEVICE
-        | CL_QUEUE_DEVICE_DEFAULT // CL_VERSION_2_1
+        CommandQueueInfo::CL_QUEUE_CONTEXT
+        | CommandQueueInfo::CL_QUEUE_DEVICE
+        | CommandQueueInfo::CL_QUEUE_DEVICE_DEFAULT // CL_VERSION_2_1
         => {
             api_info_value!(get_value, intptr_t, clGetCommandQueueInfo);
-            Ok(InfoType::Ptr(get_value(command_queue, param_name)?))
+            Ok(InfoType::Ptr(get_value(command_queue, param_id)?))
         }
 
-        CL_QUEUE_PROPERTIES_ARRAY // CL_VERSION_3_0
+        CommandQueueInfo::CL_QUEUE_PROPERTIES_ARRAY // CL_VERSION_3_0
         => {
             api_info_size!(get_size, clGetCommandQueueInfo);
             api_info_vector!(get_vec, cl_ulong, clGetCommandQueueInfo);
-            let size = get_size(command_queue, param_name)?;
+            let size = get_size(command_queue, param_id)?;
             Ok(InfoType::VecUlong(get_vec(
                 command_queue,
-                param_name,
+                param_id,
                 size,
             )?))
         }
-
-        _ => Err(CL_INVALID_VALUE),
     }
 }
 

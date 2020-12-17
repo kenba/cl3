@@ -14,6 +14,8 @@
 
 //! OpenCL Sampler API.
 
+#![allow(non_camel_case_types)]
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 #[allow(unused_imports)]
 use super::ffi::cl::{
@@ -122,21 +124,22 @@ pub fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     }
 }
 
-// cl_sampler_info:
-pub const CL_SAMPLER_REFERENCE_COUNT: cl_sampler_info = 0x1150;
-pub const CL_SAMPLER_CONTEXT: cl_sampler_info = 0x1151;
-pub const CL_SAMPLER_NORMALIZED_COORDS: cl_sampler_info = 0x1152;
-pub const CL_SAMPLER_ADDRESSING_MODE: cl_sampler_info = 0x1153;
-pub const CL_SAMPLER_FILTER_MODE: cl_sampler_info = 0x1154;
-// #ifdef CL_VERSION_2_0
-// TODO not defined in OpenCL API specs
-// pub const CL_SAMPLER_MIP_FILTER_MODE: cl_sampler_info = 0x1155;
-// pub const CL_SAMPLER_LOD_MIN: cl_sampler_info = 0x1156;
-// pub const CL_SAMPLER_LOD_MAX: cl_sampler_info = 0x1157;
-// #endif
-// #ifdef CL_VERSION_3_0
-pub const CL_SAMPLER_PROPERTIES: cl_sampler_info = 0x1158;
-// #endif
+// cl_sampler_info
+#[derive(Clone, Copy, Debug)]
+pub enum SamplerInfo {
+    CL_SAMPLER_REFERENCE_COUNT = 0x1150,
+    CL_SAMPLER_CONTEXT = 0x1151,
+    CL_SAMPLER_NORMALIZED_COORDS = 0x1152,
+    CL_SAMPLER_ADDRESSING_MODE = 0x1153,
+    CL_SAMPLER_FILTER_MODE = 0x1154,
+    // CL_VERSION_2_0
+    // TODO not defined in OpenCL API specs
+    // CL_SAMPLER_MIP_FILTER_MODE = 0x1155,
+    // CL_SAMPLER_LOD_MIN = 0x1156,
+    // CL_SAMPLER_LOD_MAX = 0x1157,
+    // CL_VERSION_3_0
+    CL_SAMPLER_PROPERTIES = 0x1158,
+}
 
 /// Get information specific to an OpenCL sampler object.  
 /// Calls clGetImageInfo to get the desired information about the sampler object.
@@ -147,32 +150,28 @@ pub const CL_SAMPLER_PROPERTIES: cl_sampler_info = 0x1158;
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
-pub fn get_sampler_info(
-    sampler: cl_sampler,
-    param_name: cl_sampler_info,
-) -> Result<InfoType, cl_int> {
+pub fn get_sampler_info(sampler: cl_sampler, param_name: SamplerInfo) -> Result<InfoType, cl_int> {
+    let param_id = param_name as cl_sampler_info;
     match param_name {
-        CL_SAMPLER_REFERENCE_COUNT
-        | CL_SAMPLER_NORMALIZED_COORDS
-        | CL_SAMPLER_ADDRESSING_MODE
-        | CL_SAMPLER_FILTER_MODE => {
+        SamplerInfo::CL_SAMPLER_REFERENCE_COUNT
+        | SamplerInfo::CL_SAMPLER_NORMALIZED_COORDS
+        | SamplerInfo::CL_SAMPLER_ADDRESSING_MODE
+        | SamplerInfo::CL_SAMPLER_FILTER_MODE => {
             api_info_value!(get_value, cl_uint, clGetSamplerInfo);
-            Ok(InfoType::Uint(get_value(sampler, param_name)?))
+            Ok(InfoType::Uint(get_value(sampler, param_id)?))
         }
 
-        CL_SAMPLER_CONTEXT => {
+        SamplerInfo::CL_SAMPLER_CONTEXT => {
             api_info_value!(get_value, intptr_t, clGetSamplerInfo);
-            Ok(InfoType::Ptr(get_value(sampler, param_name)?))
+            Ok(InfoType::Ptr(get_value(sampler, param_id)?))
         }
 
-        CL_SAMPLER_PROPERTIES // CL_VERSION_3_0
+        SamplerInfo::CL_SAMPLER_PROPERTIES // CL_VERSION_3_0
         => {
             api_info_size!(get_size, clGetSamplerInfo);
             api_info_vector!(get_vec, cl_ulong, clGetSamplerInfo);
-            let size = get_size(sampler, param_name)?;
-            Ok(InfoType::VecUlong(get_vec(sampler, param_name, size,)?))
+            let size = get_size(sampler, param_id)?;
+            Ok(InfoType::VecUlong(get_vec(sampler, param_id, size,)?))
         }
-
-        _ => Err(CL_INVALID_VALUE),
     }
 }

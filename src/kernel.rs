@@ -14,6 +14,8 @@
 
 //! OpenCL Kernel Object API.
 
+#![allow(non_camel_case_types)]
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::ffi::cl::{
     clCloneKernel, clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
@@ -209,15 +211,17 @@ pub fn set_kernel_exec_info(
     }
 }
 
-// cl_kernel_info:
-pub const CL_KERNEL_FUNCTION_NAME: cl_kernel_info = 0x1190;
-pub const CL_KERNEL_NUM_ARGS: cl_kernel_info = 0x1191;
-pub const CL_KERNEL_REFERENCE_COUNT: cl_kernel_info = 0x1192;
-pub const CL_KERNEL_CONTEXT: cl_kernel_info = 0x1193;
-pub const CL_KERNEL_PROGRAM: cl_kernel_info = 0x1194;
-// #ifdef CL_VERSION_1_2
-pub const CL_KERNEL_ATTRIBUTES: cl_kernel_info = 0x1195;
-// #endif
+// cl_kernel_info
+#[derive(Clone, Copy, Debug)]
+pub enum KernelInfo {
+    CL_KERNEL_FUNCTION_NAME = 0x1190,
+    CL_KERNEL_NUM_ARGS = 0x1191,
+    CL_KERNEL_REFERENCE_COUNT = 0x1192,
+    CL_KERNEL_CONTEXT = 0x1193,
+    CL_KERNEL_PROGRAM = 0x1194,
+    // CL_VERSION_1_2
+    CL_KERNEL_ATTRIBUTES = 0x1195,
+}
 
 /// Get specific information about an OpenCL kernel.  
 /// Calls clGetKernelInfo to get the desired information about the kernel.
@@ -228,35 +232,45 @@ pub const CL_KERNEL_ATTRIBUTES: cl_kernel_info = 0x1195;
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
-pub fn get_kernel_info(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<InfoType, cl_int> {
+pub fn get_kernel_info(kernel: cl_kernel, param_name: KernelInfo) -> Result<InfoType, cl_int> {
     api_info_size!(get_size, clGetKernelInfo);
+
+    let param_id = param_name as cl_kernel_info;
     match param_name {
-        CL_KERNEL_FUNCTION_NAME | CL_KERNEL_ATTRIBUTES => {
+        KernelInfo::CL_KERNEL_FUNCTION_NAME | KernelInfo::CL_KERNEL_ATTRIBUTES => {
             api_info_vector!(get_string, u8, clGetKernelInfo);
-            let size = get_size(kernel, param_name)?;
-            Ok(InfoType::Str(get_string(kernel, param_name, size)?))
+            let size = get_size(kernel, param_id)?;
+            Ok(InfoType::Str(get_string(kernel, param_id, size)?))
         }
 
-        CL_KERNEL_NUM_ARGS | CL_KERNEL_REFERENCE_COUNT => {
+        KernelInfo::CL_KERNEL_NUM_ARGS | KernelInfo::CL_KERNEL_REFERENCE_COUNT => {
             api_info_value!(get_value, cl_uint, clGetKernelInfo);
-            Ok(InfoType::Uint(get_value(kernel, param_name)?))
+            Ok(InfoType::Uint(get_value(kernel, param_id)?))
         }
 
-        CL_KERNEL_CONTEXT | CL_KERNEL_PROGRAM => {
+        KernelInfo::CL_KERNEL_CONTEXT | KernelInfo::CL_KERNEL_PROGRAM => {
             api_info_value!(get_value, intptr_t, clGetKernelInfo);
-            Ok(InfoType::Ptr(get_value(kernel, param_name)?))
+            Ok(InfoType::Ptr(get_value(kernel, param_id)?))
         }
-
-        _ => Err(CL_INVALID_VALUE),
     }
 }
 
 // cl_kernel_arg_info
-pub const CL_KERNEL_ARG_ADDRESS_QUALIFIER: cl_kernel_arg_info = 0x1196;
-pub const CL_KERNEL_ARG_ACCESS_QUALIFIER: cl_kernel_arg_info = 0x1197;
-pub const CL_KERNEL_ARG_TYPE_NAME: cl_kernel_arg_info = 0x1198;
-pub const CL_KERNEL_ARG_TYPE_QUALIFIER: cl_kernel_arg_info = 0x1199;
-pub const CL_KERNEL_ARG_NAME: cl_kernel_arg_info = 0x119A;
+// pub const CL_KERNEL_ARG_ADDRESS_QUALIFIER: cl_kernel_arg_info = 0x1196;
+// pub const CL_KERNEL_ARG_ACCESS_QUALIFIER: cl_kernel_arg_info = 0x1197;
+// pub const CL_KERNEL_ARG_TYPE_NAME: cl_kernel_arg_info = 0x1198;
+// pub const CL_KERNEL_ARG_TYPE_QUALIFIER: cl_kernel_arg_info = 0x1199;
+// pub const CL_KERNEL_ARG_NAME: cl_kernel_arg_info = 0x119A;
+
+// cl_kernel_arg_info
+#[derive(Clone, Copy, Debug)]
+pub enum KernelArgInfo {
+    CL_KERNEL_ARG_ADDRESS_QUALIFIER = 0x1196,
+    CL_KERNEL_ARG_ACCESS_QUALIFIER = 0x1197,
+    CL_KERNEL_ARG_TYPE_NAME = 0x1198,
+    CL_KERNEL_ARG_TYPE_QUALIFIER = 0x1199,
+    CL_KERNEL_ARG_NAME = 0x119A,
+}
 
 /// Get specific information about arguments of an OpenCL kernel.  
 /// Calls clGetKernelArgInfo to get the desired information about the kernel.
@@ -271,43 +285,43 @@ pub const CL_KERNEL_ARG_NAME: cl_kernel_arg_info = 0x119A;
 pub fn get_kernel_arg_info(
     kernel: cl_kernel,
     arg_indx: cl_uint,
-    param_name: cl_kernel_arg_info,
+    param_name: KernelArgInfo,
 ) -> Result<InfoType, cl_int> {
+    let param_id = param_name as cl_kernel_arg_info;
     match param_name {
-        CL_KERNEL_ARG_ADDRESS_QUALIFIER | CL_KERNEL_ARG_ACCESS_QUALIFIER => {
+        KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER
+        | KernelArgInfo::CL_KERNEL_ARG_ACCESS_QUALIFIER => {
             api2_info_value!(get_index_value, cl_uint, cl_uint, clGetKernelArgInfo);
-            Ok(InfoType::Uint(get_index_value(
-                kernel, arg_indx, param_name,
-            )?))
+            Ok(InfoType::Uint(get_index_value(kernel, arg_indx, param_id)?))
         }
 
-        CL_KERNEL_ARG_TYPE_QUALIFIER => {
+        KernelArgInfo::CL_KERNEL_ARG_TYPE_QUALIFIER => {
             api2_info_value!(get_index_value, cl_uint, cl_ulong, clGetKernelArgInfo);
             Ok(InfoType::Ulong(get_index_value(
-                kernel, arg_indx, param_name,
+                kernel, arg_indx, param_id,
             )?))
         }
 
-        CL_KERNEL_ARG_TYPE_NAME | CL_KERNEL_ARG_NAME => {
+        KernelArgInfo::CL_KERNEL_ARG_TYPE_NAME | KernelArgInfo::CL_KERNEL_ARG_NAME => {
             api2_info_size!(get_device_size, cl_uint, clGetKernelArgInfo);
             api2_info_vector!(get_device_string, cl_uint, u8, clGetKernelArgInfo);
-            let size = get_device_size(kernel, arg_indx, param_name)?;
+            let size = get_device_size(kernel, arg_indx, param_id)?;
             Ok(InfoType::Str(get_device_string(
-                kernel, arg_indx, param_name, size,
+                kernel, arg_indx, param_id, size,
             )?))
         }
-
-        _ => Err(CL_INVALID_VALUE),
     }
 }
-
 // cl_kernel_work_group_info
-pub const CL_KERNEL_WORK_GROUP_SIZE: cl_kernel_work_group_info = 0x11B0;
-pub const CL_KERNEL_COMPILE_WORK_GROUP_SIZE: cl_kernel_work_group_info = 0x11B1;
-pub const CL_KERNEL_LOCAL_MEM_SIZE: cl_kernel_work_group_info = 0x11B2;
-pub const CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE: cl_kernel_work_group_info = 0x11B3;
-pub const CL_KERNEL_PRIVATE_MEM_SIZE: cl_kernel_work_group_info = 0x11B4;
-pub const CL_KERNEL_GLOBAL_WORK_SIZE: cl_kernel_work_group_info = 0x11B5;
+#[derive(Clone, Copy, Debug)]
+pub enum KernelWorkGroupInfo {
+    CL_KERNEL_WORK_GROUP_SIZE = 0x11B0,
+    CL_KERNEL_COMPILE_WORK_GROUP_SIZE = 0x11B1,
+    CL_KERNEL_LOCAL_MEM_SIZE = 0x11B2,
+    CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE = 0x11B3,
+    CL_KERNEL_PRIVATE_MEM_SIZE = 0x11B4,
+    CL_KERNEL_GLOBAL_WORK_SIZE = 0x11B5,
+}
 
 /// Get specific information about work groups of an OpenCL kernel.  
 /// Calls clGetKernelWorkGroupInfo to get the desired information about the kernel.
@@ -322,20 +336,23 @@ pub const CL_KERNEL_GLOBAL_WORK_SIZE: cl_kernel_work_group_info = 0x11B5;
 pub fn get_kernel_work_group_info(
     kernel: cl_kernel,
     device: cl_device_id,
-    param_name: cl_kernel_work_group_info,
+    param_name: KernelWorkGroupInfo,
 ) -> Result<InfoType, cl_int> {
+    let param_id = param_name as cl_kernel_work_group_info;
     match param_name {
-        CL_KERNEL_WORK_GROUP_SIZE | CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE => {
+        KernelWorkGroupInfo::CL_KERNEL_WORK_GROUP_SIZE
+        | KernelWorkGroupInfo::CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE => {
             api2_info_value!(
                 get_index_value,
                 cl_device_id,
                 size_t,
                 clGetKernelWorkGroupInfo
             );
-            Ok(InfoType::Size(get_index_value(kernel, device, param_name)?))
+            Ok(InfoType::Size(get_index_value(kernel, device, param_id)?))
         }
 
-        CL_KERNEL_COMPILE_WORK_GROUP_SIZE | CL_KERNEL_GLOBAL_WORK_SIZE => {
+        KernelWorkGroupInfo::CL_KERNEL_COMPILE_WORK_GROUP_SIZE
+        | KernelWorkGroupInfo::CL_KERNEL_GLOBAL_WORK_SIZE => {
             api2_info_size!(get_device_size, cl_device_id, clGetKernelWorkGroupInfo);
             api2_info_vector!(
                 get_device_vec,
@@ -343,34 +360,34 @@ pub fn get_kernel_work_group_info(
                 size_t,
                 clGetKernelWorkGroupInfo
             );
-            let size = get_device_size(kernel, device, param_name)?;
+            let size = get_device_size(kernel, device, param_id)?;
             Ok(InfoType::VecSize(get_device_vec(
-                kernel, device, param_name, size,
+                kernel, device, param_id, size,
             )?))
         }
 
-        CL_KERNEL_LOCAL_MEM_SIZE | CL_KERNEL_PRIVATE_MEM_SIZE => {
+        KernelWorkGroupInfo::CL_KERNEL_LOCAL_MEM_SIZE
+        | KernelWorkGroupInfo::CL_KERNEL_PRIVATE_MEM_SIZE => {
             api2_info_value!(
                 get_index_value,
                 cl_device_id,
                 cl_ulong,
                 clGetKernelWorkGroupInfo
             );
-            Ok(InfoType::Ulong(get_index_value(
-                kernel, device, param_name,
-            )?))
+            Ok(InfoType::Ulong(get_index_value(kernel, device, param_id)?))
         }
-
-        _ => Err(CL_INVALID_VALUE),
     }
 }
 
 // cl_kernel_sub_group_info
-pub const CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE: cl_kernel_sub_group_info = 0x2033;
-pub const CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE: cl_kernel_sub_group_info = 0x2034;
-pub const CL_KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT: cl_kernel_sub_group_info = 0x11B8;
-pub const CL_KERNEL_MAX_NUM_SUB_GROUPS: cl_kernel_sub_group_info = 0x11B9;
-pub const CL_KERNEL_COMPILE_NUM_SUB_GROUPS: cl_kernel_sub_group_info = 0x11BA;
+#[derive(Clone, Copy, Debug)]
+pub enum KernelSubGroupInfo {
+    CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE = 0x2033,
+    CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE = 0x2034,
+    CL_KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT = 0x11B8,
+    CL_KERNEL_MAX_NUM_SUB_GROUPS = 0x11B9,
+    CL_KERNEL_COMPILE_NUM_SUB_GROUPS = 0x11BA,
+}
 
 /// Get specific information about sub groups of an OpenCL kernel.  
 /// Calls clGetKernelSubGroupInfo to get the desired information about the kernel.  
@@ -389,56 +406,77 @@ pub const CL_KERNEL_COMPILE_NUM_SUB_GROUPS: cl_kernel_sub_group_info = 0x11BA;
 pub fn get_kernel_sub_group_info(
     kernel: cl_kernel,
     device: cl_device_id,
-    param_name: cl_kernel_sub_group_info,
+    param_name: KernelSubGroupInfo,
     input_value_size: size_t,
     input_value: *const c_void,
 ) -> Result<InfoType, cl_int> {
-    // Get the size of the information.
-    let mut size: size_t = 0;
-    let status: cl_int = unsafe {
-        clGetKernelSubGroupInfo(
-            kernel,
-            device,
-            param_name,
-            input_value_size,
-            input_value,
-            0,
-            ptr::null_mut(),
-            &mut size,
-        )
-    };
+    let mut size: size_t = mem::size_of::<size_t>();
+    let param_id = param_name as cl_kernel_sub_group_info;
+    match param_name {
+        KernelSubGroupInfo::CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE
+        | KernelSubGroupInfo::CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE
+        | KernelSubGroupInfo::CL_KERNEL_MAX_NUM_SUB_GROUPS
+        | KernelSubGroupInfo::CL_KERNEL_COMPILE_NUM_SUB_GROUPS => {
+            // get the value
+            let mut data: size_t = 0;
+            let data_ptr: *mut size_t = &mut data;
+            let status = unsafe {
+                clGetKernelSubGroupInfo(
+                    kernel,
+                    device,
+                    param_id,
+                    input_value_size,
+                    input_value,
+                    size,
+                    data_ptr as *mut c_void,
+                    ptr::null_mut(),
+                )
+            };
+            if CL_SUCCESS != status {
+                Err(status)
+            } else {
+                Ok(InfoType::Size(data))
+            }
+        }
 
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
-        // Get the information.
-        let count = size / mem::size_of::<size_t>();
-        let mut data: Vec<size_t> = Vec::with_capacity(count);
-        let status = unsafe {
-            data.set_len(count);
-            clGetKernelSubGroupInfo(
-                kernel,
-                device,
-                param_name,
-                input_value_size,
-                input_value,
-                size,
-                data.as_mut_ptr() as *mut c_void,
-                ptr::null_mut(),
-            )
-        };
-        if CL_SUCCESS != status {
-            Err(status)
-        } else {
-            match param_name {
-                CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE
-                | CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE
-                | CL_KERNEL_MAX_NUM_SUB_GROUPS
-                | CL_KERNEL_COMPILE_NUM_SUB_GROUPS => Ok(InfoType::Size(data[0])),
-
-                CL_KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT => Ok(InfoType::VecSize(data)),
-
-                _ => Err(CL_INVALID_VALUE),
+        KernelSubGroupInfo::CL_KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT => {
+            // get the size
+            let status: cl_int = unsafe {
+                clGetKernelSubGroupInfo(
+                    kernel,
+                    device,
+                    param_id,
+                    input_value_size,
+                    input_value,
+                    0,
+                    ptr::null_mut(),
+                    &mut size,
+                )
+            };
+            if CL_SUCCESS != status {
+                Err(status)
+            } else {
+                // Get the information.
+                let count = size / mem::size_of::<size_t>();
+                let mut data: Vec<size_t> = Vec::with_capacity(count);
+                let status = unsafe {
+                    data.set_len(count);
+                    clGetKernelSubGroupInfo(
+                        kernel,
+                        device,
+                        param_id,
+                        input_value_size,
+                        input_value,
+                        size,
+                        data.as_mut_ptr() as *mut c_void,
+                        ptr::null_mut(),
+                    )
+                };
+                if CL_SUCCESS != status {
+                    Err(status)
+                } else {
+                    Ok(InfoType::VecSize(data))
+                }
             }
         }
     }
@@ -448,7 +486,7 @@ pub fn get_kernel_sub_group_info(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, get_device_info, CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR_ID};
+    use crate::device::{get_device_ids, get_device_info, DeviceInfo, CL_DEVICE_TYPE_GPU};
     use crate::platform::get_platform_ids;
     use crate::program::{build_program, create_program_with_source, release_program};
     use std::ffi::CString;
@@ -465,7 +503,7 @@ mod tests {
 
         let device_id = device_ids[0];
 
-        let value = get_device_info(device_id, CL_DEVICE_VENDOR_ID).unwrap();
+        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR_ID).unwrap();
         let value = value.to_uint();
         println!("CL_DEVICE_VENDOR_ID: {:X}", value);
         assert!(0 < value);
@@ -499,95 +537,113 @@ mod tests {
         let name = CString::new(kernel_name).unwrap();
         let kernel = create_kernel(program, &name).unwrap();
 
-        let value = get_kernel_info(kernel, CL_KERNEL_FUNCTION_NAME).unwrap();
+        let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_FUNCTION_NAME).unwrap();
         let value = value.to_str().unwrap();
         println!("CL_KERNEL_FUNCTION_NAME: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        assert!(0 < value.to_bytes().len());
 
-        let value = get_kernel_info(kernel, CL_KERNEL_NUM_ARGS).unwrap();
+        let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_NUM_ARGS).unwrap();
         let value = value.to_uint();
         println!("CL_KERNEL_NUM_ARGS: {}", value);
         assert!(0 < value);
 
-        let value = get_kernel_info(kernel, CL_KERNEL_REFERENCE_COUNT).unwrap();
+        let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_REFERENCE_COUNT).unwrap();
         let value = value.to_uint();
         println!("CL_KERNEL_REFERENCE_COUNT: {}", value);
         assert!(0 < value);
 
-        let value = get_kernel_info(kernel, CL_KERNEL_CONTEXT).unwrap();
+        let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_CONTEXT).unwrap();
         let value = value.to_ptr();
         println!("CL_KERNEL_CONTEXT: {}", value);
         assert!(0 < value);
 
-        let value = get_kernel_info(kernel, CL_KERNEL_PROGRAM).unwrap();
+        let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_PROGRAM).unwrap();
         let value = value.to_ptr();
         println!("CL_KERNEL_PROGRAM: {}", value);
         assert!(0 < value);
 
-        let value = get_kernel_info(kernel, CL_KERNEL_ATTRIBUTES).unwrap();
+        let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_ATTRIBUTES).unwrap();
         let value = value.to_str().unwrap();
         println!("CL_KERNEL_ATTRIBUTES: {:?}", value);
 
         if !is_nvidia {
             // Nvidia returns: -19, CL_KERNEL_ARG_INFO_NOT_AVAILABLE
-            let value = get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_ADDRESS_QUALIFIER).unwrap();
+            let value =
+                get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER)
+                    .unwrap();
             let value = value.to_uint();
             println!("CL_KERNEL_ARG_ADDRESS_QUALIFIER: {:X}", value);
 
-            let value = get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_ACCESS_QUALIFIER).unwrap();
+            let value =
+                get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ACCESS_QUALIFIER)
+                    .unwrap();
             let value = value.to_uint();
             println!("CL_KERNEL_ARG_ACCESS_QUALIFIER: {:X}", value);
 
-            let value = get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_TYPE_NAME).unwrap();
+            let value =
+                get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_TYPE_NAME).unwrap();
             let value = value.to_str().unwrap();
             println!("CL_KERNEL_ARG_TYPE_NAME: {:?}", value);
-            let value = value.into_string().unwrap();
-            assert!(0 < value.len());
+            assert!(0 < value.to_bytes().len());
 
-            let value = get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_TYPE_QUALIFIER).unwrap();
+            let value = get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_TYPE_QUALIFIER)
+                .unwrap();
             let value = value.to_ulong();
             println!("CL_KERNEL_ARG_TYPE_QUALIFIER: {}", value);
 
-            let value = get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_NAME).unwrap();
+            let value = get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_NAME).unwrap();
             let value = value.to_str().unwrap();
             println!("CL_KERNEL_ARG_NAME: {:?}", value);
-            let value = value.into_string().unwrap();
-            assert!(0 < value.len());
+            assert!(0 < value.to_bytes().len());
         }
 
-        let value =
-            get_kernel_work_group_info(kernel, device_id, CL_KERNEL_WORK_GROUP_SIZE).unwrap();
+        let value = get_kernel_work_group_info(
+            kernel,
+            device_id,
+            KernelWorkGroupInfo::CL_KERNEL_WORK_GROUP_SIZE,
+        )
+        .unwrap();
         let value = value.to_size();
         println!("CL_KERNEL_WORK_GROUP_SIZE: {}", value);
 
-        let value =
-            get_kernel_work_group_info(kernel, device_id, CL_KERNEL_COMPILE_WORK_GROUP_SIZE)
-                .unwrap();
+        let value = get_kernel_work_group_info(
+            kernel,
+            device_id,
+            KernelWorkGroupInfo::CL_KERNEL_COMPILE_WORK_GROUP_SIZE,
+        )
+        .unwrap();
         let value = value.to_vec_size();
         println!("CL_KERNEL_COMPILE_WORK_GROUP_SIZE: {}", value.len());
 
-        let value =
-            get_kernel_work_group_info(kernel, device_id, CL_KERNEL_LOCAL_MEM_SIZE).unwrap();
+        let value = get_kernel_work_group_info(
+            kernel,
+            device_id,
+            KernelWorkGroupInfo::CL_KERNEL_LOCAL_MEM_SIZE,
+        )
+        .unwrap();
         let value = value.to_ulong();
         println!("CL_KERNEL_LOCAL_MEM_SIZE: {}", value);
 
         let value = get_kernel_work_group_info(
             kernel,
             device_id,
-            CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE,
+            KernelWorkGroupInfo::CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE,
         )
         .unwrap();
         let value = value.to_size();
         println!("CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE: {}", value);
 
-        let value =
-            get_kernel_work_group_info(kernel, device_id, CL_KERNEL_PRIVATE_MEM_SIZE).unwrap();
+        let value = get_kernel_work_group_info(
+            kernel,
+            device_id,
+            KernelWorkGroupInfo::CL_KERNEL_PRIVATE_MEM_SIZE,
+        )
+        .unwrap();
         let value = value.to_ulong();
         println!("CL_KERNEL_PRIVATE_MEM_SIZE: {}", value);
 
         // TODO
-        // let value = get_kernel_work_group_info(kernel, device_id, CL_KERNEL_GLOBAL_WORK_SIZE).unwrap();
+        // let value = get_kernel_work_group_info(kernel, device_id, KernelWorkGroupInfo::CL_KERNEL_GLOBAL_WORK_SIZE).unwrap();
         // let value = value.to_vec_size();
         // println!("CL_KERNEL_GLOBAL_WORK_SIZE: {}", value.len());
 
