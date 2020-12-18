@@ -580,8 +580,6 @@ pub fn svm_alloc(
 /// * `context` - the valid OpenCL context used to create the SVM buffer.
 /// * `svm_pointer` - the value returned by a call to clSVMAlloc.
 ///
-/// returns an empty Result.
-pub fn svm_free(context: cl_context, svm_pointer: *mut c_void) -> Result<(), cl_int> {
+pub fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
     unsafe { clSVMFree(context, svm_pointer) };
-    Ok(())
 }
