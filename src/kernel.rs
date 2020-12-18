@@ -254,14 +254,6 @@ pub fn get_kernel_info(kernel: cl_kernel, param_name: KernelInfo) -> Result<Info
         }
     }
 }
-
-// cl_kernel_arg_info
-// pub const CL_KERNEL_ARG_ADDRESS_QUALIFIER: cl_kernel_arg_info = 0x1196;
-// pub const CL_KERNEL_ARG_ACCESS_QUALIFIER: cl_kernel_arg_info = 0x1197;
-// pub const CL_KERNEL_ARG_TYPE_NAME: cl_kernel_arg_info = 0x1198;
-// pub const CL_KERNEL_ARG_TYPE_QUALIFIER: cl_kernel_arg_info = 0x1199;
-// pub const CL_KERNEL_ARG_NAME: cl_kernel_arg_info = 0x119A;
-
 // cl_kernel_arg_info
 #[derive(Clone, Copy, Debug)]
 pub enum KernelArgInfo {
