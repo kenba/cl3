@@ -12,13 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! A Rust implementation of the [Khronos OpenCL 3.0 API](https://www.khronos.org/registry/OpenCL/).
+//! A Rust implementation of the Khronos [OpenCL](https://www.khronos.org/registry/OpenCL/) 3.0 API.
 //!
 //! # Description
 //!
-//! The `types` and `functions` modules provide unsafe Foreign Function Interfaces
-//! (ffi) for the OpenCL C API types and functions.  
-//! The other modules wrap the ffi in a functional, safe, idiomatic Rust API.
+//! The [ffi] modules provide unsafe Foreign Function Interfaces for the OpenCL
+//! C functions, while [types] contains all the OpenCL API data types.
+//!
+//! Most of the other modules are named after their equivalent OpenCL objects
+//! and provide simple, safe functions around the C API functions that return
+//! Rust Result types. The exceptions are:
+//!
+//! * [error_codes] - contains the OpenCL API error codes from cl.h that are
+//! returned in the OpenCL API Result types.
+//! * [info_type] - contains a Rust enum (`InfoType`) to hold the OpenCL types
+//! that can be returned from OpenCL "Info" functions, e.g. clGetPlatformInfo,
+//! clGetDeviceInfo, clGetProgramInfo, etc.
+//! * [macros] - contains Rust macros to call the OpenCL "Info" functions and
+//! return the appropriate `InfoType` in a Rust Result.
 
 pub mod command_queue;
 pub mod context;
