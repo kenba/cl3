@@ -28,9 +28,9 @@ use super::info_type::InfoType;
 #[allow(unused_imports)]
 use super::types::{
     cl_buffer_create_type, cl_context, cl_image_desc, cl_image_format, cl_image_info, cl_int,
-    cl_mem, cl_mem_flags, cl_mem_info, cl_mem_object_type, cl_mem_properties, cl_pipe_info,
-    cl_svm_mem_flags, cl_uint, cl_ulong,
-}; // cl_pipe_properties,
+    cl_map_flags, cl_mem, cl_mem_flags, cl_mem_info, cl_mem_object_type, cl_mem_properties,
+    cl_pipe_info, cl_svm_mem_flags, cl_uint, cl_ulong,
+};
 
 use super::{api_info_size, api_info_value, api_info_vector};
 
@@ -54,6 +54,10 @@ pub const CL_MEM_SVM_FINE_GRAIN_BUFFER: cl_svm_mem_flags = 1 << 10; // used by c
 pub const CL_MEM_SVM_ATOMICS: cl_svm_mem_flags = 1 << 11; // used by cl_svm_mem_flags only
 pub const CL_MEM_KERNEL_READ_AND_WRITE: cl_mem_flags = 1 << 12;
 // #endif
+
+pub const CL_MAP_READ: cl_map_flags = 1 << 0;
+pub const CL_MAP_WRITE: cl_map_flags = 1 << 1;
+pub const CL_MAP_WRITE_INVALIDATE_REGION: cl_map_flags = 1 << 2;
 
 /// Create an OpenCL buffer object for a context.  
 /// Calls clCreateBuffer to create an OpenCL buffer object.  

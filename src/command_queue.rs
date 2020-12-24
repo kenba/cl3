@@ -1017,7 +1017,7 @@ pub fn enqueue_svm_mem_fill(
     }
 }
 
-pub fn enqueue_svm_mem_map(
+pub fn enqueue_svm_map(
     command_queue: cl_command_queue,
     blocking_map: cl_bool,
     flags: cl_map_flags,
@@ -1046,7 +1046,7 @@ pub fn enqueue_svm_mem_map(
     }
 }
 
-pub fn enqueue_svm_unmem(
+pub fn enqueue_svm_unmap(
     command_queue: cl_command_queue,
     svm_ptr: *mut c_void,
     num_events_in_wait_list: cl_uint,
