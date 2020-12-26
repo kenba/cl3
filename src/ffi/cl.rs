@@ -634,6 +634,7 @@ extern "system" {
         dst_buffer: cl_mem,
         src_origin: *const size_t,
         dst_origin: *const size_t,
+        region: *const size_t,
         src_row_pitch: size_t,
         src_slice_pitch: size_t,
         dst_row_pitch: size_t,
