@@ -459,9 +459,42 @@ pub fn get_program_info(
         }
 
         ProgramInfo::CL_PROGRAM_BINARIES => {
-            api_info_vector!(get_vec, cl_uchar, clGetProgramInfo);
-            let size = get_size(program, param_id)?;
-            Ok(InfoType::VecUchar(get_vec(program, param_id, size)?))
+            // Gets all the binaries for all the devices in the context
+
+            // get the binary sizes, as the case above
+            api_info_vector!(get_size_vec, size_t, clGetProgramInfo);
+            let count = get_size(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES as cl_program_info)?;
+            let sizes = get_size_vec(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES as cl_program_info, count)?;
+
+            // calculate the sum of the binary sizes and create a vector of that length
+            let size_sum = sizes.iter().sum();
+            let bin_vec: Vec<cl_uchar> = vec![0u8; size_sum];
+
+            // get the number of devices in the context, as case above
+            api_info_value!(get_value, cl_uint, clGetProgramInfo);
+            let dev_count = get_value(program, ProgramInfo::CL_PROGRAM_NUM_DEVICES as cl_program_info)? as usize;
+            // create a vector of dev_count copies of the bin_vec vector
+            let binaries = vec![bin_vec; dev_count];
+
+            // Create a vector of pointers to the vectors in binaries
+            let mut binary_ptrs = binaries.iter().map(|vec| {
+                vec.as_ptr()
+            }).collect::<Vec<_>>();
+
+            let status = unsafe {
+                clGetProgramInfo(
+                    program,
+                    param_id,
+                    mem::size_of::<*mut c_void>(),
+                    binary_ptrs.as_mut_ptr() as *mut _ as *mut c_void,
+                    ptr::null_mut(),
+                )
+            };
+            if CL_SUCCESS != status {
+                Err(status)
+            } else {
+                Ok(InfoType::VecVecUchar(binaries))
+            }
         }
 
         ProgramInfo::CL_PROGRAM_NUM_KERNELS => {
@@ -545,15 +578,6 @@ mod tests {
 
         let device_id = device_ids[0];
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR_ID).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_VENDOR_ID: {:X}", value);
-        assert!(0 < value);
-
-        let _is_amd = 0x1002 == value;
-        let _is_intel = 0x8086 == value;
-        let is_nvidia = 0x10DE == value;
-
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VERSION).unwrap();
         let value = value.to_str().unwrap();
         println!("CL_DEVICE_VERSION: {:?}", value);
@@ -617,12 +641,12 @@ mod tests {
         println!("CL_PROGRAM_BINARY_SIZES: {:?}", value);
         assert!(0 < value.len());
 
-        // TODO investigate why not Nvidia
-        if !is_nvidia {
-            let value = get_program_info(program, ProgramInfo::CL_PROGRAM_BINARIES).unwrap();
-            let value = value.to_vec_uchar();
-            println!("CL_PROGRAM_BINARIES: {}", value.len());
-        }
+        let value = get_program_info(program, ProgramInfo::CL_PROGRAM_BINARIES).unwrap();
+        let value = value.to_vec_vec_uchar();
+        println!("CL_PROGRAM_BINARIES count: {}", value.len());
+        println!("CL_PROGRAM_BINARIES length[0]: {}", value[0].len());
+        // println!("CL_PROGRAM_BINARIES[0]: {:?}", value[0]);
+        assert!(0 < value.len());
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_NUM_KERNELS).unwrap();
         let value = value.to_size();

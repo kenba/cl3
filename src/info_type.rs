@@ -33,6 +33,7 @@ pub enum InfoType {
     VecIntPtr(Vec<intptr_t>),
     VecNameVersion(Vec<cl_name_version>),
     VecImageFormat(Vec<cl_image_format>),
+    VecVecUchar(Vec<Vec<cl_uchar>>),
 }
 
 impl InfoType {
@@ -123,6 +124,13 @@ impl InfoType {
         match self {
             InfoType::VecImageFormat(a) => a,
             _ => panic!("not a Vec<cl_image_format>"),
+        }
+    }
+
+    pub fn to_vec_vec_uchar(self) -> Vec<Vec<cl_uchar>> {
+        match self {
+            InfoType::VecVecUchar(a) => a,
+            _ => panic!("not a Vec<Vec<cl_uchar>"),
         }
     }
 }
