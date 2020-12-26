@@ -16,26 +16,33 @@
 
 #![allow(non_camel_case_types)]
 
+pub use cl_sys::{CL_CONTEXT_INTEROP_USER_SYNC, CL_CONTEXT_PLATFORM};
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-#[allow(unused_imports)]
-use super::ffi::cl::{
-    clCreateContext, clCreateContextFromType, clGetContextInfo, clReleaseContext, clRetainContext,
-    clSetContextDestructorCallback,
-};
 use super::info_type::InfoType;
 use super::types::{
     cl_context, cl_context_info, cl_context_properties, cl_device_id, cl_device_type, cl_int,
     cl_uint,
 };
 use super::{api_info_size, api_info_value, api_info_vector};
+use cl_sys::{
+    clCreateContext, clCreateContextFromType, clGetContextInfo, clReleaseContext, clRetainContext,
+};
 
 use libc::{c_char, c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-// cl_context_properties
-pub const CL_CONTEXT_PLATFORM: cl_context_properties = 0x1084;
-pub const CL_CONTEXT_INTEROP_USER_SYNC: cl_context_properties = 0x1085;
+// clSetContextDestructorCallback is CL_VERSION_3_0, not in cl_sys yet
+#[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
+#[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
+extern "system" {
+    pub fn clSetContextDestructorCallback(
+        context: cl_context,
+        pfn_notify: extern "C" fn(cl_context, *const c_void),
+        user_data: *mut c_void,
+    ) -> cl_int;
+}
 
 /// Create an OpenCL context.  
 /// Calls clCreateContext to create an OpenCL context.

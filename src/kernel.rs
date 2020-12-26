@@ -17,11 +17,6 @@
 #![allow(non_camel_case_types)]
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-use super::ffi::cl::{
-    clCloneKernel, clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
-    clGetKernelSubGroupInfo, clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel,
-    clSetKernelArg, clSetKernelArgSVMPointer, clSetKernelExecInfo,
-};
 use super::info_type::InfoType;
 use super::types::{
     cl_device_id, cl_int, cl_kernel, cl_kernel_arg_info, cl_kernel_exec_info, cl_kernel_info,
@@ -30,6 +25,11 @@ use super::types::{
 use super::{
     api2_info_size, api2_info_value, api2_info_vector, api_info_size, api_info_value,
     api_info_vector,
+};
+use cl_sys::{
+    clCloneKernel, clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
+    clGetKernelSubGroupInfo, clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel,
+    clSetKernelArg, clSetKernelArgSVMPointer, clSetKernelExecInfo,
 };
 
 use libc::{c_void, intptr_t, size_t};
@@ -552,7 +552,9 @@ mod tests {
         println!("CL_KERNEL_ATTRIBUTES: {:?}", value);
 
         // Don't get KernelArgInfo if CL_KERNEL_ARG_INFO_NOT_AVAILABLE on device
-        if let Ok(value) = get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER){
+        if let Ok(value) =
+            get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER)
+        {
             let value = value.to_uint();
             println!("CL_KERNEL_ARG_ADDRESS_QUALIFIER: {:X}", value);
 

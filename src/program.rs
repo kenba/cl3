@@ -18,11 +18,12 @@
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 #[allow(unused_imports)]
-use super::ffi::cl::{
-    clCreateProgramWithSource, clCreateProgramWithBinary, clCreateProgramWithBuiltInKernels,
+use cl_sys::{
+    clCreateProgramWithSource, clCreateProgramWithBinary, 
     clCreateProgramWithIL, clLinkProgram, clCompileProgram, clRetainProgram, clReleaseProgram,
-    clBuildProgram, clUnloadPlatformCompiler, clGetProgramInfo, clGetProgramBuildInfo,
-    clSetProgramReleaseCallback, clSetProgramSpecializationConstant,
+    clBuildProgram, clGetProgramInfo, clGetProgramBuildInfo,
+    // clUnloadPlatformCompiler, clCreateProgramWithBuiltInKernels,
+    // clSetProgramReleaseCallback, clSetProgramSpecializationConstant,
 };
 use super::info_type::InfoType;
 use super::types::{
@@ -36,6 +37,37 @@ use libc::{c_void, intptr_t, size_t, c_char, c_uchar};
 use std::mem;
 use std::ptr;
 use std::ffi::CStr;
+
+// clUnloadPlatformCompiler disabled in cl_sys due to platform incompatibility.
+// clCreateProgramWithBuiltInKernels kernel_names mutability incorrect in cl_sys
+// clSetProgramReleaseCallback, clSetProgramSpecializationConstant, are
+// CL_VERSION_2_2 and missing from cl_sys
+#[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
+#[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
+extern "system" {
+    pub fn clUnloadPlatformCompiler(platform: cl_platform_id) -> cl_int;
+
+    pub fn clCreateProgramWithBuiltInKernels(
+        context: cl_context,
+        num_devices: cl_uint,
+        device_list: *const cl_device_id,
+        kernel_names: *const c_char,
+        errcode_ret: *mut cl_int,
+    ) -> cl_program;
+
+    pub fn clSetProgramReleaseCallback(
+        program: cl_program,
+        pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
+        user_data: *mut c_void,
+    ) -> cl_int;
+
+    pub fn clSetProgramSpecializationConstant(
+        program: cl_program,
+        spec_id: cl_uint,
+        spec_size: size_t,
+        spec_value: *const c_void,
+    ) -> cl_int;
+}
 
 /// Create an OpenCL program object for a context and load source code into that object.  
 /// Calls clCreateProgramWithSource to create an OpenCL program object.  

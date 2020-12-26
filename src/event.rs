@@ -17,13 +17,13 @@
 #![allow(non_camel_case_types)]
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-use super::ffi::cl::{
-    clCreateUserEvent, clGetEventInfo, clGetEventProfilingInfo, clReleaseEvent, clRetainEvent,
-    clSetEventCallback, clSetUserEventStatus, clWaitForEvents,
-};
 use super::info_type::InfoType;
 use super::types::{
     cl_context, cl_event, cl_event_info, cl_int, cl_profiling_info, cl_uint, cl_ulong,
+};
+use cl_sys::{
+    clCreateUserEvent, clGetEventInfo, clGetEventProfilingInfo, clReleaseEvent, clRetainEvent,
+    clSetEventCallback, clSetUserEventStatus, clWaitForEvents,
 };
 
 use super::api_info_value;
@@ -163,8 +163,14 @@ pub fn set_event_callback(
     pfn_notify: extern "C" fn(cl_event, cl_int, *mut c_void),
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int =
-        unsafe { clSetEventCallback(event, command_exec_callback_type, pfn_notify, user_data) };
+    let status: cl_int = unsafe {
+        clSetEventCallback(
+            event,
+            command_exec_callback_type,
+            Some(pfn_notify),
+            user_data,
+        )
+    };
     if CL_SUCCESS != status {
         Err(status)
     } else {

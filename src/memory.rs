@@ -17,13 +17,6 @@
 #![allow(non_camel_case_types)]
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-#[allow(unused_imports)]
-use super::ffi::cl::{
-    clCreateBuffer, clCreateBufferWithProperties, clCreateImage, clCreateImageWithProperties,
-    clCreatePipe, clCreateSubBuffer, clGetImageInfo, clGetMemObjectInfo, clGetPipeInfo,
-    clGetSupportedImageFormats, clReleaseMemObject, clRetainMemObject, clSVMAlloc, clSVMFree,
-    clSetMemObjectDestructorCallback,
-};
 use super::info_type::InfoType;
 #[allow(unused_imports)]
 use super::types::{
@@ -31,12 +24,64 @@ use super::types::{
     cl_map_flags, cl_mem, cl_mem_flags, cl_mem_info, cl_mem_object_type, cl_mem_properties,
     cl_pipe_info, cl_svm_mem_flags, cl_uint, cl_ulong,
 };
+#[allow(unused_imports)]
+use cl_sys::{
+    clCreateBuffer, clCreatePipe, clCreateSubBuffer, clGetImageInfo, clGetMemObjectInfo,
+    clGetPipeInfo, clReleaseMemObject, clRetainMemObject, clSVMAlloc, clSVMFree,
+    clSetMemObjectDestructorCallback,
+};
 
 use super::{api_info_size, api_info_value, api_info_vector};
 
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
+
+// clGetSupportedImageFormats and clCreateImage because cl_image_format does not
+// derive the Debug trait.
+// clCreateBufferWithProperties, clCreateImageWithProperties are CL_VERSION_3_0
+#[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
+#[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
+extern "system" {
+    pub fn clGetSupportedImageFormats(
+        context: cl_context,
+        flags: cl_mem_flags,
+        image_type: cl_mem_object_type,
+        num_entries: cl_uint,
+        image_formats: *mut cl_image_format,
+        num_image_formats: *mut cl_uint,
+    ) -> cl_int;
+
+    pub fn clCreateImage(
+        context: cl_context,
+        flags: cl_mem_flags,
+        image_format: *const cl_image_format,
+        image_desc: *const cl_image_desc,
+        host_ptr: *mut c_void,
+        errcode_ret: *mut cl_int,
+    ) -> cl_mem;
+
+    // #ifdef CL_VERSION_3_0
+    pub fn clCreateBufferWithProperties(
+        context: cl_context,
+        properties: *const cl_mem_properties,
+        flags: cl_mem_flags,
+        size: size_t,
+        host_ptr: *mut c_void,
+        errcode_ret: *mut cl_int,
+    ) -> cl_mem;
+
+    pub fn clCreateImageWithProperties(
+        context: cl_context,
+        properties: *const cl_mem_properties,
+        flags: cl_mem_flags,
+        image_format: *const cl_image_format,
+        image_desc: *const cl_image_desc,
+        host_ptr: *mut c_void,
+        errcode_ret: *mut cl_int,
+    ) -> cl_mem;
+// #endif
+}
 
 // cl_mem_flags and cl_svm_mem_flags - bitfield:
 pub const CL_MEM_READ_WRITE: cl_mem_flags = 1 << 0;
@@ -541,7 +586,8 @@ pub fn set_mem_object_destructor_callback(
     pfn_notify: extern "C" fn(cl_mem, *mut c_void),
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clSetMemObjectDestructorCallback(memobj, pfn_notify, user_data) };
+    let status: cl_int =
+        unsafe { clSetMemObjectDestructorCallback(memobj, Some(pfn_notify), user_data) };
     if CL_SUCCESS != status {
         Err(status)
     } else {

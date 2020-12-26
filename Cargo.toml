@@ -8,8 +8,7 @@ homepage = "https://github.com/kenba/cl3"
 repository = "https://github.com/kenba/cl3"
 readme = "README.md"
 keywords = ["opencl", "gpu", "gpgpu"]
-build = "build.rs"
-categories = ["api-bindings", "external-ffi-bindings", "asynchronous"]
+categories = ["api-bindings", "asynchronous"]
 license = "Apache-2.0"
 edition = "2018"
 
@@ -23,7 +22,11 @@ CL_VERSION_2_2 = []
 CL_VERSION_3_0 = []
 
 # Default features:
-default = ["CL_VERSION_1_2", "CL_VERSION_2_0"]
+default = ["CL_VERSION_1_2", "CL_VERSION_2_0", "CL_VERSION_2_1"]
 
 [dependencies]
 libc = "0.2"
+
+[dependencies.cl-sys]
+version = "0.4.2"
+features = ["opencl_version_2_0", "opencl_version_2_1", "opencl_version_2_2"]

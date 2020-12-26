@@ -31,12 +31,13 @@
 //! * [macros] - contains Rust macros to call the OpenCL "Info" functions and
 //! return the appropriate `InfoType` in a Rust Result.
 
+extern crate cl_sys;
+
 pub mod command_queue;
 pub mod context;
 pub mod device;
 pub mod error_codes;
 pub mod event;
-pub mod ffi;
 pub mod info_type;
 pub mod kernel;
 pub mod macros;

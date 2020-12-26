@@ -17,11 +17,21 @@
 #![allow(non_camel_case_types)]
 
 use super::error_codes::{CL_DEVICE_NOT_FOUND, CL_SUCCESS};
-#[allow(unused_imports)]
-use super::ffi::cl::{
-    clCreateSubDevices, clGetDeviceAndHostTimer, clGetDeviceIDs, clGetDeviceInfo, clGetHostTimer,
-    clReleaseDevice, clRetainDevice, clSetDefaultDeviceCommandQueue,
+
+pub use cl_sys::{
+    CL_DEVICE_TYPE_DEFAULT, CL_DEVICE_TYPE_CPU,
+    CL_DEVICE_TYPE_GPU, CL_DEVICE_TYPE_ACCELERATOR,CL_DEVICE_TYPE_CUSTOM, CL_DEVICE_TYPE_ALL,
+    CL_FP_DENORM, CL_FP_INF_NAN, CL_FP_ROUND_TO_NEAREST, CL_FP_ROUND_TO_ZERO,
+    CL_FP_ROUND_TO_INF, CL_FP_FMA, CL_FP_SOFT_FLOAT, CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT,
+    CL_NONE, CL_READ_ONLY_CACHE, CL_READ_WRITE_CACHE, CL_LOCAL, CL_GLOBAL,
+    CL_EXEC_KERNEL, CL_EXEC_NATIVE_KERNEL, 
+    CL_DEVICE_AFFINITY_DOMAIN_NUMA, CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE,
+    CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE, CL_DEVICE_AFFINITY_DOMAIN_L2_CACHE,
+    CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE, CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE,
+    CL_DEVICE_SVM_COARSE_GRAIN_BUFFER, CL_DEVICE_SVM_FINE_GRAIN_BUFFER,
+    CL_DEVICE_SVM_FINE_GRAIN_SYSTEM, CL_DEVICE_SVM_ATOMICS,
 };
+
 use super::info_type::InfoType;
 #[allow(unused_imports)]
 use super::types::{
@@ -32,18 +42,27 @@ use super::types::{
 };
 use super::{api_info_size, api_info_value, api_info_vector};
 
+use cl_sys::{
+    clCreateSubDevices, clGetDeviceIDs, clGetDeviceInfo, clReleaseDevice, clRetainDevice, 
+    clSetDefaultDeviceCommandQueue, 
+};
+
+// clGetDeviceAndHostTimer, clGetHostTimer, are incorrect in cl_sys
+#[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
+#[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
+extern "system" {
+    pub fn clGetDeviceAndHostTimer(
+        device: cl_device_id,
+        device_timestamp: *mut cl_ulong,
+        host_timestamp: *mut cl_ulong,
+    ) -> cl_int;
+
+    pub fn clGetHostTimer(device: cl_device_id, host_timestamp: *mut cl_ulong) -> cl_int;
+}
+
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
-
-// cl_device_type - bitfield
-pub const CL_DEVICE_TYPE_DEFAULT: cl_device_type = 1 << 0;
-pub const CL_DEVICE_TYPE_CPU: cl_device_type = 1 << 1;
-pub const CL_DEVICE_TYPE_GPU: cl_device_type = 1 << 2;
-pub const CL_DEVICE_TYPE_ACCELERATOR: cl_device_type = 1 << 3;
-/// CL_VERSION_1_2
-pub const CL_DEVICE_TYPE_CUSTOM: cl_device_type = 1 << 4;
-pub const CL_DEVICE_TYPE_ALL: cl_device_type = 0xFFFFFFFF;
 
 /// Get the list of available devices of the given type on a platform.  
 /// Calls clGetDeviceIDs to get the available device ids on the platform.
@@ -105,44 +124,6 @@ pub fn get_device_ids(
         }
     }
 }
-
-// cl_device_fp_config
-pub const CL_FP_DENORM: cl_device_fp_config = 1 << 0;
-pub const CL_FP_INF_NAN: cl_device_fp_config = 1 << 1;
-pub const CL_FP_ROUND_TO_NEAREST: cl_device_fp_config = 1 << 2;
-pub const CL_FP_ROUND_TO_ZERO: cl_device_fp_config = 1 << 3;
-pub const CL_FP_ROUND_TO_INF: cl_device_fp_config = 1 << 4;
-pub const CL_FP_FMA: cl_device_fp_config = 1 << 5;
-pub const CL_FP_SOFT_FLOAT: cl_device_fp_config = 1 << 6;
-pub const CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT: cl_device_fp_config = 1 << 7;
-
-// cl_device_mem_cache_type
-pub const CL_NONE: cl_device_mem_cache_type = 0x0;
-pub const CL_READ_ONLY_CACHE: cl_device_mem_cache_type = 0x1;
-pub const CL_READ_WRITE_CACHE: cl_device_mem_cache_type = 0x2;
-
-// cl_device_local_mem_type
-pub const CL_LOCAL: cl_device_local_mem_type = 0x1;
-pub const CL_GLOBAL: cl_device_local_mem_type = 0x2;
-
-// cl_device_exec_capabilities
-pub const CL_EXEC_KERNEL: cl_device_exec_capabilities = 1 << 0;
-pub const CL_EXEC_NATIVE_KERNEL: cl_device_exec_capabilities = 1 << 1;
-
-// cl_device_affinity_domain
-pub const CL_DEVICE_AFFINITY_DOMAIN_NUMA: cl_device_affinity_domain = 1 << 0;
-pub const CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE: cl_device_affinity_domain = 1 << 1;
-pub const CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE: cl_device_affinity_domain = 1 << 2;
-pub const CL_DEVICE_AFFINITY_DOMAIN_L2_CACHE: cl_device_affinity_domain = 1 << 3;
-pub const CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE: cl_device_affinity_domain = 1 << 4;
-pub const CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE: cl_device_affinity_domain = 1 << 5;
-
-// cl_device_svm_capabilities
-pub const CL_DEVICE_SVM_COARSE_GRAIN_BUFFER: cl_device_svm_capabilities = 1 << 0;
-pub const CL_DEVICE_SVM_FINE_GRAIN_BUFFER: cl_device_svm_capabilities = 1 << 1;
-pub const CL_DEVICE_SVM_FINE_GRAIN_SYSTEM: cl_device_svm_capabilities = 1 << 2;
-pub const CL_DEVICE_SVM_ATOMICS: cl_device_svm_capabilities = 1 << 3;
-//////////////////////////////////////
 
 // cl_device_info
 #[derive(Clone, Copy, Debug)]

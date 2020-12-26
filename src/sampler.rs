@@ -17,17 +17,17 @@
 #![allow(non_camel_case_types)]
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-#[allow(unused_imports)]
-use super::ffi::cl::{
-    clCreateSampler, clCreateSamplerWithProperties, clGetSamplerInfo, clReleaseSampler,
-    clRetainSampler,
-};
 use super::info_type::InfoType;
 use super::types::{
     cl_addressing_mode, cl_bool, cl_context, cl_filter_mode, cl_int, cl_sampler, cl_sampler_info,
     cl_sampler_properties, cl_uint, cl_ulong,
 };
 use super::{api_info_size, api_info_value, api_info_vector};
+#[allow(unused_imports)]
+use cl_sys::{
+    clCreateSampler, clCreateSamplerWithProperties, clGetSamplerInfo, clReleaseSampler,
+    clRetainSampler,
+};
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;

@@ -16,9 +16,21 @@
 
 #![allow(non_camel_case_types)]
 
+pub use cl_sys::{
+    CL_QUEUE_ON_DEVICE, CL_QUEUE_ON_DEVICE_DEFAULT, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE,
+    CL_QUEUE_PROFILING_ENABLE,
+};
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
+use super::info_type::InfoType;
+use super::types::{
+    cl_bool, cl_command_queue, cl_command_queue_info, cl_command_queue_properties, cl_context,
+    cl_device_id, cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_mem_migration_flags,
+    cl_queue_properties, cl_uint, cl_ulong,
+};
+use super::{api_info_size, api_info_value, api_info_vector};
 #[allow(unused_imports)]
-use super::ffi::cl::{
+use cl_sys::{
     clCreateCommandQueue, clCreateCommandQueueWithProperties, clEnqueueBarrierWithWaitList,
     clEnqueueCopyBuffer, clEnqueueCopyBufferRect, clEnqueueCopyBufferToImage, clEnqueueCopyImage,
     clEnqueueCopyImageToBuffer, clEnqueueFillBuffer, clEnqueueFillImage, clEnqueueMapBuffer,
@@ -29,25 +41,10 @@ use super::ffi::cl::{
     clEnqueueWriteBuffer, clEnqueueWriteBufferRect, clEnqueueWriteImage, clFinish, clFlush,
     clGetCommandQueueInfo, clReleaseCommandQueue, clRetainCommandQueue,
 };
-use super::info_type::InfoType;
-use super::types::{
-    cl_bool, cl_command_queue, cl_command_queue_info, cl_command_queue_properties, cl_context,
-    cl_device_id, cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_mem_migration_flags,
-    cl_queue_properties, cl_uint, cl_ulong,
-};
-use super::{api_info_size, api_info_value, api_info_vector};
 
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
-
-// cl_command_queue_properties
-pub const CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE: cl_command_queue_properties = 1 << 0;
-pub const CL_QUEUE_PROFILING_ENABLE: cl_command_queue_properties = 1 << 1;
-// #ifdef CL_VERSION_2_0
-pub const CL_QUEUE_ON_DEVICE: cl_command_queue_properties = 1 << 2;
-pub const CL_QUEUE_ON_DEVICE_DEFAULT: cl_command_queue_properties = 1 << 3;
-// #endif
 
 /// Create an OpenCL host or device command-queue on a specific device.  
 /// Calls clCreateCommandQueue to create an OpenCL context.  

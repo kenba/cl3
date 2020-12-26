@@ -17,10 +17,10 @@
 #![allow(non_camel_case_types)]
 
 use super::error_codes::CL_SUCCESS;
-use super::ffi::cl::{clGetPlatformIDs, clGetPlatformInfo};
 use super::info_type::InfoType;
 use super::types::{cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong};
 use super::{api_info_size, api_info_value, api_info_vector};
+use cl_sys::{clGetPlatformIDs, clGetPlatformInfo};
 
 use libc::{c_void, size_t};
 use std::mem;

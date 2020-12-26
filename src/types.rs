@@ -16,110 +16,40 @@
 
 #![allow(non_camel_case_types)]
 
-use libc::{c_void, intptr_t, size_t};
-
-pub type cl_platform_id = *mut c_void;
-pub type cl_device_id = *mut c_void;
-pub type cl_context = *mut c_void;
-pub type cl_command_queue = *mut c_void;
-pub type cl_mem = *mut c_void;
-pub type cl_program = *mut c_void;
-pub type cl_kernel = *mut c_void;
-pub type cl_event = *mut c_void;
-pub type cl_sampler = *mut c_void;
-
-pub type cl_char = i8;
-pub type cl_uchar = u8;
-pub type cl_short = i16;
-pub type cl_ushort = u16;
-pub type cl_int = i32;
-pub type cl_uint = u32;
-pub type cl_long = i64;
-pub type cl_ulong = u64;
-pub type cl_half = u16;
-pub type cl_float = f32;
-pub type cl_double = f64;
-
+// Note: cl_half = u16
 // WARNING!  Unlike cl_ types in cl_platform.h, cl_bool is not guaranteed to be the same size as the bool in kernels.
-pub type cl_bool = cl_uint;
-pub type cl_bitfield = cl_ulong;
+pub use cl_sys::{
+    cl_addressing_mode, cl_bitfield, cl_bool, cl_buffer_create_type, cl_build_status,
+    cl_channel_order, cl_channel_type, cl_char, cl_command_queue, cl_command_queue_info,
+    cl_command_queue_properties, cl_command_type, cl_context, cl_context_info,
+    cl_context_properties, cl_device_affinity_domain, cl_device_exec_capabilities,
+    cl_device_fp_config, cl_device_id, cl_device_info, cl_device_local_mem_type,
+    cl_device_mem_cache_type, cl_device_partition_property, cl_device_svm_capabilities,
+    cl_device_type, cl_double, cl_event, cl_event_info, cl_filter_mode, cl_float, cl_half,
+    cl_image_info, cl_int, cl_kernel, cl_kernel_arg_access_qualifier,
+    cl_kernel_arg_address_qualifier, cl_kernel_arg_info, cl_kernel_arg_type_qualifier,
+    cl_kernel_exec_info, cl_kernel_info, cl_kernel_sub_group_info, cl_kernel_work_group_info,
+    cl_long, cl_map_flags, cl_mem, cl_mem_flags, cl_mem_info, cl_mem_migration_flags,
+    cl_mem_object_type, cl_pipe_info, cl_pipe_properties, cl_platform_id, cl_platform_info,
+    cl_profiling_info, cl_program, cl_program_binary_type, cl_program_build_info, cl_program_info,
+    cl_queue_properties, cl_sampler, cl_sampler_info, cl_sampler_properties, cl_short,
+    cl_svm_mem_flags, cl_uchar, cl_uint, cl_ulong, cl_ushort, CL_BLOCKING, CL_FALSE,
+    CL_NON_BLOCKING, CL_TRUE,
+};
+
+use libc::size_t;
+
+// Not defined in cl_sys
 pub type cl_properties = cl_ulong;
-pub type cl_device_type = cl_bitfield;
-pub type cl_platform_info = cl_uint;
-pub type cl_device_info = cl_uint;
-pub type cl_device_fp_config = cl_bitfield;
-pub type cl_device_mem_cache_type = cl_uint;
-pub type cl_device_local_mem_type = cl_uint;
-pub type cl_device_exec_capabilities = cl_bitfield;
-// #ifdef CL_VERSION_2_0
-pub type cl_device_svm_capabilities = cl_bitfield;
-// #endif
-pub type cl_command_queue_properties = cl_bitfield;
-// #ifdef CL_VERSION_1_2
-pub type cl_device_partition_property = intptr_t;
-pub type cl_device_affinity_domain = cl_bitfield;
-// #endif
-pub type cl_context_properties = intptr_t;
-pub type cl_context_info = cl_uint;
-// #ifdef CL_VERSION_2_0
-pub type cl_queue_properties = cl_bitfield;
-// #endif
-pub type cl_command_queue_info = cl_uint;
-pub type cl_channel_order = cl_uint;
-pub type cl_channel_type = cl_uint;
-pub type cl_mem_flags = cl_bitfield;
-// #ifdef CL_VERSION_2_0
-pub type cl_svm_mem_flags = cl_bitfield;
-// #endif
-pub type cl_mem_object_type = cl_uint;
-pub type cl_mem_info = cl_uint;
-// #ifdef CL_VERSION_1_2
-pub type cl_mem_migration_flags = cl_bitfield;
-// #endif
-pub type cl_image_info = cl_uint;
-// #ifdef CL_VERSION_1_1
-pub type cl_buffer_create_type = cl_uint;
-// #endif
-pub type cl_addressing_mode = cl_uint;
-pub type cl_filter_mode = cl_uint;
-pub type cl_sampler_info = cl_uint;
-pub type cl_map_flags = cl_bitfield;
-// #ifdef CL_VERSION_2_0
-pub type cl_pipe_properties = intptr_t;
-pub type cl_pipe_info = cl_uint;
-// #endif
-pub type cl_program_info = cl_uint;
-pub type cl_program_build_info = cl_uint;
-// #ifdef CL_VERSION_1_2
-pub type cl_program_binary_type = cl_uint;
-// #endif
-pub type cl_build_status = cl_int;
-pub type cl_kernel_info = cl_uint;
-// #ifdef CL_VERSION_1_2
-pub type cl_kernel_arg_info = cl_uint;
-pub type cl_kernel_arg_address_qualifier = cl_uint;
-pub type cl_kernel_arg_access_qualifier = cl_uint;
-pub type cl_kernel_arg_type_qualifier = cl_uint;
-// #endif
-pub type cl_kernel_work_group_info = cl_uint;
-// #ifdef CL_VERSION_2_1
-pub type cl_kernel_sub_group_info = cl_uint;
-// #endif
-pub type cl_event_info = cl_uint;
-pub type cl_command_type = cl_uint;
-pub type cl_profiling_info = cl_uint;
-// #ifdef CL_VERSION_2_0
-pub type cl_sampler_properties = cl_bitfield;
-pub type cl_kernel_exec_info = cl_uint;
-// #endif
-// #ifdef CL_VERSION_3_0
+
+// CL_VERSION_3_0
 pub type cl_device_atomic_capabilities = cl_bitfield;
 pub type cl_device_device_enqueue_capabilities = cl_bitfield;
 pub type cl_khronos_vendor_id = cl_uint;
 pub type cl_mem_properties = cl_properties;
 pub type cl_version = cl_uint;
-// #endif
 
+// Note: these structures are defined in cl_sys without the Debug trait.
 #[derive(Debug)]
 #[repr(C)]
 pub struct cl_image_format {
@@ -127,7 +57,6 @@ pub struct cl_image_format {
     pub image_channel_data_type: cl_channel_type,
 }
 
-// #ifdef CL_VERSION_1_2
 #[derive(Debug)]
 #[repr(C)]
 pub struct cl_image_desc {
@@ -142,18 +71,15 @@ pub struct cl_image_desc {
     pub num_samples: cl_uint,
     pub mem_object: cl_mem, // called buffer before OpenCL 2.0
 }
-// #endif
 
-// #ifdef CL_VERSION_1_1
 #[derive(Debug)]
 #[repr(C)]
 pub struct cl_buffer_region {
     pub origin: size_t,
     pub size: size_t,
 }
-// #endif
 
-// #ifdef CL_VERSION_3_0
+// CL_VERSION_3_0
 pub const CL_NAME_VERSION_MAX_NAME_SIZE: usize = 64;
 #[derive(Debug)]
 #[repr(C)]
@@ -161,12 +87,3 @@ pub struct cl_name_version {
     pub version: cl_version,
     pub name: [cl_char; CL_NAME_VERSION_MAX_NAME_SIZE],
 }
-// #endif
-
-// cl_bool
-pub const CL_FALSE: cl_bool = 0;
-pub const CL_TRUE: cl_bool = 1;
-// #ifdef CL_VERSION_1_2
-pub const CL_BLOCKING: cl_bool = CL_TRUE;
-pub const CL_NON_BLOCKING: cl_bool = CL_FALSE;
-// #endif
