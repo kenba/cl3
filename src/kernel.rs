@@ -478,7 +478,7 @@ pub fn get_kernel_sub_group_info(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, get_device_info, DeviceInfo, CL_DEVICE_TYPE_GPU};
+    use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
     use crate::platform::get_platform_ids;
     use crate::program::{build_program, create_program_with_source, release_program};
     use std::ffi::CString;
@@ -494,13 +494,6 @@ mod tests {
         assert!(0 < device_ids.len());
 
         let device_id = device_ids[0];
-
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR_ID).unwrap();
-        let value = value.to_uint();
-        println!("CL_DEVICE_VENDOR_ID: {:X}", value);
-        assert!(0 < value);
-
-        let is_nvidia = 0x10DE == value;
 
         let context = create_context(&device_ids, ptr::null(), None, ptr::null_mut());
         let context = context.unwrap();
@@ -558,11 +551,8 @@ mod tests {
         let value = value.to_str().unwrap();
         println!("CL_KERNEL_ATTRIBUTES: {:?}", value);
 
-        if !is_nvidia {
-            // Nvidia returns: -19, CL_KERNEL_ARG_INFO_NOT_AVAILABLE
-            let value =
-                get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER)
-                    .unwrap();
+        // Don't get KernelArgInfo if CL_KERNEL_ARG_INFO_NOT_AVAILABLE on device
+        if let Ok(value) = get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER){
             let value = value.to_uint();
             println!("CL_KERNEL_ARG_ADDRESS_QUALIFIER: {:X}", value);
 

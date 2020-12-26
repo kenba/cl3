@@ -1035,7 +1035,6 @@ mod tests {
         let value = value.to_vec_intptr();
         println!("CL_DEVICE_PARTITION_TYPE: {}", value.len());
         println!("CL_DEVICE_PARTITION_TYPE: {:?}", value);
-        assert!(0 < value.len());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_REFERENCE_COUNT).unwrap();
         let value = value.to_uint();
