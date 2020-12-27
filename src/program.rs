@@ -16,6 +16,12 @@
 
 #![allow(non_camel_case_types)]
 
+pub use cl_sys::{
+    CL_BUILD_SUCCESS, CL_BUILD_NONE, CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS,
+    CL_PROGRAM_BINARY_TYPE_NONE, CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT,
+    CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_EXECUTABLE,
+};
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 #[allow(unused_imports)]
 use cl_sys::{
@@ -594,8 +600,9 @@ pub fn get_program_build_info(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, get_device_info, CL_DEVICE_TYPE_GPU, DeviceInfo};
+    use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
     use crate::platform::get_platform_ids;
+    use crate::error_codes::error_text;
     use std::ffi::CString;
 
         #[test]
@@ -609,15 +616,6 @@ mod tests {
         assert!(0 < device_ids.len());
 
         let device_id = device_ids[0];
-
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VERSION).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_VERSION: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
-
-        let opencl_2_1: String = "OpenCL .1".to_string();
-        let is_opencl_2_1: bool = value.contains(&opencl_2_1);
 
         let context = create_context(&device_ids, ptr::null(), None, ptr::null_mut());
         let context = context.unwrap();
@@ -667,6 +665,33 @@ mod tests {
         let options = CString::default();
         build_program(program, &device_ids, &options, None, ptr::null_mut()).unwrap();
 
+        let value = get_program_build_info(program, device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_STATUS).unwrap();
+        let value = value.to_int();
+        println!("CL_PROGRAM_BUILD_STATUS: {}", value);
+        assert_eq!(CL_BUILD_SUCCESS, value);
+
+        let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_OPTIONS).unwrap();
+        let value = value.to_str().unwrap();
+        println!("CL_PROGRAM_BUILD_OPTIONS: {:?}", value);
+
+        let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_LOG).unwrap();
+        let value = value.to_str().unwrap();
+        println!("CL_PROGRAM_BUILD_LOG: {:?}", value);
+
+        let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE).unwrap();
+        let value = value.to_uint();
+        println!("CL_PROGRAM_BINARY_TYPE: {:?}", value);
+        assert_eq!(CL_PROGRAM_BINARY_TYPE_EXECUTABLE as u32, value);
+
+        // CL_VERSION_2_0 value
+        match get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE) {
+            Ok(value) => {
+                let value = value.to_size();
+                println!("CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE: {:?}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE: {}", error_text(e))
+        }
+
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES).unwrap();
         let value = value.to_vec_size();
         println!("CL_PROGRAM_BINARY_SIZES: {}", value.len());
@@ -691,10 +716,35 @@ mod tests {
         let value = value.into_string().unwrap();
         assert!(0 < value.len());
 
-        if is_opencl_2_1 {
-            let value = get_program_info(program, ProgramInfo::CL_PROGRAM_IL).unwrap();
-            let value = value.to_str().unwrap();
-            println!("CL_PROGRAM_IL: {:?}", value);
+        // CL_VERSION_2_1 value
+        match get_program_info(program, ProgramInfo::CL_PROGRAM_IL) {
+            Ok(value) => {
+                let value = value.to_str().unwrap();
+                println!("CL_PROGRAM_IL: {:?}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_PROGRAM_IL: {}", error_text(e))
+        };
+
+         // CL_VERSION_2_2 value
+        match get_program_info(program, ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: {}", error_text(e))
+        };
+
+        // CL_VERSION_2_2 value
+        match get_program_info(program, ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: {}", error_text(e))
+        };
+
+        if let Err(e) = unload_platform_compiler(platform_id) {
+            println!("OpenCL error, clUnloadPlatformCompiler: {}", error_text(e));
         }
 
         release_program(program).unwrap();
