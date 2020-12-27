@@ -152,6 +152,7 @@ pub fn get_platform_info(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::error_codes::error_text;
 
     #[test]
     fn test_get_platform_info() {
@@ -173,9 +174,6 @@ mod tests {
         let value = value.into_string().unwrap();
         assert!(0 < value.len());
 
-        let opencl_2_1: String = "OpenCL 2.1".to_string();
-        let is_opencl_2_1: bool = value.contains(&opencl_2_1);
-
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
         let value = value.to_str().unwrap();
         println!("CL_PLATFORM_NAME: {:?}", value);
@@ -191,14 +189,17 @@ mod tests {
         println!("CL_PLATFORM_EXTENSIONS: {:?}", value);
         assert!(0 < value.to_bytes().len());
 
-        if is_opencl_2_1 {
-            let value =
-                get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_HOST_TIMER_RESOLUTION)
-                    .unwrap();
-            let value = value.to_ulong();
-            println!("CL_PLATFORM_HOST_TIMER_RESOLUTION: {}", value);
-            assert!(0 < value);
-        }
+        // CL_VERSION_2_1 value, may not be supported
+        match get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_HOST_TIMER_RESOLUTION) {
+            Ok(value) => {
+                let value = value.to_ulong();
+                println!("CL_PLATFORM_HOST_TIMER_RESOLUTION: {}", value)
+            }
+            Err(e) => println!(
+                "OpenCL error, CL_PLATFORM_HOST_TIMER_RESOLUTION: {}",
+                error_text(e)
+            ),
+        };
     }
 
     #[test]
