@@ -481,6 +481,7 @@ mod tests {
     use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
     use crate::platform::get_platform_ids;
     use crate::program::{build_program, create_program_with_source, release_program};
+    use crate::error_codes::error_text;
     use std::ffi::CString;
 
     #[test]
@@ -551,34 +552,46 @@ mod tests {
         let value = value.to_str().unwrap();
         println!("CL_KERNEL_ATTRIBUTES: {:?}", value);
 
-        // Don't get KernelArgInfo if CL_KERNEL_ARG_INFO_NOT_AVAILABLE on device
-        if let Ok(value) =
-            get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER)
-        {
-            let value = value.to_uint();
-            println!("CL_KERNEL_ARG_ADDRESS_QUALIFIER: {:X}", value);
+        match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_KERNEL_ARG_ADDRESS_QUALIFIER: {:X}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_KERNEL_ARG_ADDRESS_QUALIFIER: {}", error_text(e))
+        }
 
-            let value =
-                get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ACCESS_QUALIFIER)
-                    .unwrap();
-            let value = value.to_uint();
-            println!("CL_KERNEL_ARG_ACCESS_QUALIFIER: {:X}", value);
+        match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ACCESS_QUALIFIER) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_KERNEL_ARG_ACCESS_QUALIFIER: {:X}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_KERNEL_ARG_ACCESS_QUALIFIER: {}", error_text(e))
+        }
 
-            let value =
-                get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_TYPE_NAME).unwrap();
-            let value = value.to_str().unwrap();
-            println!("CL_KERNEL_ARG_TYPE_NAME: {:?}", value);
-            assert!(0 < value.to_bytes().len());
+        match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_TYPE_NAME) {
+            Ok(value) => {
+                let value = value.to_str().unwrap();
+                println!("CL_KERNEL_ARG_TYPE_NAME: {:?}", value);
+                assert!(0 < value.to_bytes().len())
+            }
+            Err(e) => println!("OpenCL error, CL_KERNEL_ARG_TYPE_NAME: {}", error_text(e))
+        }
 
-            let value = get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_TYPE_QUALIFIER)
-                .unwrap();
-            let value = value.to_ulong();
-            println!("CL_KERNEL_ARG_TYPE_QUALIFIER: {}", value);
+        match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_TYPE_QUALIFIER) {
+            Ok(value) => {
+                let value = value.to_ulong();
+                println!("CL_KERNEL_ARG_TYPE_QUALIFIER: {:X}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_KERNEL_ARG_TYPE_QUALIFIER: {}", error_text(e))
+        }
 
-            let value = get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_NAME).unwrap();
-            let value = value.to_str().unwrap();
-            println!("CL_KERNEL_ARG_NAME: {:?}", value);
-            assert!(0 < value.to_bytes().len());
+        match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_NAME) {
+            Ok(value) => {
+                let value = value.to_str().unwrap();
+                println!("CL_KERNEL_ARG_NAME: {:?}", value);
+                assert!(0 < value.to_bytes().len())
+            }
+            Err(e) => println!("OpenCL error, CL_KERNEL_ARG_NAME: {}", error_text(e))
         }
 
         let value = get_kernel_work_group_info(
@@ -626,10 +639,13 @@ mod tests {
         let value = value.to_ulong();
         println!("CL_KERNEL_PRIVATE_MEM_SIZE: {}", value);
 
-        // TODO
-        // let value = get_kernel_work_group_info(kernel, device_id, KernelWorkGroupInfo::CL_KERNEL_GLOBAL_WORK_SIZE).unwrap();
-        // let value = value.to_vec_size();
-        // println!("CL_KERNEL_GLOBAL_WORK_SIZE: {}", value.len());
+        match get_kernel_work_group_info(kernel, device_id, KernelWorkGroupInfo::CL_KERNEL_GLOBAL_WORK_SIZE) {
+            Ok(value) => {
+                let value = value.to_vec_size();
+                println!("CL_KERNEL_GLOBAL_WORK_SIZE: {}", value.len())
+            }
+            Err(e) => println!("OpenCL error, CL_KERNEL_GLOBAL_WORK_SIZE: {}", error_text(e))
+        }
 
         release_kernel(kernel).unwrap();
         release_program(program).unwrap();
