@@ -41,7 +41,7 @@ use super::types::{
     cl_device_type, cl_int, cl_name_version, cl_platform_id, cl_uint, cl_ulong,
 };
 use super::{api_info_size, api_info_value, api_info_vector};
-
+#[allow(unused_imports)]
 use cl_sys::{
     clCreateSubDevices, clGetDeviceIDs, clGetDeviceInfo, clReleaseDevice, clRetainDevice, 
     clSetDefaultDeviceCommandQueue, 
@@ -624,6 +624,7 @@ pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
 mod tests {
     use super::*;
     use crate::platform::get_platform_ids;
+    use crate::error_codes::error_text;
 
     #[test]
     fn test_get_platform_devices() {
@@ -658,9 +659,13 @@ mod tests {
         println!("CL_DEVICE_VENDOR_ID: {:X}", value);
         assert!(0 < value);
 
-        let _is_amd = 0x1002 == value;
-        let _is_intel = 0x8086 == value;
-        let is_nvidia = 0x10DE == value;
+        let vendor_text = match value {
+            0x1002 => "AMD",
+            0x10DE => "Nvidia",
+            0x8086 => "Intel",
+            _ => "unknown",
+        };
+        println!("Device vendor is: {}", vendor_text);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VERSION).unwrap();
         let value = value.to_str().unwrap();
@@ -847,7 +852,6 @@ mod tests {
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_ERROR_CORRECTION_SUPPORT).unwrap();
         let value = value.to_uint();
         println!("CL_DEVICE_ERROR_CORRECTION_SUPPORT: {}", value);
-        // assert!(0 == value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PROFILING_TIMER_RESOLUTION).unwrap();
         let value = value.to_size();
@@ -916,17 +920,23 @@ mod tests {
         println!("CL_DEVICE_PLATFORM: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_DOUBLE_FP_CONFIG).unwrap();
-        let value = value.to_ulong();
-        println!("CL_DEVICE_DOUBLE_FP_CONFIG: {}", value);
-        assert!(0 < value);
+        // Device may not support double fp precision
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_DOUBLE_FP_CONFIG) {
+            Ok(value) => {
+                let value = value.to_ulong();
+                println!("CL_DEVICE_DOUBLE_FP_CONFIG: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_DOUBLE_FP_CONFIG: {}", error_text(e))
+        };
 
-        if !is_nvidia {
-            // "0x1033 reserved for CL_DEVICE_HALF_FP_CONFIG" defined in cl_ext.h
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_HALF_FP_CONFIG).unwrap();
-            let value = value.to_ulong();
-            println!("CL_DEVICE_HALF_FP_CONFIG: {}", value);
-        }
+        // Device may not support half fp precision
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_HALF_FP_CONFIG) {
+            Ok(value) => {
+                let value = value.to_ulong();
+                println!("CL_DEVICE_HALF_FP_CONFIG: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_HALF_FP_CONFIG: {}", error_text(e))
+        };
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF).unwrap();
         let value = value.to_uint();
@@ -1022,17 +1032,14 @@ mod tests {
         println!("CL_DEVICE_REFERENCE_COUNT: {}", value);
         assert!(0 < value);
 
-        if !is_nvidia {
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_INTEROP_USER_SYNC).unwrap();
-            let value = value.to_uint();
-            println!("CL_DEVICE_PREFERRED_INTEROP_USER_SYNC: {}", value);
-            assert!(0 < value);
+        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_INTEROP_USER_SYNC).unwrap();
+        let value = value.to_uint();
+        println!("CL_DEVICE_PREFERRED_INTEROP_USER_SYNC: {}", value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PRINTF_BUFFER_SIZE).unwrap();
-            let value = value.to_size();
-            println!("CL_DEVICE_PRINTF_BUFFER_SIZE: {}", value);
-            assert!(0 < value);
-        }
+        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PRINTF_BUFFER_SIZE).unwrap();
+        let value = value.to_size();
+        println!("CL_DEVICE_PRINTF_BUFFER_SIZE: {}", value);
+        assert!(0 < value);
 
         // CL_VERSION_2_0
         if is_opencl_2 {
@@ -1168,7 +1175,7 @@ mod tests {
         // CL_VERSION_3_0
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NUMERIC_VERSION).unwrap();
         let value = value.to_uint();
-        println!("CL_DEVICE_MAX_NUM_SUB_GROUPS: {}", value);
+        println!("CL_DEVICE_NUMERIC_VERSION: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_EXTENSIONS_WITH_VERSION).unwrap();
