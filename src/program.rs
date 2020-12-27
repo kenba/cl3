@@ -34,7 +34,7 @@ use cl_sys::{
 use super::info_type::InfoType;
 use super::types::{
     cl_int, cl_program, cl_program_info, cl_platform_id, cl_context, cl_device_id,
-    cl_uchar, cl_uint, cl_program_build_info,
+    cl_uint, cl_program_build_info,
 };
 use super::{api_info_size, api_info_value, api_info_vector,
     api2_info_size, api2_info_vector, api2_info_value};
