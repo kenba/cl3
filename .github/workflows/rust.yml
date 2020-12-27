@@ -17,7 +17,6 @@ jobs:
     steps:
     - name: Load OpenCL
       run: |
-        sudo apt-get install -y gpg-agent 
         wget -qO - https://repositories.intel.com/graphics/intel-graphics.key |
           sudo apt-key add -
         sudo add-apt-repository \
@@ -27,7 +26,7 @@ jobs:
           intel-opencl-icd \
           intel-level-zero-gpu level-zero \
           intel-media-va-driver-non-free libmfx1
-        sudo apt install ocl-icd-* opencl-headers
+        sudo apt-get install intel-igc-opencl-devel
     - uses: actions/checkout@v2
     - name: Build
       run: cargo build --verbose
