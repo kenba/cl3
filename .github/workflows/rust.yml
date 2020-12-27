@@ -26,7 +26,8 @@ jobs:
           intel-opencl-icd \
           intel-level-zero-gpu level-zero \
           intel-media-va-driver-non-free libmfx1
-        sudo apt-get install intel-igc-opencl-devel
+        sudo apt-get install ocl-icd-opencl-dev
+
     - uses: actions/checkout@v2
     - name: Build
       run: cargo build --verbose
