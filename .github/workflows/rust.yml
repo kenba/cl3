@@ -12,14 +12,21 @@ env:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - name: Load OpenCL
       run: |
-        sudo add-apt-repository ppa:intel-opencl/intel-opencl
+        sudo apt-get install -y gpg-agent 
+        wget -qO - https://repositories.intel.com/graphics/intel-graphics.key |
+          sudo apt-key add -
+        sudo add-apt-repository \
+          'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main'
         sudo apt-get update
-        sudo apt-get install intel-opencl ocl-icd-opencl-dev
+        sudo apt-get install \
+          intel-opencl-icd \
+          intel-level-zero-gpu level-zero \
+          intel-media-va-driver-non-free libmfx1
     - uses: actions/checkout@v2
     - name: Build
       run: cargo build --verbose
