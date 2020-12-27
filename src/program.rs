@@ -497,22 +497,17 @@ pub fn get_program_info(
         }
 
         ProgramInfo::CL_PROGRAM_BINARIES => {
-            // Gets all the binaries for all the devices in the context
+            // Gets the binaries for all the devices in the context
 
             // get the binary sizes, as the case above
             api_info_vector!(get_size_vec, size_t, clGetProgramInfo);
-            let count = get_size(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES as cl_program_info)?;
-            let sizes = get_size_vec(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES as cl_program_info, count)?;
+            let size = get_size(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES as cl_program_info)?;
+            let binary_sizes = get_size_vec(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES as cl_program_info, size)?;
 
-            // calculate the sum of the binary sizes and create a vector of that length
-            let size_sum = sizes.iter().sum();
-            let bin_vec: Vec<cl_uchar> = vec![0u8; size_sum];
-
-            // get the number of devices in the context, as case above
-            api_info_value!(get_value, cl_uint, clGetProgramInfo);
-            let dev_count = get_value(program, ProgramInfo::CL_PROGRAM_NUM_DEVICES as cl_program_info)? as usize;
-            // create a vector of dev_count copies of the bin_vec vector
-            let binaries = vec![bin_vec; dev_count];
+            // A vector of vectors to hold the binaries of each device
+            let binaries = binary_sizes.into_iter().map(|size| {
+                vec![0u8; size]
+            }).collect::<Vec<Vec<u8>>>();
 
             // Create a vector of pointers to the vectors in binaries
             let mut binary_ptrs = binaries.iter().map(|vec| {
@@ -523,7 +518,7 @@ pub fn get_program_info(
                 clGetProgramInfo(
                     program,
                     param_id,
-                    mem::size_of::<*mut c_void>(),
+                    binary_ptrs.len() * mem::size_of::<*mut c_void>(),
                     binary_ptrs.as_mut_ptr() as *mut _ as *mut c_void,
                     ptr::null_mut(),
                 )
@@ -600,7 +595,7 @@ pub fn get_program_build_info(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
+    use crate::device::{get_device_ids, CL_DEVICE_TYPE_ALL};
     use crate::platform::get_platform_ids;
     use crate::error_codes::error_text;
     use std::ffi::CString;
@@ -609,12 +604,22 @@ mod tests {
     fn test_program() {
         let platform_ids = get_platform_ids().unwrap();
 
-        // Choose the first platform
-        let platform_id = platform_ids[0];
+        let mut platform_id = platform_ids[0];
+        let mut device_count: usize = 0;
 
-        let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
-        assert!(0 < device_ids.len());
+        // Search for a platform with the most devices
+        for p in platform_ids {
+            let ids = get_device_ids(p, CL_DEVICE_TYPE_ALL).unwrap();
+            let count = ids.len();
+            if device_count < count {
+                device_count = count;
+                platform_id = p;
+            }
+        }
 
+        println!("Platform device_count: {}", device_count);
+
+        let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_ALL).unwrap();
         let device_id = device_ids[0];
 
         let context = create_context(&device_ids, ptr::null(), None, ptr::null_mut());
