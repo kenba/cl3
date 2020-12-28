@@ -23,7 +23,7 @@ use cl3::command_queue::{create_command_queue, release_command_queue,
 use cl3::program::{create_program_with_source, build_program, release_program};
 use cl3::kernel::{create_kernel, release_kernel, set_kernel_arg};
 use cl3::memory::{create_buffer, release_mem_object, CL_MEM_WRITE_ONLY, CL_MEM_READ_ONLY};
-use cl3::event::{wait_for_events, release_event};
+use cl3::event::{wait_for_events, release_event, get_event_profiling_info, ProfilingInfo};
 use cl3::types::{cl_event, cl_float, cl_mem, CL_FALSE, CL_TRUE};
 use std::ffi::CString;
 use libc::{c_void, size_t};
@@ -163,6 +163,13 @@ fn test_opencl_1_2_example() {
     // Test and print the results from OpenCL
     assert_eq!(1300.0, results[ARRAY_SIZE - 1]);
     println!("results back: {}", results[ARRAY_SIZE - 1]);
+
+    let start_time = get_event_profiling_info(kernel_event,
+        ProfilingInfo::CL_PROFILING_COMMAND_START).unwrap();
+    let end_time = get_event_profiling_info(kernel_event,
+        ProfilingInfo::CL_PROFILING_COMMAND_END).unwrap();
+    let duration = end_time.to_ulong() - start_time.to_ulong();
+    println!("kernel execution duration (ns): {}", duration);
 
     /////////////////////////////////////////////////////////////////////
     // Release OpenCL objects
