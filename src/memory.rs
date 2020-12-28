@@ -16,6 +16,14 @@
 
 #![allow(non_camel_case_types)]
 
+pub use cl_sys::{
+    CL_MEM_READ_WRITE, CL_MEM_WRITE_ONLY, CL_MEM_READ_ONLY, CL_MEM_USE_HOST_PTR,
+    CL_MEM_ALLOC_HOST_PTR, CL_MEM_COPY_HOST_PTR, CL_MEM_HOST_WRITE_ONLY,
+    CL_MEM_HOST_READ_ONLY, CL_MEM_HOST_NO_ACCESS, CL_MEM_SVM_FINE_GRAIN_BUFFER,
+    CL_MEM_SVM_ATOMICS, CL_MEM_KERNEL_READ_AND_WRITE, CL_MAP_READ, CL_MAP_WRITE,
+    CL_MAP_WRITE_INVALIDATE_REGION
+};
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::info_type::InfoType;
 #[allow(unused_imports)]
@@ -82,27 +90,6 @@ extern "system" {
     ) -> cl_mem;
 // #endif
 }
-
-// cl_mem_flags and cl_svm_mem_flags - bitfield:
-pub const CL_MEM_READ_WRITE: cl_mem_flags = 1 << 0;
-pub const CL_MEM_WRITE_ONLY: cl_mem_flags = 1 << 1;
-pub const CL_MEM_READ_ONLY: cl_mem_flags = 1 << 2;
-pub const CL_MEM_USE_HOST_PTR: cl_mem_flags = 1 << 3;
-pub const CL_MEM_ALLOC_HOST_PTR: cl_mem_flags = 1 << 4;
-pub const CL_MEM_COPY_HOST_PTR: cl_mem_flags = 1 << 5;
-// reserved                      cl_mem_flags = 1 << 6;
-pub const CL_MEM_HOST_WRITE_ONLY: cl_mem_flags = 1 << 7;
-pub const CL_MEM_HOST_READ_ONLY: cl_mem_flags = 1 << 8;
-pub const CL_MEM_HOST_NO_ACCESS: cl_mem_flags = 1 << 9;
-// #ifdef CL_VERSION_2_0
-pub const CL_MEM_SVM_FINE_GRAIN_BUFFER: cl_svm_mem_flags = 1 << 10; // used by cl_svm_mem_flags only
-pub const CL_MEM_SVM_ATOMICS: cl_svm_mem_flags = 1 << 11; // used by cl_svm_mem_flags only
-pub const CL_MEM_KERNEL_READ_AND_WRITE: cl_mem_flags = 1 << 12;
-// #endif
-
-pub const CL_MAP_READ: cl_map_flags = 1 << 0;
-pub const CL_MAP_WRITE: cl_map_flags = 1 << 1;
-pub const CL_MAP_WRITE_INVALIDATE_REGION: cl_map_flags = 1 << 2;
 
 /// Create an OpenCL buffer object for a context.  
 /// Calls clCreateBuffer to create an OpenCL buffer object.  
