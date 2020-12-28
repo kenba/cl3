@@ -104,6 +104,7 @@ extern "system" {
 ///
 /// returns a Result containing the new OpenCL buffer object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_buffer(
     context: cl_context,
     flags: cl_mem_flags,
@@ -132,6 +133,7 @@ pub fn create_buffer(
 ///
 /// returns a Result containing the new OpenCL buffer object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_sub_buffer(
     buffer: cl_mem,
     flags: cl_mem_flags,
@@ -171,6 +173,7 @@ pub fn create_sub_buffer(
 ///
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_image(
     context: cl_context,
     flags: cl_mem_flags,
@@ -210,6 +213,7 @@ pub fn create_image(
 ///
 /// returns a Result containing the new OpenCL pipe object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_pipe(
     context: cl_context,
     flags: cl_mem_flags,
@@ -251,6 +255,7 @@ pub fn create_pipe(
 /// returns a Result containing the new OpenCL buffer object
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_3_0")]
+#[inline]
 pub fn create_buffer_with_properties(
     context: cl_context,
     properties: *const cl_mem_properties,
@@ -287,6 +292,7 @@ pub fn create_buffer_with_properties(
 ///
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
+#[inline]
 #[cfg(feature = "CL_VERSION_3_0")]
 pub fn create_image_with_properties(
     context: cl_context,
@@ -321,6 +327,7 @@ pub fn create_image_with_properties(
 /// * `memobj` - the OpenCL memory object.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clRetainMemObject(memobj) };
     if CL_SUCCESS != status {
@@ -336,6 +343,7 @@ pub fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
 /// * `memobj` - the OpenCL memory object.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn release_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clReleaseMemObject(memobj) };
     if CL_SUCCESS != status {
@@ -373,6 +381,7 @@ fn count_supported_image_formats(
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn get_supported_image_formats(
     context: cl_context,
     flags: cl_mem_flags,
@@ -568,6 +577,7 @@ pub fn get_pipe_info(pipe: cl_mem, param_name: PipeInfo) -> Result<InfoType, cl_
 /// * `user_data` - passed as the user_data argument when pfn_notify is called.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn set_mem_object_destructor_callback(
     memobj: cl_mem,
     pfn_notify: extern "C" fn(cl_mem, *mut c_void),
@@ -595,7 +605,8 @@ pub fn set_mem_object_destructor_callback(
 /// newly created buffers memory region.
 ///
 /// returns Result containing the address of the SVM buffer
-/// or the error code: CL_INVALID_VALUE if the address is NULL..
+/// or the error code: CL_INVALID_VALUE if the address is NULL.
+#[inline]
 pub fn svm_alloc(
     context: cl_context,
     flags: cl_svm_mem_flags,
@@ -616,7 +627,7 @@ pub fn svm_alloc(
 ///
 /// * `context` - the valid OpenCL context used to create the SVM buffer.
 /// * `svm_pointer` - the value returned by a call to clSVMAlloc.
-///
+#[inline]
 pub fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
     unsafe { clSVMFree(context, svm_pointer) };
 }

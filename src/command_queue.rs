@@ -58,6 +58,7 @@ use std::ptr;
 /// returns a Result containing the new OpenCL command-queue
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
+#[inline]
 pub fn create_command_queue(
     context: cl_context,
     device: cl_device_id,
@@ -85,6 +86,7 @@ pub fn create_command_queue(
 /// returns a Result containing the new OpenCL command-queue
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_0")]
+#[inline]
 pub fn create_command_queue_with_properties(
     context: cl_context,
     device: cl_device_id,
@@ -106,6 +108,7 @@ pub fn create_command_queue_with_properties(
 /// * `command_queue` - the OpenCL command-queue.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn retain_command_queue(command_queue: cl_command_queue) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clRetainCommandQueue(command_queue) };
     if CL_SUCCESS != status {
@@ -121,6 +124,7 @@ pub fn retain_command_queue(command_queue: cl_command_queue) -> Result<(), cl_in
 ///  * `command_queue` - the OpenCL command-queue.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn release_command_queue(command_queue: cl_command_queue) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clReleaseCommandQueue(command_queue) };
     if CL_SUCCESS != status {
@@ -200,6 +204,7 @@ pub fn get_command_queue_info(
 /// * `command_queue` - the OpenCL command-queue.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn flush(command_queue: cl_command_queue) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clFlush(command_queue) };
     if CL_SUCCESS != status {
@@ -215,6 +220,7 @@ pub fn flush(command_queue: cl_command_queue) -> Result<(), cl_int> {
 /// * `command_queue` - the OpenCL command-queue.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn finish(command_queue: cl_command_queue) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clFinish(command_queue) };
     if CL_SUCCESS != status {
@@ -226,6 +232,7 @@ pub fn finish(command_queue: cl_command_queue) -> Result<(), cl_int> {
 
 // OpenCL command-queue enqueue commands.
 
+#[inline]
 pub fn enqueue_read_buffer(
     command_queue: cl_command_queue,
     buffer: cl_mem,
@@ -257,6 +264,7 @@ pub fn enqueue_read_buffer(
     }
 }
 
+#[inline]
 pub fn enqueue_read_buffer_rect(
     command_queue: cl_command_queue,
     buffer: cl_mem,
@@ -298,6 +306,7 @@ pub fn enqueue_read_buffer_rect(
     }
 }
 
+#[inline]
 pub fn enqueue_write_buffer(
     command_queue: cl_command_queue,
     buffer: cl_mem,
@@ -329,6 +338,7 @@ pub fn enqueue_write_buffer(
     }
 }
 
+#[inline]
 pub fn enqueue_write_buffer_rect(
     command_queue: cl_command_queue,
     buffer: cl_mem,
@@ -370,6 +380,7 @@ pub fn enqueue_write_buffer_rect(
     }
 }
 
+#[inline]
 pub fn enqueue_fill_buffer(
     command_queue: cl_command_queue,
     buffer: cl_mem,
@@ -401,6 +412,7 @@ pub fn enqueue_fill_buffer(
     }
 }
 
+#[inline]
 pub fn enqueue_copy_buffer(
     command_queue: cl_command_queue,
     src_buffer: cl_mem,
@@ -432,6 +444,7 @@ pub fn enqueue_copy_buffer(
     }
 }
 
+#[inline]
 pub fn enqueue_copy_buffer_rect(
     command_queue: cl_command_queue,
     src_buffer: cl_mem,
@@ -471,6 +484,7 @@ pub fn enqueue_copy_buffer_rect(
     }
 }
 
+#[inline]
 pub fn enqueue_read_image(
     command_queue: cl_command_queue,
     image: cl_mem,
@@ -506,6 +520,7 @@ pub fn enqueue_read_image(
     }
 }
 
+#[inline]
 pub fn enqueue_write_image(
     command_queue: cl_command_queue,
     image: cl_mem,
@@ -541,6 +556,7 @@ pub fn enqueue_write_image(
     }
 }
 
+#[inline]
 pub fn enqueue_fill_image(
     command_queue: cl_command_queue,
     image: cl_mem,
@@ -570,6 +586,7 @@ pub fn enqueue_fill_image(
     }
 }
 
+#[inline]
 pub fn enqueue_copy_image(
     command_queue: cl_command_queue,
     src_image: cl_mem,
@@ -601,6 +618,7 @@ pub fn enqueue_copy_image(
     }
 }
 
+#[inline]
 pub fn enqueue_copy_image_to_buffer(
     command_queue: cl_command_queue,
     src_image: cl_mem,
@@ -632,6 +650,7 @@ pub fn enqueue_copy_image_to_buffer(
     }
 }
 
+#[inline]
 pub fn enqueue_copy_buffer_to_image(
     command_queue: cl_command_queue,
     src_buffer: cl_mem,
@@ -665,6 +684,7 @@ pub fn enqueue_copy_buffer_to_image(
 
 /// Note: returns event NOT pointer for consistency with other enqueue functions.  
 /// The buffer pointer is returned in the buffer_ptr mutable reference.
+#[inline]
 pub fn enqueue_map_buffer(
     command_queue: cl_command_queue,
     buffer: cl_mem,
@@ -701,6 +721,7 @@ pub fn enqueue_map_buffer(
 
 /// Note: returns event NOT pointer for consistency with other enqueue functions.  
 /// The image pointer is returned in the image_ptr mutable reference.
+#[inline]
 pub fn enqueue_map_image(
     command_queue: cl_command_queue,
     image: cl_mem,
@@ -739,6 +760,7 @@ pub fn enqueue_map_image(
     }
 }
 
+#[inline]
 pub fn enqueue_unmap_mem_object(
     command_queue: cl_command_queue,
     memobj: cl_mem,
@@ -764,6 +786,7 @@ pub fn enqueue_unmap_mem_object(
     }
 }
 
+#[inline]
 pub fn enqueue_migrate_mem_object(
     command_queue: cl_command_queue,
     num_mem_objects: cl_uint,
@@ -791,6 +814,7 @@ pub fn enqueue_migrate_mem_object(
     }
 }
 
+#[inline]
 pub fn enqueue_nd_range_kernel(
     command_queue: cl_command_queue,
     kernel: cl_kernel,
@@ -824,6 +848,7 @@ pub fn enqueue_nd_range_kernel(
 
 // Deprecated in CL_VERSION_2_0
 #[cfg(feature = "CL_VERSION_1_2")]
+#[inline]
 pub fn enqueue_task(
     command_queue: cl_command_queue,
     kernel: cl_kernel,
@@ -847,6 +872,7 @@ pub fn enqueue_task(
     }
 }
 
+#[inline]
 pub fn enqueue_native_kernel(
     command_queue: cl_command_queue,
     user_func: Option<extern "C" fn(*mut c_void)>,
@@ -880,6 +906,7 @@ pub fn enqueue_native_kernel(
     }
 }
 
+#[inline]
 pub fn enqueue_marker_with_wait_list(
     command_queue: cl_command_queue,
     num_events_in_wait_list: cl_uint,
@@ -901,6 +928,7 @@ pub fn enqueue_marker_with_wait_list(
     }
 }
 
+#[inline]
 pub fn enqueue_barrier_with_wait_list(
     command_queue: cl_command_queue,
     num_events_in_wait_list: cl_uint,
@@ -922,6 +950,7 @@ pub fn enqueue_barrier_with_wait_list(
     }
 }
 
+#[inline]
 pub fn enqueue_svm_free(
     command_queue: cl_command_queue,
     num_svm_pointers: cl_uint,
@@ -958,6 +987,7 @@ pub fn enqueue_svm_free(
     }
 }
 
+#[inline]
 pub fn enqueue_svm_mem_cpy(
     command_queue: cl_command_queue,
     blocking_copy: cl_bool,
@@ -987,6 +1017,7 @@ pub fn enqueue_svm_mem_cpy(
     }
 }
 
+#[inline]
 pub fn enqueue_svm_mem_fill(
     command_queue: cl_command_queue,
     svm_ptr: *mut c_void,
@@ -1016,6 +1047,7 @@ pub fn enqueue_svm_mem_fill(
     }
 }
 
+#[inline]
 pub fn enqueue_svm_map(
     command_queue: cl_command_queue,
     blocking_map: cl_bool,
@@ -1045,6 +1077,7 @@ pub fn enqueue_svm_map(
     }
 }
 
+#[inline]
 pub fn enqueue_svm_unmap(
     command_queue: cl_command_queue,
     svm_ptr: *mut c_void,
@@ -1068,6 +1101,7 @@ pub fn enqueue_svm_unmap(
     }
 }
 
+#[inline]
 pub fn enqueue_svm_migrate_mem(
     command_queue: cl_command_queue,
     num_svm_pointers: cl_uint,

@@ -85,6 +85,7 @@ extern "system" {
 /// 
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_program_with_source(
     context: cl_context,
     count: cl_uint,
@@ -154,6 +155,7 @@ pub fn create_program_with_binary(
 /// 
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_program_with_builtin_kernels(
     context: cl_context,
     devices: &[cl_device_id],
@@ -187,6 +189,7 @@ pub fn create_program_with_builtin_kernels(
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
+#[inline]
 pub fn create_program_with_il(
     context: cl_context,
     il: &[u8],
@@ -213,6 +216,7 @@ pub fn create_program_with_il(
 /// * `program` - the OpenCL program.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn retain_program(program: cl_program) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clRetainProgram(program) };
     if CL_SUCCESS != status {
@@ -228,6 +232,7 @@ pub fn retain_program(program: cl_program) -> Result<(), cl_int> {
 /// * `program` - the OpenCL program.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn release_program(program: cl_program) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clReleaseProgram(program) };
     if CL_SUCCESS != status {
@@ -248,6 +253,7 @@ pub fn release_program(program: cl_program) -> Result<(), cl_int> {
 /// 
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn build_program(
     program: cl_program,
     devices: &[cl_device_id],
@@ -287,6 +293,7 @@ pub fn build_program(
 /// 
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn compile_program(
     program: cl_program,
     devices: &[cl_device_id],
@@ -329,6 +336,7 @@ pub fn compile_program(
 /// 
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn link_program(
     program: cl_program,
     devices: &[cl_device_id],
@@ -369,6 +377,7 @@ pub fn link_program(
 /// 
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_2")]
+#[inline]
 pub fn set_program_release_callback(
     program: cl_program,
     pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
@@ -394,6 +403,7 @@ pub fn set_program_release_callback(
 /// 
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_2")]
+#[inline]
 pub fn set_program_specialization_constant(
     program: cl_program,
     spec_id: cl_uint,
@@ -417,6 +427,7 @@ pub fn set_program_specialization_constant(
 /// * `program` - the program being deleted.
 /// 
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clUnloadPlatformCompiler(platform) };
     if CL_SUCCESS != status {

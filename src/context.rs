@@ -55,6 +55,7 @@ extern "system" {
 ///
 /// returns a Result containing the new OpenCL context
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_context(
     devices: &[cl_device_id],
     properties: *const cl_context_properties,
@@ -91,6 +92,7 @@ pub fn create_context(
 ///
 /// returns a Result containing the new OpenCL context
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_context_from_type(
     device_type: cl_device_type,
     properties: *const cl_context_properties,
@@ -114,6 +116,7 @@ pub fn create_context_from_type(
 /// * `context` - the cl_context of the OpenCL context.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn retain_context(context: cl_context) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clRetainContext(context) };
     if CL_SUCCESS != status {
@@ -129,6 +132,7 @@ pub fn retain_context(context: cl_context) -> Result<(), cl_int> {
 /// * `context` - the cl_context of the OpenCL context.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn release_context(context: cl_context) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clReleaseContext(context) };
     if CL_SUCCESS != status {
@@ -185,6 +189,7 @@ pub fn get_context_info(context: cl_context, param_name: ContextInfo) -> Result<
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_3_0")]
+#[inline]
 pub fn set_context_destructor_callback(
     context: cl_context,
     pfn_notify: extern "C" fn(cl_context, *const c_void),

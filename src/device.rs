@@ -465,6 +465,7 @@ pub const CL_DEVICE_PARTITION_BY_COUNTS_LIST_END: cl_device_partition_property =
 pub const CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN: cl_device_partition_property = 0x1088;
 
 // helper function for create_sub_devices
+#[inline]
 fn count_sub_devices(
     in_device: cl_device_id,
     properties: &[cl_device_partition_property],
@@ -495,6 +496,7 @@ fn count_sub_devices(
 ///
 /// returns a Result containing a vector of available sub-device ids
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_sub_devices(
     in_device: cl_device_id,
     properties: &[cl_device_partition_property],
@@ -504,8 +506,8 @@ pub fn create_sub_devices(
 
     // partition in_device
     let mut ids: Vec<cl_device_id> = Vec::with_capacity(num_devices as usize);
-    unsafe { ids.set_len(num_devices as usize) };
     let status: cl_int = unsafe {
+        ids.set_len(num_devices as usize);
         clCreateSubDevices(
             in_device,
             properties.as_ptr(),
@@ -529,6 +531,7 @@ pub fn create_sub_devices(
 /// * `device` - the cl_device_id of the OpenCL device.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clRetainDevice(device) };
     if CL_SUCCESS != status {
@@ -545,6 +548,7 @@ pub fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 /// * `device` - the cl_device_id of the OpenCL device.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn release_device(device: cl_device_id) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clReleaseDevice(device) };
     if CL_SUCCESS != status {
@@ -566,6 +570,7 @@ pub fn release_device(device: cl_device_id) -> Result<(), cl_int> {
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
+#[inline]
 pub fn set_default_device_command_queue(
     context: cl_context,
     device: cl_device_id,
@@ -588,6 +593,7 @@ pub fn set_default_device_command_queue(
 /// returns a Result containing device_timestamp and host_timestamp in a 2D array
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
+#[inline]
 pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], cl_int> {
     let mut device_timestamp: cl_ulong = 0;
     let mut host_timestamp: cl_ulong = 0;
@@ -609,6 +615,7 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
 /// returns a Result containing host_timestamp
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
+#[inline]
 pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
     let mut host_timestamp: cl_ulong = 0;
     let status: cl_int = unsafe { clGetHostTimer(device, &mut host_timestamp) };

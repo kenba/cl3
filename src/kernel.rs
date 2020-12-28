@@ -45,6 +45,7 @@ use std::ptr;
 ///
 /// returns a Result containing the new OpenCL kernel object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_kernel(program: cl_program, kernel_name: &CStr) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let kernel: cl_kernel = unsafe { clCreateKernel(program, kernel_name.as_ptr(), &mut status) };
@@ -73,6 +74,7 @@ fn count_kernels_in_program(program: cl_program) -> Result<cl_uint, cl_int> {
 ///
 /// returns a Result containing the new OpenCL kernel objects
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, cl_int> {
     let count: cl_uint = count_kernels_in_program(program)?;
     let mut kernels: Vec<cl_kernel> = Vec::with_capacity(count as usize);
@@ -100,6 +102,7 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
 ///
 /// returns a Result containing the new OpenCL kernel object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let kernel: cl_kernel = unsafe { clCloneKernel(source_kernel, &mut status) };
@@ -116,6 +119,7 @@ pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
 /// * `program` - the OpenCL kernel.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clRetainKernel(kernel) };
     if CL_SUCCESS != status {
@@ -131,6 +135,7 @@ pub fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
 /// * `kernel` - the OpenCL kernel.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clReleaseKernel(kernel) };
     if CL_SUCCESS != status {
@@ -148,6 +153,7 @@ pub fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
 /// * `arg_ptr` - pointer to the data for the argument at arg_index.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn set_kernel_arg(
     kernel: cl_kernel,
     arg_index: cl_uint,
@@ -170,6 +176,7 @@ pub fn set_kernel_arg(
 /// * `arg_ptr` - the SVM pointer to the data for the argument at arg_index.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn set_kernel_arg_svm_pointer(
     kernel: cl_kernel,
     arg_index: cl_uint,
@@ -196,6 +203,7 @@ pub const CL_KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM: cl_kernel_exec_info = 0x11B
 /// * `param_ptr` - pointer to the data for the param_name.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn set_kernel_exec_info(
     kernel: cl_kernel,
     param_name: cl_kernel_exec_info,

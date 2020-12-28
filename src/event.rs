@@ -38,6 +38,7 @@ use std::ptr;
 /// * `events` - a slice of OpenCL events.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clWaitForEvents(events.len() as cl_uint, events.as_ptr()) };
     if CL_SUCCESS != status {
@@ -93,6 +94,7 @@ pub fn get_event_info(event: cl_event, param_name: EventInfo) -> Result<InfoType
 ///
 /// returns a Result containing the new OpenCL event object
 /// or the error code from the OpenCL C API function.
+#[inline]
 pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let event: cl_event = unsafe { clCreateUserEvent(context, &mut status) };
@@ -109,6 +111,7 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
 /// * `event` - the OpenCL event.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn retain_event(event: cl_event) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clRetainEvent(event) };
     if CL_SUCCESS != status {
@@ -124,6 +127,7 @@ pub fn retain_event(event: cl_event) -> Result<(), cl_int> {
 /// * `event` - the OpenCL event.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn release_event(event: cl_event) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clReleaseEvent(event) };
     if CL_SUCCESS != status {
@@ -140,6 +144,7 @@ pub fn release_event(event: cl_event) -> Result<(), cl_int> {
 /// * `execution_status` - the OpenCL execution_status.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn set_user_event_status(event: cl_event, execution_status: cl_int) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clSetUserEventStatus(event, execution_status) };
     if CL_SUCCESS != status {
@@ -157,6 +162,7 @@ pub fn set_user_event_status(event: cl_event, execution_status: cl_int) -> Resul
 /// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn set_event_callback(
     event: cl_event,
     command_exec_callback_type: cl_int,

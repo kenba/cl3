@@ -46,6 +46,7 @@ use std::ptr;
 /// returns a Result containing the new OpenCL sampler object
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
+#[inline]
 pub fn create_sampler(
     context: cl_context,
     normalize_coords: cl_bool,
@@ -80,6 +81,7 @@ pub fn create_sampler(
 /// returns a Result containing the new OpenCL sampler object
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_0")]
+#[inline]
 pub fn create_sampler_with_properties(
     context: cl_context,
     properties: *const cl_sampler_properties,
@@ -100,6 +102,7 @@ pub fn create_sampler_with_properties(
 /// * `sampler` - the OpenCL sampler.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clRetainSampler(sampler) };
     if CL_SUCCESS != status {
@@ -115,6 +118,7 @@ pub fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
 /// * `sampler` - the OpenCL sampler.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[inline]
 pub fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clReleaseSampler(sampler) };
     if CL_SUCCESS != status {
