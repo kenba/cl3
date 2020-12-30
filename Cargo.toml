@@ -14,7 +14,6 @@ edition = "2018"
 
 [features]
 
-CL_VERSION_1_1 = []
 CL_VERSION_1_2 = []
 CL_VERSION_2_0 = []
 CL_VERSION_2_1 = []
