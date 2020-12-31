@@ -4,7 +4,7 @@
 [![docs.io](https://docs.rs/cl3/badge.svg)](https://docs.rs/cl3/)
 [![OpenCL 3.0](https://img.shields.io/badge/OpenCL-3.0-blue.svg)](https://www.khronos.org/registry/OpenCL/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![Rust](https://github.com/kenba/cl3/workflows/Rust/badge.svg)
+[![Rust](https://github.com/kenba/cl3/workflows/Rust/badge.svg)](https://github.com/kenba/cl3/actions)
 
 A Rust adapter for the Khronos [OpenCL](https://www.khronos.org/registry/OpenCL/) API.
 

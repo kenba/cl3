@@ -1101,6 +1101,7 @@ pub fn enqueue_svm_unmap(
     }
 }
 
+#[cfg(feature = "CL_VERSION_2_1")]
 #[inline]
 pub fn enqueue_svm_migrate_mem(
     command_queue: cl_command_queue,

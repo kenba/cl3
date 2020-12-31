@@ -102,6 +102,7 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
 ///
 /// returns a Result containing the new OpenCL kernel object
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_2_1")]
 #[inline]
 pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
@@ -403,6 +404,7 @@ pub enum KernelSubGroupInfo {
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_2_1")]
 pub fn get_kernel_sub_group_info(
     kernel: cl_kernel,
     device: cl_device_id,
