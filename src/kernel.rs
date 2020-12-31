@@ -18,6 +18,7 @@
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::info_type::InfoType;
+#[allow(unused_imports)]
 use super::types::{
     cl_device_id, cl_int, cl_kernel, cl_kernel_arg_info, cl_kernel_exec_info, cl_kernel_info,
     cl_kernel_sub_group_info, cl_kernel_work_group_info, cl_program, cl_uint, cl_ulong,
@@ -26,6 +27,7 @@ use super::{
     api2_info_size, api2_info_value, api2_info_vector, api_info_size, api_info_value,
     api_info_vector,
 };
+#[allow(unused_imports)]
 use cl_sys::{
     clCloneKernel, clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
     clGetKernelSubGroupInfo, clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel,
