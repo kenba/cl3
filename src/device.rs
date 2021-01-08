@@ -511,7 +511,7 @@ pub fn create_sub_devices(
         clCreateSubDevices(
             in_device,
             properties.as_ptr(),
-            num_devices,
+            num_devices * mem::size_of::<cl_device_id>() as cl_uint,
             ids.as_mut_ptr(),
             ptr::null_mut(),
         )
@@ -1266,5 +1266,44 @@ mod tests {
         println!("CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED: {:?}", value);
         let value = value.into_string().unwrap();
         assert!(0 < value.len());
+    }
+
+    #[test]
+    fn test_get_sub_devices() {
+        let platform_ids = get_platform_ids().unwrap();
+        assert!(0 < platform_ids.len());
+
+        // Find an OpenCL device with sub devices
+
+        let mut device_id = ptr::null_mut();
+        let mut has_sub_devices: bool = false;
+
+        for p in platform_ids {
+            let device_ids = get_device_ids(p, CL_DEVICE_TYPE_CPU).unwrap();
+
+            for dev_id in device_ids {
+                let value = get_device_info(dev_id, DeviceInfo::CL_DEVICE_PARTITION_MAX_SUB_DEVICES).unwrap();
+                let max_sub_devices = value.to_uint();
+
+                has_sub_devices = 1 < max_sub_devices;
+                if has_sub_devices {
+                    device_id = dev_id;
+                    break;
+                }
+            }
+        }
+
+        assert!(has_sub_devices, "OpenCL device capable of sub division not found");
+
+        let properties: [cl_device_partition_property; 3] =
+            [CL_DEVICE_PARTITION_EQUALLY, 4, 0];
+        let sub_devices = create_sub_devices(device_id, &properties).unwrap();
+
+        println!("CL_DEVICE_TYPE_CPU count: {}", sub_devices.len());
+        assert!(0 < sub_devices.len());
+
+        for device in sub_devices {
+            release_device(device).unwrap();
+        }
     }
 }
