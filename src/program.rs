@@ -245,7 +245,7 @@ pub fn release_program(program: cl_program) -> Result<(), cl_int> {
 /// Build (compile & link) a program executable.  
 /// Calls clBuildProgram to build an OpenCL program object.  
 ///
-/// * `context` - a valid OpenCL context.
+/// * `program` - a valid OpenCL program.
 /// * `devices` - a slice of devices that are in context.
 /// * `options` - the build options in a null-terminated string. 
 /// * `pfn_notify` - an optional function pointer to a notification routine.
@@ -282,7 +282,7 @@ pub fn build_program(
 /// with the program.  
 /// Calls clCompileProgram to compile an OpenCL program object.  
 ///
-/// * `context` - a valid OpenCL context.
+/// * `program` - a valid OpenCL program.
 /// * `devices` - a slice of devices that are in context.
 /// * `options` - the compilation options in a null-terminated string. 
 /// * `input_headers` - a slice of programs that describe headers in the input_headers.
@@ -338,7 +338,7 @@ pub fn compile_program(
 /// or the error code from the OpenCL C API function.
 #[inline]
 pub fn link_program(
-    program: cl_program,
+    context: cl_context,
     devices: &[cl_device_id],
     options: &CStr,
     input_programs: &[cl_program],
@@ -348,7 +348,7 @@ pub fn link_program(
     let mut status: cl_int = CL_INVALID_VALUE;
     let programme: cl_program = unsafe { 
         clLinkProgram(
-            program,
+            context,
             devices.len() as cl_uint,
             devices.as_ptr(),
             options.as_ptr(),
@@ -424,7 +424,7 @@ pub fn set_program_specialization_constant(
 /// Release the resources allocated by the OpenCL compiler for platform.  
 /// Calls clUnloadPlatformCompiler.  
 ///
-/// * `program` - the program being deleted.
+/// * `platform` - the platform.
 /// 
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
