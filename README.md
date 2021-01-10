@@ -12,7 +12,9 @@ A Rust adapter for the Khronos [OpenCL](https://www.khronos.org/registry/OpenCL/
 
 A functional, safe Rust interface to the Khronos OpenCL 3.0
 [C API](https://github.com/KhronosGroup/OpenCL-Headers/blob/master/CL/cl.h)
-based upon the [cl-sys](https://crates.io/crates/cl-sys) OpenCL FFI bindings.
+based upon the [cl-sys](https://crates.io/crates/cl-sys) OpenCL FFI bindings.  
+It is the foundation of the [opencl3](https://crates.io/crates/opencl3) crate
+which provides a simpler, object based model of the OpenCL 3.0 API.
 
 [OpenCL 3.0](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html)
 is a unified specification that adds little new functionality to previous OpenCL versions.  
@@ -34,48 +36,64 @@ They contain Rust adapter functions for the OpenCL API C functions defined
 in those sections with their associated types and constants.  
 For more information see the Rust [documentation](https://docs.rs/cl3/).
 
-## OpenCL Installation
-
-There are two parts of OpenCL to install: an OpenCL hardware driver and an
-OpenCL Installable Client Driver (ICD).
-
-OpenCL hardware drivers are normally bundled together with the graphics drivers
-for the hardware, while there are several options for installing an OpenCL ICD.
-
-AMD support OpenCL 2.2 through their Radeon Open Compute (ROCm) development
-platform. Unfortunately, it only supports a limited number of Linux distributions,
-see [AMD ROCm Platform](https://rocmdocs.amd.com/en/latest/).
-
-AMD used to provide the de facto standard OpenCL ICD in AMD APP SDK 3.0 which
-provided OpenCL 2.0 support on both Linux and Windows. Unfortunately, it is
-no longer available from AMD, although it can be found elsewhere on the internet, see
-[OpenCL AMD APP SDK 3.0 for windows and linux](https://stackoverflow.com/questions/53070673/download-opencl-amd-app-sdk-3-0-for-windows-and-linux).  
-
-Note: on Windows 10 systems with both an AMD Radeon GPU and an Intel GPU,
-OpenCL is often limited to the AMD GPU only, see
-[How to Enable Intel OpenCL Support on Windows when AMD Radeon Graphics Driver is Installed](https://www.geeks3d.com/20181220/how-to-enable-intel-opencl-support-on-windows-when-amd-radeon-graphics-driver-is-installed/)
-for a description of the issue and how to fix it.
-
-The Intel OpenCL ICD currently provides good OpenCL support (version 2.1)
-for both Linux and Windows, see [Intel SDK for OpenCL applications](https://software.intel.com/content/www/us/en/develop/tools/opencl-sdk/choose-download.html).
-Intel also provides a useful guide to OpenCL development, see
-[Get Started with Intel SDK for OpenCL](https://software.intel.com/content/www/us/en/develop/articles/sdk-for-opencl-2019-gsg.html).
-
-Nvidia also provides an [OpenCL ICD](https://developer.nvidia.com/opencl).
-However, Nvidia OpenCL support has lagged behind AMD and Intel in the past,
-so it is recommended to install the Nvidia graphics drivers with an AMD or Intel
-OpenCL ICD, depending on your CPU manufacturer and operating system.
-
-Other OpenCL ICDs are available. For example, [cl-sys](https://crates.io/crates/cl-sys)
-searches for the [OCLSDK_Light](https://github.com/GPUOpen-LibrariesAndSDKs/OCL-SDK/releases)
-on Windows if it can't find any of the AMD, Intel or Nvidia OpenCL ICDs.
-
-Finally, it's possible to build your own OpenCL ICD for Linux or Windows from the
-[Khronos official OpenCL ICD Loader](https://github.com/KhronosGroup/OpenCL-ICD-Loader) source code.
-
 ## Use
 
-See the Rust crate documentation: [cl3](https://docs.rs/cl3/).
+Ensure that an OpenCL Installable Client Driver (ICD) and the appropriate OpenCL
+hardware driver(s) are installed, see
+[OpenCL Installation](https://github.com/kenba/cl3/tree/main/docs/opencl_installation.md).
+
+`cl3` supports OpenCL 1.2 and 2.0 ICD loaders by default. If you have an
+OpenCL 2.0 ICD loader then add the following to your project's `Cargo.toml`:
+
+```toml
+[dependencies]
+cl3 = "0.1"
+```
+
+If your OpenCL ICD loader supports higher versions of OpenCL then add the
+appropriate features to cl3, e.g. for an OpenCL 2.2 ICD loader add the
+following to your project's `Cargo.toml` instead:
+
+```toml
+[dependencies.cl3]
+version = "0.1"
+features = ["CL_VERSION_2_1", "CL_VERSION_2_2"]
+```
+
+Whichever version of OpenCL ICD loader you use, add the following to your
+crate root (`lib.rs` or `main.rs`):
+
+```rust
+extern crate cl3;
+```
+
+## Tests
+
+The crate contains unit, documentation and integration tests.  
+The tests run the platform and device info functions (among others) so they
+can provide useful information about OpenCL capabilities of the system.
+
+It is recommended to run the tests in single-threaded mode, since some of
+them can interfere with each other when run multi-threaded, e.g.:
+
+```shell
+cargo test -- --test-threads=1 --show-output
+```
+
+The integration tests are marked `ignore` so use the following command to
+run them:
+
+```shell
+cargo test -- --test-threads=1 --show-output --ignored
+```
+
+## Examples
+
+The tests provide examples of how the crate may be used, e.g. see:
+[platform](https://github.com/kenba/cl3/tree/main/src/platform.rs),
+[device](https://github.com/kenba/cl3/tree/main/src/device.rs),
+[context](https://github.com/kenba/cl3/tree/main/src/context.rs) and
+[integration_test](https://github.com/kenba/cl3/tree/main/tests/integration_test.rs).
 
 ## License
 

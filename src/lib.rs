@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,65 +59,12 @@
 //!
 //! # Use
 //!
-//! Ensure that an OpenCL ICD and the appropriate OpenCL hardware driver(s)
-//! are installed, see [cl3](https://github.com/kenba/cl3).  
-//!
-//! `cl3` supports OpenCL 1.2 and 2.0 ICD loaders by default. If you have an
-//! OpenCL 2.0 ICD loader then add the following to your project's `Cargo.toml`:
-//!
-//! ```toml
-//! [dependencies]
-//! cl3 = "0.1"
-//! ```
-//!
-//! If your OpenCL ICD loader supports higher versions of OpenCL then add the
-//! appropriate features to cl3, e.g. for an OpenCL 2.2 ICD loader add the
-//! following to your project's `Cargo.toml` instead:
-//!
-//! ```toml
-//! [dependencies.cl3]
-//! version = "0.1"
-//! features = ["CL_VERSION_2_1", "CL_VERSION_2_2"]
-//! ```
-//!
-//! Whichever version of OpenCL ICD loader you use, add the following to your
-//! crate root (`lib.rs` or `main.rs`):
-//!
-//! ```rust
-//! extern crate cl3;
-//! ```
-//!
-//! ## Tests
-//!
-//! The crate contains unit, documentation and integration tests.  
-//! The tests run the platform and device info functions (among others) so they
-//! can provide useful information about OpenCL capabilities of the system.
-//!
-//! It is recommended to run the tests in single-threaded mode, since some of
-//! them can interfere with each other when run multi-threaded, e.g.:
-//!
-//! ```shell
-//! cargo test -- --test-threads=1 --show-output
-//! ```
-//!
-//! The integration tests are marked `ignore` so use the following command to
-//! run them:
-//!
-//! ```shell
-//! cargo test -- --test-threads=1 --show-output --ignored
-//! ```
-//!
-//! ## Examples
-//!
-//! The tests provide examples of how the crate may be used, e.g. see:
-//! [platform], [device], [context] and
-//! [integration_test](https://github.com/kenba/cl3/tests/integration_test.rs).
+//! See [cl3](https://crates.io/crates/cl3).  
 //!
 //! ## License
 //! 
 //! Licensed under the Apache License, Version 2.0, as per Khronos Group OpenCL.  
-//! You may obtain a copy of the License at:
-//! [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+//! You may obtain a copy of the License at: <http://www.apache.org/licenses/LICENSE-2.0>
 //! 
 //! OpenCL and the OpenCL logo are trademarks of Apple Inc. used under license by Khronos.
 
