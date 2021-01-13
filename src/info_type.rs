@@ -40,8 +40,8 @@ impl InfoType {
     pub fn to_str(self) -> Result<CString, NulError> {
         match self {
             InfoType::Str(mut a) => {
-                // remove the trailing null if there is one
-                if let Some(0) = a.last() {
+                // remove all trailing nulls if any
+                while let Some(0) = a.last() {
                     a.pop();
                 }
                 CString::new(a)
