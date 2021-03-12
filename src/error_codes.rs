@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@ pub use cl_sys::{
 // CL_VERSION_2_2 Error Codes:
 pub const CL_INVALID_SPEC_ID: cl_int = -71;
 pub const CL_MAX_SIZE_RESTRICTION_EXCEEDED: cl_int = -72;
+
+pub const CSTRING_UTF8_CONVERSION_ERROR: cl_int = -9999;
 
 pub fn error_text(error_code: cl_int) -> &'static str {
     match error_code {
@@ -110,6 +112,8 @@ pub fn error_text(error_code: cl_int) -> &'static str {
         CL_MAX_SIZE_RESTRICTION_EXCEEDED => "CL_MAX_SIZE_RESTRICTION_EXCEEDED",
 
         CL_PLATFORM_NOT_FOUND_KHR => "CL_PLATFORM_NOT_FOUND_KHR",
+
+        CSTRING_UTF8_CONVERSION_ERROR => "CSTRING_UTF8_CONVERSION_ERROR",
 
         _ => "UNKNOWN_ERROR",
     }
