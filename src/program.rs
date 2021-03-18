@@ -498,7 +498,7 @@ pub fn get_program_info(
         ProgramInfo::CL_PROGRAM_SOURCE | ProgramInfo::CL_PROGRAM_KERNEL_NAMES | ProgramInfo::CL_PROGRAM_IL => {
             api_info_vector!(get_string, u8, clGetProgramInfo);
             let size = get_size(program, param_id)?;
-            Ok(InfoType::Str(get_string(program, param_id, size)?))
+            Ok(InfoType::VecUchar(get_string(program, param_id, size)?))
         }
 
         ProgramInfo::CL_PROGRAM_BINARY_SIZES => {
@@ -586,7 +586,7 @@ pub fn get_program_build_info(
             api2_info_size!(get_device_size, cl_device_id, clGetProgramBuildInfo);
             api2_info_vector!(get_device_string, cl_device_id, u8, clGetProgramBuildInfo);
             let size = get_device_size(program, device, param_id)?;
-            Ok(InfoType::Str(get_device_string(program, device, param_id, size)?))
+            Ok(InfoType::VecUchar(get_device_string(program, device, param_id, size)?))
         }
 
         ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE => {
@@ -690,9 +690,11 @@ mod tests {
         let value = value.to_str().unwrap();
         println!("CL_PROGRAM_BUILD_OPTIONS: {:?}", value);
 
+        unsafe {
         let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_LOG).unwrap();
-        let value = value.to_str().unwrap();
+        let value = value.to_str_unchecked();
         println!("CL_PROGRAM_BUILD_LOG: {:?}", value);
+        }
 
         let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE).unwrap();
         let value = value.to_uint();

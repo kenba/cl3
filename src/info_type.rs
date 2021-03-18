@@ -21,7 +21,6 @@ use std::ffi::{CString, NulError};
 /// The functions will panic if they are called for the incorrect type.
 #[derive(Debug)]
 pub enum InfoType {
-    Str(Vec<u8>),
     Int(cl_int),
     Uint(cl_uint),
     Ulong(cl_ulong),
@@ -38,16 +37,25 @@ pub enum InfoType {
 
 impl InfoType {
     pub fn to_str(self) -> Result<CString, NulError> {
-        match self {
-            InfoType::Str(mut a) => {
-                // remove all trailing nulls if any
-                while let Some(0) = a.last() {
-                    a.pop();
-                }
-                CString::new(a)
-            }
-            _ => panic!("not a String"),
+        let mut a = self.to_vec_uchar();
+
+        // remove all trailing nulls if any
+        while let Some(0) = a.last() {
+            a.pop();
         }
+
+        CString::new(a)
+    }
+
+    pub unsafe fn to_str_unchecked(self) -> CString {
+        let mut a = self.to_vec_uchar();
+
+        // remove all trailing nulls if any
+        while let Some(0) = a.last() {
+            a.pop();
+        }
+
+        CString::from_vec_unchecked(a)
     }
 
     pub fn to_int(self) -> cl_int {

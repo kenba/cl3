@@ -126,7 +126,7 @@ pub fn get_platform_info(
         | PlatformInfo::CL_PLATFORM_EXTENSIONS => {
             api_info_vector!(get_string, u8, clGetPlatformInfo);
             let size = get_size(platform, param_id)?;
-            Ok(InfoType::Str(get_string(platform, param_id, size)?))
+            Ok(InfoType::VecUchar(get_string(platform, param_id, size)?))
         }
         // CL_VERSION_3_0
         PlatformInfo::CL_PLATFORM_NUMERIC_VERSION => {

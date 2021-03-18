@@ -313,7 +313,7 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         => {
             api_info_vector!(get_string, u8, clGetDeviceInfo);
             let size = get_size(device, param_id)?;
-            Ok(InfoType::Str(get_string(device, param_id, size)?))
+            Ok(InfoType::VecUchar(get_string(device, param_id, size)?))
         }
 
         DeviceInfo::CL_DEVICE_VENDOR_ID
