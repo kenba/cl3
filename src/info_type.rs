@@ -46,9 +46,13 @@ impl InfoType {
 
         // convert remaining nulls (if any) to spaces
         const SPACE: u8 = 32;
-        let b: Vec<u8> = a.iter().map(|x| if *x != 0 { *x } else { SPACE }).collect();
+        for elem in a.iter_mut() {
+            if *elem == 0 {
+                *elem = SPACE
+            }
+        }
 
-        CString::new(b)
+        CString::new(a)
     }
 
     pub fn to_int(self) -> cl_int {
