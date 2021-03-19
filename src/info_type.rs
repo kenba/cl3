@@ -47,17 +47,6 @@ impl InfoType {
         CString::new(a)
     }
 
-    pub unsafe fn to_str_unchecked(self) -> CString {
-        let mut a = self.to_vec_uchar();
-
-        // remove all trailing nulls if any
-        while let Some(0) = a.last() {
-            a.pop();
-        }
-
-        CString::from_vec_unchecked(a)
-    }
-
     pub fn to_int(self) -> cl_int {
         match self {
             InfoType::Int(a) => a,

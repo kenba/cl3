@@ -690,11 +690,9 @@ mod tests {
         let value = value.to_str().unwrap();
         println!("CL_PROGRAM_BUILD_OPTIONS: {:?}", value);
 
-        unsafe {
         let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_LOG).unwrap();
-        let value = value.to_str_unchecked();
+        let value = value.to_str().unwrap();
         println!("CL_PROGRAM_BUILD_LOG: {:?}", value);
-        }
 
         let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE).unwrap();
         let value = value.to_uint();
