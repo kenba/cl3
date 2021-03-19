@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,7 +44,11 @@ impl InfoType {
             a.pop();
         }
 
-        CString::new(a)
+        // convert remaining nulls (if any) to spaces
+        const SPACE: u8 = 32;
+        let b: Vec<u8> = a.iter().map(|x| if *x != 0 { *x } else { SPACE }).collect();
+
+        CString::new(b)
     }
 
     pub fn to_int(self) -> cl_int {
