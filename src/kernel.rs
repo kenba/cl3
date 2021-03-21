@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -536,9 +536,9 @@ mod tests {
         let kernel = create_kernel(program, &name).unwrap();
 
         let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_FUNCTION_NAME).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_KERNEL_FUNCTION_NAME: {:?}", value);
-        assert!(0 < value.to_bytes().len());
+        let value = value.to_string();
+        println!("CL_KERNEL_FUNCTION_NAME: {}", value);
+        assert!(0 < value.len());
 
         let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_NUM_ARGS).unwrap();
         let value = value.to_uint();
@@ -561,8 +561,8 @@ mod tests {
         assert!(0 < value);
 
         let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_ATTRIBUTES).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_KERNEL_ATTRIBUTES: {:?}", value);
+        let value = value.to_string();
+        println!("CL_KERNEL_ATTRIBUTES: {}", value);
 
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER) {
             Ok(value) => {
@@ -588,9 +588,9 @@ mod tests {
 
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_TYPE_NAME) {
             Ok(value) => {
-                let value = value.to_str().unwrap();
-                println!("CL_KERNEL_ARG_TYPE_NAME: {:?}", value);
-                assert!(0 < value.to_bytes().len())
+                let value = value.to_string();
+                println!("CL_KERNEL_ARG_TYPE_NAME: {}", value);
+                assert!(0 < value.len())
             }
             Err(e) => println!("OpenCL error, CL_KERNEL_ARG_TYPE_NAME: {}", error_text(e)),
         }
@@ -608,9 +608,9 @@ mod tests {
 
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_NAME) {
             Ok(value) => {
-                let value = value.to_str().unwrap();
-                println!("CL_KERNEL_ARG_NAME: {:?}", value);
-                assert!(0 < value.to_bytes().len())
+                let value = value.to_string();
+                println!("CL_KERNEL_ARG_NAME: {}", value);
+                assert!(0 < value.len())
             }
             Err(e) => println!("OpenCL error, CL_KERNEL_ARG_NAME: {}", error_text(e)),
         }

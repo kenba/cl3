@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -280,14 +280,14 @@ pub enum DeviceInfo {
 /// assert_eq!(CL_DEVICE_TYPE_GPU, value);
 ///
 /// let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR).unwrap();
-/// let value = value.to_str().unwrap();
-/// println!("CL_DEVICE_VENDOR: {:?}", value);
-/// assert!(0 < value.to_bytes().len());
+/// let value = value.to_string();
+/// println!("CL_DEVICE_VENDOR: {}", value);
+/// assert!(!value.is_empty());
 ///
 /// let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VERSION).unwrap();
-/// let value = value.to_str().unwrap();
-/// println!("CL_DEVICE_VERSION: {:?}", value);
-/// assert!(0 < value.to_bytes().len());
+/// let value = value.to_string();
+/// println!("CL_DEVICE_VERSION: {}", value);
+/// assert!(!value.is_empty());
 /// ```
 /// * `device` - the cl_device_id of the OpenCL device.
 /// * `param_name` - the type of device information being queried, see
@@ -675,10 +675,9 @@ mod tests {
         println!("Device vendor is: {}", vendor_text);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VERSION).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_VERSION: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        let value = value.to_string();
+        println!("CL_DEVICE_VERSION: {}", value);
+        assert!(!value.is_empty());
 
         let opencl_2: String = "OpenCL 2".to_string();
         let is_opencl_2: bool = value.contains(&opencl_2);
@@ -893,34 +892,29 @@ mod tests {
         }
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NAME).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_NAME: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        let value = value.to_string();
+        println!("CL_DEVICE_NAME: {}", value);
+        assert!(!value.is_empty());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_VENDOR: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        let value = value.to_string();
+        println!("CL_DEVICE_VENDOR: {}", value);
+        assert!(!value.is_empty());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DRIVER_VERSION).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DRIVER_VERSION: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        let value = value.to_string();
+        println!("CL_DRIVER_VERSION: {}", value);
+        assert!(!value.is_empty());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PROFILE).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_PROFILE: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        let value = value.to_string();
+        println!("CL_DEVICE_PROFILE: {}", value);
+        assert!(!value.is_empty());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_EXTENSIONS).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_EXTENSIONS: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        let value = value.to_string();
+        println!("CL_DEVICE_EXTENSIONS: {}", value);
+        assert!(!value.is_empty());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PLATFORM).unwrap();
         let value = value.to_ptr();
@@ -984,10 +978,9 @@ mod tests {
         println!("CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF: {}", value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_OPENCL_C_VERSION).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_OPENCL_C_VERSION: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        let value = value.to_string();
+        println!("CL_DEVICE_OPENCL_C_VERSION: {}", value);
+        assert!(!value.is_empty());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_LINKER_AVAILABLE).unwrap();
         let value = value.to_uint();
@@ -995,8 +988,8 @@ mod tests {
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_BUILT_IN_KERNELS).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_BUILT_IN_KERNELS: {:?}", value);
+        let value = value.to_string();
+        println!("CL_DEVICE_BUILT_IN_KERNELS: {}", value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE_MAX_BUFFER_SIZE).unwrap();
         let value = value.to_size();
@@ -1143,10 +1136,9 @@ mod tests {
             // CL_VERSION_2_1
             if is_opencl_2_1 {
                 let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IL_VERSION).unwrap();
-                let value = value.to_str().unwrap();
-                println!("CL_DEVICE_IL_VERSION: {:?}", value);
-                let value = value.into_string().unwrap();
-                assert!(0 < value.len());
+                let value = value.to_string();
+                println!("CL_DEVICE_IL_VERSION: {}", value);
+                assert!(!value.is_empty());
 
                 let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_NUM_SUB_GROUPS).unwrap();
                 let value = value.to_uint();
@@ -1262,10 +1254,9 @@ mod tests {
 
         let value =
             get_device_info(device_id, DeviceInfo::CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        let value = value.to_string();
+        println!("CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED: {}", value);
+        assert!(!value.is_empty());
     }
 
     #[test]

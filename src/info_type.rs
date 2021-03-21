@@ -36,6 +36,24 @@ pub enum InfoType {
 }
 
 impl InfoType {
+    /// Get a `Vec<cl_uchar>` aka `Vec<u8>` as a String.
+    /// Note: it removes trailing null characters and uses from_utf8_lossy to
+    /// convert any other invalid characters to std::char::REPLACEMENT_CHARACTER.
+    ///
+    /// returns a utf8 String.
+    pub fn to_string(self) -> String {
+        let mut a = self.to_vec_uchar();
+
+        // remove all trailing nulls, if any
+        while let Some(0) = a.last() {
+            a.pop();
+        }
+
+        // convert invalid characters to std::char::REPLACEMENT_CHARACTER
+        String::from_utf8_lossy(&a).into_owned()
+    }
+
+    #[deprecated(since = "0.1.8", note = "Please use the to_string function instead")]
     pub fn to_str(self) -> Result<CString, NulError> {
         let mut a = self.to_vec_uchar();
 
