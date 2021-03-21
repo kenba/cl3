@@ -528,7 +528,7 @@ mod tests {
         let program =
             create_program_with_source(context, 1, char_ptrs.as_ptr(), ptr::null()).unwrap();
 
-        let options = CString::default();
+        let options = CString::new("-cl-kernel-arg-info").unwrap();
         build_program(program, &device_ids, &options, None, ptr::null_mut()).unwrap();
 
         let kernel_name = "saxpy_float";
