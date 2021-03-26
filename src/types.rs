@@ -20,7 +20,7 @@
 // WARNING!  Unlike cl_ types in cl_platform.h, cl_bool is not guaranteed to be the same size as the bool in kernels.
 pub use cl_sys::{
     cl_addressing_mode, cl_bitfield, cl_bool, cl_buffer_create_type, cl_build_status,
-    cl_channel_order, cl_channel_type, cl_char, cl_command_queue, cl_command_queue_info,
+    cl_channel_order, cl_channel_type, cl_command_queue, cl_command_queue_info,
     cl_command_queue_properties, cl_command_type, cl_context, cl_context_info,
     cl_context_properties, cl_device_affinity_domain, cl_device_exec_capabilities,
     cl_device_fp_config, cl_device_id, cl_device_info, cl_device_local_mem_type,
@@ -85,5 +85,5 @@ pub const CL_NAME_VERSION_MAX_NAME_SIZE: usize = 64;
 #[repr(C)]
 pub struct cl_name_version {
     pub version: cl_version,
-    pub name: [cl_char; CL_NAME_VERSION_MAX_NAME_SIZE],
+    pub name: [cl_uchar; CL_NAME_VERSION_MAX_NAME_SIZE],
 }

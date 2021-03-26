@@ -15,6 +15,7 @@
 use crate::types::{cl_image_format, cl_int, cl_name_version, cl_uchar, cl_uint, cl_ulong};
 use libc::{intptr_t, size_t};
 use std::ffi::{CString, NulError};
+use std::fmt;
 
 /// A Rust enum to handle OpenCL API "Info" function return types.  
 /// It provides functions to extract each data type from the enum.  
@@ -35,10 +36,60 @@ pub enum InfoType {
     VecVecUchar(Vec<Vec<cl_uchar>>),
 }
 
+impl fmt::Display for InfoType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            InfoType::VecUchar(a) => {
+                let b = String::from_utf8_lossy(a).into_owned();
+                write!(f, "{}", b)
+            }
+
+            InfoType::VecNameVersion(a) => {
+                let mut s = String::default();
+                for b in a.iter() {
+                    s.push_str("\n");
+
+                    s.push_str(&b.version.to_string());
+                    s.push_str(": ");
+                    s.push_str(&String::from_utf8_lossy(&b.name).into_owned());
+                }
+
+                write!(f, "{}", s)
+            }
+
+            InfoType::VecImageFormat(a) => {
+                let mut s = String::default();
+
+                for b in a.iter() {
+                    s.push_str("\n");
+
+                    s.push_str(&b.image_channel_order.to_string());
+                    s.push_str(": ");
+                    s.push_str(&b.image_channel_data_type.to_string());
+                }
+
+                write!(f, "{}", s)
+            }
+
+            InfoType::VecVecUchar(a) => {
+                let mut s = String::default();
+                for b in a.iter() {
+                    s.push_str("\n");
+                    s.push_str(&String::from_utf8_lossy(b).into_owned());
+                }
+
+                write!(f, "{}", s)
+            }
+
+            _ => panic!("not a Displayable type, use Debug instead"),
+        }
+    }
+}
+
 impl InfoType {
     /// Get a `Vec<cl_uchar>` aka `Vec<u8>` as a String.
-    /// Note: it removes trailing null characters and uses from_utf8_lossy to
-    /// convert any other invalid characters to std::char::REPLACEMENT_CHARACTER.
+    /// Note: it uses from_utf8_lossy to convert any invalid characters to
+    /// std::char::REPLACEMENT_CHARACTER.
     ///
     /// returns a utf8 String.
     pub fn to_string(self) -> String {
@@ -179,5 +230,54 @@ impl From<InfoType> for cl_ulong {
 impl From<InfoType> for size_t {
     fn from(info_type: InfoType) -> Self {
         info_type.to_size()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::device::*;
+    use crate::platform::*;
+
+    #[test]
+    fn test_debug_display_info() {
+        let platform_ids = get_platform_ids().unwrap();
+        println!("Number of platforms: {}", platform_ids.len());
+        assert!(0 < platform_ids.len());
+
+        // Choose the first platform
+        let platform_id = platform_ids[0];
+
+        // Test Display trait
+        let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
+        println!("CL_PLATFORM_NAME: {}", value);
+
+        let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
+        println!("CL_PLATFORM_VERSION: {}", value);
+
+        let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_ALL).unwrap();
+        println!("Platform[0]->number of devices: {}", device_ids.len());
+        assert!(0 < device_ids.len());
+
+        // Choose the first device
+        let device_id = device_ids[0];
+
+        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NAME).unwrap();
+        println!("CL_DEVICE_NAME: {}", value);
+
+        let value = get_device_info(device_id, DeviceInfo::CL_DRIVER_VERSION).unwrap();
+        println!("CL_DRIVER_VERSION: {}", value);
+
+        // Test Debug trait
+        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_TYPE).unwrap();
+        println!("CL_DEVICE_TYPE: {:?}", value);
+
+        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR_ID).unwrap();
+        println!("CL_DEVICE_VENDOR_ID: {:?}", value);
+
+        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_WORK_ITEM_SIZES).unwrap();
+        println!("CL_DEVICE_MAX_WORK_ITEM_SIZES len: {:?}", value);
+
+        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PARTITION_PROPERTIES).unwrap();
+        println!("CL_DEVICE_PARTITION_PROPERTIES: {:?}", value);
     }
 }
