@@ -157,3 +157,27 @@ impl InfoType {
         }
     }
 }
+
+impl From<InfoType> for cl_int {
+    fn from(info_type: InfoType) -> Self {
+        info_type.to_int()
+    }
+}
+
+impl From<InfoType> for cl_uint {
+    fn from(info_type: InfoType) -> Self {
+        info_type.to_uint()
+    }
+}
+
+impl From<InfoType> for cl_ulong {
+    fn from(info_type: InfoType) -> Self {
+        info_type.to_ulong()
+    }
+}
+
+impl From<InfoType> for size_t {
+    fn from(info_type: InfoType) -> Self {
+        info_type.to_size()
+    }
+}

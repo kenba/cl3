@@ -681,7 +681,7 @@ mod tests {
         build_program(program, &device_ids, &options, None, ptr::null_mut()).unwrap();
 
         let value = get_program_build_info(program, device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_STATUS).unwrap();
-        let value = value.to_int();
+        let value: cl_int = From::from(value);
         println!("CL_PROGRAM_BUILD_STATUS: {}", value);
         assert_eq!(CL_BUILD_SUCCESS, value);
 

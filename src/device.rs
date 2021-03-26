@@ -657,12 +657,12 @@ mod tests {
         let device_id = device_ids[0];
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_TYPE).unwrap();
-        let value = value.to_ulong();
+        let value: cl_ulong = From::from(value);
         println!("CL_DEVICE_TYPE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR_ID).unwrap();
-        let value = value.to_uint();
+        let value: cl_uint = From::from(value);
         println!("CL_DEVICE_VENDOR_ID: {:X}", value);
         assert!(0 < value);
 
@@ -696,7 +696,7 @@ mod tests {
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_WORK_GROUP_SIZE).unwrap();
-        let value = value.to_size();
+        let value: size_t = From::from(value);
         println!("CL_DEVICE_MAX_WORK_GROUP_SIZE: {}", value);
         assert!(0 < value);
 
