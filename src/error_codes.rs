@@ -35,6 +35,7 @@ pub use cl_sys::{
     CL_MISALIGNED_SUB_BUFFER_OFFSET, CL_OUT_OF_HOST_MEMORY, CL_OUT_OF_RESOURCES,
     CL_PLATFORM_NOT_FOUND_KHR, CL_PROFILING_INFO_NOT_AVAILABLE, CL_SUCCESS,
 };
+use std::fmt;
 
 // CL_VERSION_2_2 Error Codes:
 pub const CL_INVALID_SPEC_ID: cl_int = -71;
@@ -119,6 +120,24 @@ pub fn error_text(error_code: cl_int) -> &'static str {
     }
 }
 
+#[derive(Debug)]
+/// ClError is a newtype around the OpenCL cl_int error number
+pub struct ClError(pub cl_int);
+
+/// Implement the From trait
+impl From<cl_int> for ClError {
+    fn from(error: cl_int) -> Self {
+        ClError(error)
+    }
+}
+
+/// Implement the Display trait
+impl fmt::Display for ClError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", error_text(self.0))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -142,5 +161,27 @@ mod tests {
 
         let unknown_error_text = error_text(CL_MAX_SIZE_RESTRICTION_EXCEEDED - 1);
         assert_eq!("UNKNOWN_ERROR", unknown_error_text);
+    }
+
+    #[test]
+    fn test_error_type() {
+        let cl_success_text = error_text(CL_SUCCESS);
+        assert_eq!("CL_SUCCESS", cl_success_text);
+
+        let error_01: ClError = From::from(CL_DEVICE_NOT_FOUND);
+        println!("CL_DEVICE_NOT_FOUND: {:?}", error_01);
+        println!("CL_DEVICE_NOT_FOUND: {}", error_01);
+
+        let error_30: ClError = From::from(CL_INVALID_VALUE);
+        println!("CL_INVALID_VALUE: {:?}", error_30);
+        println!("CL_INVALID_VALUE: {}", error_30);
+
+        let error_72: ClError = From::from(CL_MAX_SIZE_RESTRICTION_EXCEEDED);
+        println!("CL_MAX_SIZE_RESTRICTION_EXCEEDED: {:?}", error_72);
+        println!("CL_MAX_SIZE_RESTRICTION_EXCEEDED: {}", error_72);
+
+        let error_unknown: ClError = From::from(CL_MAX_SIZE_RESTRICTION_EXCEEDED - 1);
+        println!("UNKNOWN_ERROR: {:?}", error_unknown);
+        println!("UNKNOWN_ERROR: {}", error_unknown);
     }
 }

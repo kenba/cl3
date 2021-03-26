@@ -631,7 +631,7 @@ pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
 mod tests {
     use super::*;
     use crate::platform::get_platform_ids;
-    use crate::error_codes::error_text;
+    use crate::error_codes::{ClError};
 
     #[test]
     fn test_get_platform_devices() {
@@ -927,7 +927,7 @@ mod tests {
                 let value = value.to_ulong();
                 println!("CL_DEVICE_DOUBLE_FP_CONFIG: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_DOUBLE_FP_CONFIG: {}", error_text(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_DOUBLE_FP_CONFIG: {}", ClError(e))
         };
 
         // Device may not support half fp precision
@@ -936,7 +936,7 @@ mod tests {
                 let value = value.to_ulong();
                 println!("CL_DEVICE_HALF_FP_CONFIG: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_HALF_FP_CONFIG: {}", error_text(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_HALF_FP_CONFIG: {}", ClError(e))
         };
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF).unwrap();
