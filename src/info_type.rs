@@ -71,6 +71,8 @@ impl fmt::Display for InfoType {
                 write!(f, "{}", s)
             }
 
+            // Note: underlying type may not be a vector of Strings.
+            // If so use Debug trait instead
             InfoType::VecVecUchar(a) => {
                 let mut s = String::default();
                 for b in a.iter() {

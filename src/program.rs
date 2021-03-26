@@ -714,7 +714,7 @@ mod tests {
         assert!(0 < value.len());
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_BINARIES).unwrap();
-        println!("CL_PROGRAM_BINARIES: {}", value);
+        // println!("CL_PROGRAM_BINARIES: {:?}", value);
         let value = value.to_vec_vec_uchar();
         println!("CL_PROGRAM_BINARIES count: {}", value.len());
         println!("CL_PROGRAM_BINARIES length[0]: {}", value[0].len());
