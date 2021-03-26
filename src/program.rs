@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -673,9 +673,8 @@ mod tests {
         assert!(0 < value.len());
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_SOURCE).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_PROGRAM_SOURCE: {:?}", value);
-        let value = value.into_string().unwrap();
+        let value = value.to_string();
+        println!("CL_PROGRAM_SOURCE: {}", value);
         assert!(0 < value.len());
 
         let options = CString::default();
@@ -687,12 +686,12 @@ mod tests {
         assert_eq!(CL_BUILD_SUCCESS, value);
 
         let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_OPTIONS).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_PROGRAM_BUILD_OPTIONS: {:?}", value);
+        let value = value.to_string();
+        println!("CL_PROGRAM_BUILD_OPTIONS: {}", value);
 
         let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_LOG).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_PROGRAM_BUILD_LOG: {:?}", value);
+        let value = value.to_string();
+        println!("CL_PROGRAM_BUILD_LOG: {}", value);
 
         let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE).unwrap();
         let value = value.to_uint();
@@ -727,16 +726,15 @@ mod tests {
         assert!(0 < value);
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_KERNEL_NAMES).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_PROGRAM_KERNEL_NAMES: {:?}", value);
-        let value = value.into_string().unwrap();
+        let value = value.to_string();
+        println!("CL_PROGRAM_KERNEL_NAMES: {}", value);
         assert!(0 < value.len());
 
         // CL_VERSION_2_1 value
         match get_program_info(program, ProgramInfo::CL_PROGRAM_IL) {
             Ok(value) => {
-                let value = value.to_str().unwrap();
-                println!("CL_PROGRAM_IL: {:?}", value)
+                let value = value.to_string();
+                println!("CL_PROGRAM_IL: {}", value)
             }
             Err(e) => println!("OpenCL error, CL_PROGRAM_IL: {}", error_text(e))
         };

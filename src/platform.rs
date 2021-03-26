@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -95,15 +95,15 @@ pub enum PlatformInfo {
 /// let platform_id = platform_ids[0];
 ///
 /// let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
-/// let value = value.to_str().unwrap().into_string().unwrap();
+/// let value = value.to_string();
 /// println!("CL_PLATFORM_NAME: {}", value);
 ///
-/// assert!(0 < value.len());
+/// assert!(!value.is_empty());
 ///
 /// let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
-/// let value = value.to_str().unwrap().into_string().unwrap();
+/// let value = value.to_string();
 /// println!("CL_PLATFORM_VERSION: {}", value);
-/// assert!(0 < value.len());
+/// assert!(!value.is_empty());
 /// ```
 /// * `platform` - the cl_platform_id of the OpenCL platform.
 /// * `param_name` - the type of platform information being queried, see
@@ -164,30 +164,29 @@ mod tests {
         let platform_id = platform_ids[0];
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_PROFILE).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_PLATFORM_PROFILE: {:?}", value);
-        assert!(0 < value.to_bytes().len());
+        let value = value.to_string();
+        println!("CL_PLATFORM_PROFILE: {}", value);
+        assert!(!value.is_empty());
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_PLATFORM_VERSION: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        let value = value.to_string();
+        println!("CL_PLATFORM_VERSION: {}", value);
+        assert!(!value.is_empty());
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_PLATFORM_NAME: {:?}", value);
-        assert!(0 < value.to_bytes().len());
+        let value = value.to_string();
+        println!("CL_PLATFORM_NAME: {}", value);
+        assert!(!value.is_empty());
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VENDOR).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_PLATFORM_VENDOR: {:?}", value);
-        assert!(0 < value.to_bytes().len());
+        let value = value.to_string();
+        println!("CL_PLATFORM_VENDOR: {}", value);
+        assert!(!value.is_empty());
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_EXTENSIONS).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_PLATFORM_EXTENSIONS: {:?}", value);
-        assert!(0 < value.to_bytes().len());
+        let value = value.to_string();
+        println!("CL_PLATFORM_EXTENSIONS: {}", value);
+        assert!(!value.is_empty());
 
         // CL_VERSION_2_1 value, may not be supported
         match get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_HOST_TIMER_RESOLUTION) {
@@ -210,10 +209,9 @@ mod tests {
         let platform_id = platform_ids[0];
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
-        let value = value.to_str().unwrap();
-        println!("CL_PLATFORM_VERSION: {:?}", value);
-        let value = value.into_string().unwrap();
-        assert!(0 < value.len());
+        let value = value.to_string();
+        println!("CL_PLATFORM_VERSION: {}", value);
+        assert!(!value.is_empty());
 
         let opencl_3: String = "OpenCL 3".to_string();
         let is_opencl_3: bool = value.contains(&opencl_3);

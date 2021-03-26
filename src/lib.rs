@@ -62,10 +62,10 @@
 //! See [cl3](https://crates.io/crates/cl3).  
 //!
 //! ## License
-//! 
+//!
 //! Licensed under the Apache License, Version 2.0, as per Khronos Group OpenCL.  
 //! You may obtain a copy of the License at: <http://www.apache.org/licenses/LICENSE-2.0>
-//! 
+//!
 //! OpenCL and the OpenCL logo are trademarks of Apple Inc. used under license by Khronos.
 
 extern crate cl_sys;
