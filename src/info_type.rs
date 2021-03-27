@@ -14,7 +14,6 @@
 
 use crate::types::{cl_image_format, cl_int, cl_name_version, cl_uchar, cl_uint, cl_ulong};
 use libc::{intptr_t, size_t};
-use std::ffi::{CString, NulError};
 use std::fmt;
 
 /// A Rust enum to handle OpenCL API "Info" function return types.  
@@ -102,26 +101,6 @@ impl InfoType {
 
         // convert invalid characters to std::char::REPLACEMENT_CHARACTER
         String::from_utf8_lossy(&a).into_owned()
-    }
-
-    #[deprecated(since = "0.1.8", note = "Please use the to_string function instead")]
-    pub fn to_str(self) -> Result<CString, NulError> {
-        let mut a = self.to_vec_uchar();
-
-        // remove all trailing nulls if any
-        while let Some(0) = a.last() {
-            a.pop();
-        }
-
-        // convert remaining nulls (if any) to spaces
-        const SPACE: u8 = 32;
-        for elem in a.iter_mut() {
-            if *elem == 0 {
-                *elem = SPACE
-            }
-        }
-
-        CString::new(a)
     }
 
     pub fn to_int(self) -> cl_int {
