@@ -522,11 +522,9 @@ mod tests {
             }
         "#;
 
-        // Convert source to a C string
-        let src = CString::new(source).unwrap();
-        let char_ptrs: [*const _; 1] = [src.as_ptr()];
-        let program =
-            create_program_with_source(context, 1, char_ptrs.as_ptr(), ptr::null()).unwrap();
+        // Convert source to an array
+        let sources = [source];
+        let program = create_program_with_source(context, &sources).unwrap();
 
         let options = CString::new("-cl-kernel-arg-info").unwrap();
         build_program(program, &device_ids, &options, None, ptr::null_mut()).unwrap();

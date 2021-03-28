@@ -41,8 +41,6 @@ use std::fmt;
 pub const CL_INVALID_SPEC_ID: cl_int = -71;
 pub const CL_MAX_SIZE_RESTRICTION_EXCEEDED: cl_int = -72;
 
-pub const CSTRING_UTF8_CONVERSION_ERROR: cl_int = -9999;
-
 pub fn error_text(error_code: cl_int) -> &'static str {
     match error_code {
         CL_SUCCESS => "CL_SUCCESS",
@@ -113,8 +111,6 @@ pub fn error_text(error_code: cl_int) -> &'static str {
         CL_MAX_SIZE_RESTRICTION_EXCEEDED => "CL_MAX_SIZE_RESTRICTION_EXCEEDED",
 
         CL_PLATFORM_NOT_FOUND_KHR => "CL_PLATFORM_NOT_FOUND_KHR",
-
-        CSTRING_UTF8_CONVERSION_ERROR => "CSTRING_UTF8_CONVERSION_ERROR",
 
         _ => "UNKNOWN_ERROR",
     }

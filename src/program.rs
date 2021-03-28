@@ -79,25 +79,22 @@ extern "system" {
 /// Calls clCreateProgramWithSource to create an OpenCL program object.  
 ///
 /// * `context` - a valid OpenCL context.
-/// * `count` - the number of character strings that make up the source code.
-/// * `strings` - an array of pointers to source code character strings.
-/// * `lengths` - an array with the number of chars in each string, 
+/// * `sources` - an array of slices of source code strings.
 /// 
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
 #[inline]
 pub fn create_program_with_source(
     context: cl_context,
-    count: cl_uint,
-    strings: *const *const c_char,
-    lengths: *const size_t,
+    sources: &[&str],
 ) -> Result<cl_program, cl_int> {
+    let lengths: Vec<size_t> = sources.iter().map(|src| src.len()).collect();
     let mut status: cl_int = CL_INVALID_VALUE;
     let program: cl_program = unsafe { clCreateProgramWithSource(
         context,
-        count,
-        strings,
-        lengths,
+        sources.len() as cl_uint,
+        sources.as_ptr() as *const *const c_char,
+        lengths.as_ptr(),
         &mut status) 
     };
 
@@ -299,11 +296,11 @@ pub fn compile_program(
     devices: &[cl_device_id],
     options: &CStr,
     input_headers: &[cl_program],
-    header_include_names: &[*const c_char],
+    header_include_names: &[&CStr],
     pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { 
+    let status: cl_int = unsafe {
         clCompileProgram(
             program,
             devices.len() as cl_uint,
@@ -311,7 +308,7 @@ pub fn compile_program(
             options.as_ptr(),
             input_headers.len() as cl_uint,
             input_headers.as_ptr(),
-            header_include_names.as_ptr(),
+            header_include_names.as_ptr() as *const *const c_char,
             pfn_notify,
             user_data
         )
@@ -611,7 +608,7 @@ mod tests {
     use crate::error_codes::error_text;
     use std::ffi::CString;
 
-        #[test]
+    #[test]
     fn test_program() {
         let platform_ids = get_platform_ids().unwrap();
 
@@ -647,10 +644,9 @@ mod tests {
             }
         "#;
 
-        // Convert source to a C string
-        let src =  CString::new(source).unwrap();
-        let char_ptrs: [*const _; 1] = [src.as_ptr()];
-        let program = create_program_with_source(context, 1, char_ptrs.as_ptr(), ptr::null()).unwrap();
+        // Convert source to an array
+        let sources = [source];
+        let program = create_program_with_source(context, &sources).unwrap();
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_REFERENCE_COUNT).unwrap();
         let value = value.to_uint();

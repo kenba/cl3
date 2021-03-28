@@ -52,7 +52,6 @@ fn test_opencl_1_2_example() {
     // Choose the first platform
     let platform_id = platform_ids[0];
     let platform_name = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
-    let platform_name = platform_name.to_string();
     println!("Platform Name: {}", platform_name);
 
     let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
@@ -61,11 +60,9 @@ fn test_opencl_1_2_example() {
     // Choose the first GPU device
     let device_id = device_ids[0];
     let vendor_name = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR).unwrap();
-    let vendor_name = vendor_name.to_string();
     println!("OpenCL device vendor name: {}", vendor_name);
     let vendor_id = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR_ID).unwrap();
-    let vendor_id = vendor_id.to_uint();
-    println!("OpenCL device vendor id: {:X}", vendor_id);
+    println!("OpenCL device vendor id: {:X}", vendor_id.to_uint());
 
     /////////////////////////////////////////////////////////////////////
     // Set up OpenCL compute environment
@@ -74,13 +71,9 @@ fn test_opencl_1_2_example() {
     let device_ids = [device_id];
     let context = create_context(&device_ids, ptr::null(), None, ptr::null_mut()).unwrap();
 
-    // Create a command_queue for the device
-    let queue = create_command_queue(context, device_id, CL_QUEUE_PROFILING_ENABLE).unwrap();
-
     // Create the OpenCL program source
-    let src = CString::new(PROGRAM_SOURCE).unwrap();
-    let src_ptrs: [*const _; 1] = [src.as_ptr()];
-    let program = create_program_with_source(context, 1, src_ptrs.as_ptr(), ptr::null()).unwrap();
+    let sources = [PROGRAM_SOURCE];
+    let program = create_program_with_source(context, &sources).unwrap();
 
     // Build the OpenCL program for the device
     let build_options = CString::default();
@@ -89,6 +82,9 @@ fn test_opencl_1_2_example() {
     // Create the OpenCL kernel from the program
     let kernel_name = CString::new(KERNEL_NAME).unwrap();
     let kernel = create_kernel(program, &kernel_name).unwrap();
+
+    // Create a command_queue for the device
+    let queue = create_command_queue(context, device_id, CL_QUEUE_PROFILING_ENABLE).unwrap();
 
     /////////////////////////////////////////////////////////////////////
     // Process some data
