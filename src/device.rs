@@ -1327,7 +1327,7 @@ mod tests {
 
         if has_sub_devices {
             let properties: [cl_device_partition_property; 3] =
-                [CL_DEVICE_PARTITION_EQUALLY, 4, 0];
+                [CL_DEVICE_PARTITION_EQUALLY, 2, 0];
             let sub_devices = create_sub_devices(device_id, &properties).unwrap();
 
             println!("CL_DEVICE_TYPE_CPU count: {}", sub_devices.len());
