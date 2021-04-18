@@ -39,6 +39,7 @@ use super::types::{
     cl_device_fp_config, cl_device_id, cl_device_info, cl_device_local_mem_type,
     cl_device_mem_cache_type, cl_device_partition_property, cl_device_svm_capabilities,
     cl_device_type, cl_int, cl_name_version, cl_platform_id, cl_uint, cl_ulong,
+    cl_device_atomic_capabilities, cl_device_device_enqueue_capabilities, cl_version
 };
 use super::{api_info_size, api_info_value, api_info_vector};
 #[allow(unused_imports)]
@@ -63,6 +64,46 @@ extern "system" {
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
+
+// cl_device_atomic_capabilities
+pub const CL_DEVICE_ATOMIC_ORDER_RELAXED:     cl_device_atomic_capabilities = 1 << 0;
+pub const CL_DEVICE_ATOMIC_ORDER_ACQ_REL:     cl_device_atomic_capabilities = 1 << 1;
+pub const CL_DEVICE_ATOMIC_ORDER_SEQ_CST:     cl_device_atomic_capabilities = 1 << 2;
+pub const CL_DEVICE_ATOMIC_SCOPE_WORK_ITEM:   cl_device_atomic_capabilities = 1 << 3;
+pub const CL_DEVICE_ATOMIC_SCOPE_WORK_GROUP:  cl_device_atomic_capabilities = 1 << 4;
+pub const CL_DEVICE_ATOMIC_SCOPE_DEVICE:      cl_device_atomic_capabilities = 1 << 5;
+pub const CL_DEVICE_ATOMIC_SCOPE_ALL_DEVICES: cl_device_atomic_capabilities = 1 << 6;
+
+// cl_device_device_enqueue_capabilities
+pub const CL_DEVICE_QUEUE_SUPPORTED:           cl_device_device_enqueue_capabilities = 1 << 0;
+pub const CL_DEVICE_QUEUE_REPLACEABLE_DEFAULT: cl_device_device_enqueue_capabilities = 1 << 1;
+
+// cl_version
+pub const CL_VERSION_MAJOR_BITS: cl_version = 10;
+pub const CL_VERSION_MINOR_BITS: cl_version = 10;
+pub const CL_VERSION_PATCH_BITS: cl_version = 12;
+
+pub const CL_VERSION_MAJOR_MASK: cl_version = (1 << CL_VERSION_MAJOR_BITS) - 1;
+pub const CL_VERSION_MINOR_MASK: cl_version = (1 << CL_VERSION_MINOR_BITS) - 1;
+pub const CL_VERSION_PATCH_MASK: cl_version = (1 << CL_VERSION_PATCH_BITS) - 1;
+
+pub fn version_major(version: cl_version) -> cl_version {
+    version >> (CL_VERSION_MINOR_BITS + CL_VERSION_PATCH_BITS)
+}
+
+pub fn version_minor(version: cl_version) -> cl_version {
+    (version >> CL_VERSION_PATCH_BITS) & CL_VERSION_MINOR_MASK
+}
+
+pub fn version_patch(version: cl_version) -> cl_version {
+    version & CL_VERSION_PATCH_MASK
+}
+
+pub fn make_version(major: cl_version, minor: cl_version, patch: cl_version) -> cl_version {
+    ((major & CL_VERSION_MAJOR_MASK) << (CL_VERSION_MINOR_BITS + CL_VERSION_PATCH_BITS)) |
+    ((minor & CL_VERSION_MINOR_MASK) << CL_VERSION_PATCH_BITS) |
+    (patch & CL_VERSION_PATCH_MASK)
+}
 
 /// Get the list of available devices of the given type on a platform.  
 /// Calls clGetDeviceIDs to get the available device ids on the platform.

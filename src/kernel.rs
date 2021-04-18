@@ -16,11 +16,21 @@
 
 #![allow(non_camel_case_types)]
 
+pub use cl_sys::{
+    CL_KERNEL_ARG_ACCESS_NONE, CL_KERNEL_ARG_ACCESS_READ_ONLY, CL_KERNEL_ARG_ACCESS_READ_WRITE,
+    CL_KERNEL_ARG_ACCESS_WRITE_ONLY, CL_KERNEL_ARG_ADDRESS_CONSTANT, CL_KERNEL_ARG_ADDRESS_GLOBAL,
+    CL_KERNEL_ARG_ADDRESS_LOCAL, CL_KERNEL_ARG_ADDRESS_PRIVATE, CL_KERNEL_ARG_TYPE_CONST,
+    CL_KERNEL_ARG_TYPE_NONE, CL_KERNEL_ARG_TYPE_PIPE, CL_KERNEL_ARG_TYPE_RESTRICT,
+    CL_KERNEL_ARG_TYPE_VOLATILE, CL_KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM,
+    CL_KERNEL_EXEC_INFO_SVM_PTRS,
+};
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::info_type::InfoType;
 #[allow(unused_imports)]
 use super::types::{
-    cl_device_id, cl_int, cl_kernel, cl_kernel_arg_info, cl_kernel_exec_info, cl_kernel_info,
+    cl_device_id, cl_int, cl_kernel, cl_kernel_arg_access_qualifier,
+    cl_kernel_arg_address_qualifier, cl_kernel_arg_info, cl_kernel_exec_info, cl_kernel_info,
     cl_kernel_sub_group_info, cl_kernel_work_group_info, cl_program, cl_uint, cl_ulong,
 };
 use super::{
@@ -192,10 +202,6 @@ pub fn set_kernel_arg_svm_pointer(
         Ok(())
     }
 }
-
-// cl_kernel_exec_info:
-pub const CL_KERNEL_EXEC_INFO_SVM_PTRS: cl_kernel_exec_info = 0x11B6;
-pub const CL_KERNEL_EXEC_INFO_SVM_FINE_GRAIN_SYSTEM: cl_kernel_exec_info = 0x11B7;
 
 /// Pass additional information other than argument values to a kernel.  
 /// Calls clSetKernelExecInfo.  

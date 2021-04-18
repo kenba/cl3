@@ -16,10 +16,27 @@
 
 #![allow(non_camel_case_types)]
 
+pub use cl_sys::{
+    CL_COMMAND_ACQUIRE_GL_OBJECTS, CL_COMMAND_BARRIER, CL_COMMAND_COPY_BUFFER,
+    CL_COMMAND_COPY_BUFFER_RECT, CL_COMMAND_COPY_BUFFER_TO_IMAGE, CL_COMMAND_COPY_IMAGE,
+    CL_COMMAND_COPY_IMAGE_TO_BUFFER, CL_COMMAND_FILL_BUFFER, CL_COMMAND_FILL_IMAGE,
+    CL_COMMAND_MAP_BUFFER, CL_COMMAND_MAP_IMAGE, CL_COMMAND_MARKER, CL_COMMAND_MIGRATE_MEM_OBJECTS,
+    CL_COMMAND_NATIVE_KERNEL, CL_COMMAND_NDRANGE_KERNEL, CL_COMMAND_READ_BUFFER,
+    CL_COMMAND_READ_BUFFER_RECT, CL_COMMAND_READ_IMAGE, CL_COMMAND_RELEASE_GL_OBJECTS,
+    CL_COMMAND_SVM_FREE, CL_COMMAND_SVM_MAP, CL_COMMAND_SVM_MEMCPY, CL_COMMAND_SVM_MEMFILL,
+    CL_COMMAND_SVM_UNMAP, CL_COMMAND_TASK, CL_COMMAND_UNMAP_MEM_OBJECT, CL_COMMAND_USER,
+    CL_COMMAND_WRITE_BUFFER, CL_COMMAND_WRITE_BUFFER_RECT, CL_COMMAND_WRITE_IMAGE, CL_COMPLETE,
+    CL_QUEUED, CL_RUNNING, CL_SUBMITTED,
+};
+
+// #ifdef CL_VERSION_3_0
+pub const CL_COMMAND_SVM_MIGRATE_MEM: cl_uint = 0x120E;
+
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::info_type::InfoType;
 use super::types::{
-    cl_context, cl_event, cl_event_info, cl_int, cl_profiling_info, cl_uint, cl_ulong,
+    cl_command_type, cl_context, cl_event, cl_event_info, cl_int, cl_profiling_info, cl_uint,
+    cl_ulong,
 };
 use cl_sys::{
     clCreateUserEvent, clGetEventInfo, clGetEventProfilingInfo, clReleaseEvent, clRetainEvent,
@@ -29,6 +46,7 @@ use cl_sys::{
 use super::api_info_value;
 
 use libc::{c_void, intptr_t, size_t};
+use std::fmt;
 use std::mem;
 use std::ptr;
 
@@ -220,5 +238,132 @@ pub fn get_event_profiling_info(
             api_info_value!(get_value, cl_ulong, clGetEventProfilingInfo);
             Ok(InfoType::Ulong(get_value(event, param_id)?))
         }
+    }
+}
+
+pub fn status_text(status: cl_int) -> &'static str {
+    match status {
+        CL_COMPLETE => "CL_COMPLETE",
+        CL_RUNNING => "CL_RUNNING",
+        CL_SUBMITTED => "CL_SUBMITTED",
+        CL_QUEUED => "CL_QUEUED",
+        _ => "UNKNOWN_STATUS",
+    }
+}
+
+#[derive(Debug)]
+/// CommandExecutionStatus is a newtype around the OpenCL command execution status
+pub struct CommandExecutionStatus(pub cl_int);
+
+/// Implement the From trait
+impl From<cl_int> for CommandExecutionStatus {
+    fn from(status: cl_int) -> Self {
+        CommandExecutionStatus(status)
+    }
+}
+
+/// Implement the Display trait
+impl fmt::Display for CommandExecutionStatus {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", status_text(self.0))
+    }
+}
+
+pub fn command_type_text(command_type: cl_command_type) -> &'static str {
+    match command_type {
+        CL_COMMAND_NDRANGE_KERNEL => "CL_COMMAND_NDRANGE_KERNEL",
+        CL_COMMAND_TASK => "CL_COMMAND_TASK",
+        CL_COMMAND_NATIVE_KERNEL => "CL_COMMAND_NATIVE_KERNEL",
+        CL_COMMAND_READ_BUFFER => "CL_COMMAND_READ_BUFFER",
+        CL_COMMAND_WRITE_BUFFER => "CL_COMMAND_WRITE_BUFFER",
+        CL_COMMAND_COPY_BUFFER => "CL_COMMAND_COPY_BUFFER",
+        CL_COMMAND_READ_IMAGE => "CL_COMMAND_READ_IMAGE",
+        CL_COMMAND_WRITE_IMAGE => "CL_COMMAND_WRITE_IMAGE",
+        CL_COMMAND_COPY_IMAGE => "CL_COMMAND_COPY_IMAGE",
+        CL_COMMAND_COPY_IMAGE_TO_BUFFER => "CL_COMMAND_COPY_IMAGE_TO_BUFFER",
+        CL_COMMAND_COPY_BUFFER_TO_IMAGE => "CL_COMMAND_COPY_BUFFER_TO_IMAGE",
+        CL_COMMAND_MAP_BUFFER => "CL_COMMAND_MAP_BUFFER",
+        CL_COMMAND_MAP_IMAGE => "CL_COMMAND_MAP_IMAGE",
+        CL_COMMAND_UNMAP_MEM_OBJECT => "CL_COMMAND_UNMAP_MEM_OBJECT",
+        CL_COMMAND_MARKER => "CL_COMMAND_MARKER",
+        CL_COMMAND_ACQUIRE_GL_OBJECTS => "CL_COMMAND_ACQUIRE_GL_OBJECTS",
+        CL_COMMAND_RELEASE_GL_OBJECTS => "CL_COMMAND_RELEASE_GL_OBJECTS",
+        CL_COMMAND_READ_BUFFER_RECT => "CL_COMMAND_READ_BUFFER_RECT",
+        CL_COMMAND_WRITE_BUFFER_RECT => "CL_COMMAND_WRITE_BUFFER_RECT",
+        CL_COMMAND_COPY_BUFFER_RECT => "CL_COMMAND_COPY_BUFFER_RECT",
+        CL_COMMAND_USER => "CL_COMMAND_USER",
+        CL_COMMAND_BARRIER => "CL_COMMAND_BARRIER",
+        CL_COMMAND_MIGRATE_MEM_OBJECTS => "CL_COMMAND_MIGRATE_MEM_OBJECTS",
+        CL_COMMAND_FILL_BUFFER => "CL_COMMAND_FILL_BUFFER",
+        CL_COMMAND_FILL_IMAGE => "CL_COMMAND_FILL_IMAGE",
+        CL_COMMAND_SVM_FREE => "CL_COMMAND_SVM_FREE",
+        CL_COMMAND_SVM_MEMCPY => "CL_COMMAND_SVM_MEMCPY",
+        CL_COMMAND_SVM_MEMFILL => "CL_COMMAND_SVM_MEMFILL",
+        CL_COMMAND_SVM_MAP => "CL_COMMAND_SVM_MAP",
+        CL_COMMAND_SVM_UNMAP => "CL_COMMAND_SVM_UNMAP",
+        CL_COMMAND_SVM_MIGRATE_MEM => "CL_COMMAND_SVM_MIGRATE_MEM",
+        _ => "UNKNOWN_COMMAND_TYPE",
+    }
+}
+
+#[derive(Debug)]
+/// EventCommandType is a newtype around the OpenCL cl_command_type
+pub struct EventCommandType(pub cl_command_type);
+
+/// Implement the From trait for EventCommandType
+impl From<cl_command_type> for EventCommandType {
+    fn from(command_type: cl_command_type) -> Self {
+        EventCommandType(command_type)
+    }
+}
+
+/// Implement the Display trait for EventCommandType
+impl fmt::Display for EventCommandType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", command_type_text(self.0))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_status_text() {
+        let text = status_text(CL_COMPLETE);
+        assert_eq!("CL_COMPLETE", text);
+
+        let text = status_text(CL_RUNNING);
+        assert_eq!("CL_RUNNING", text);
+
+        let text = status_text(CL_SUBMITTED);
+        assert_eq!("CL_SUBMITTED", text);
+
+        let text = status_text(CL_QUEUED);
+        assert_eq!("CL_QUEUED", text);
+
+        let text = status_text(CL_QUEUED + 1);
+        assert_eq!("UNKNOWN_STATUS", text);
+    }
+
+    #[test]
+    fn test_command_type_text() {
+        let text = command_type_text(CL_COMMAND_NDRANGE_KERNEL);
+        assert_eq!("CL_COMMAND_NDRANGE_KERNEL", text);
+
+        let text = command_type_text(CL_COMMAND_COPY_IMAGE);
+        assert_eq!("CL_COMMAND_COPY_IMAGE", text);
+
+        let text = command_type_text(CL_COMMAND_READ_BUFFER_RECT);
+        assert_eq!("CL_COMMAND_READ_BUFFER_RECT", text);
+
+        let text = command_type_text(CL_COMMAND_BARRIER);
+        assert_eq!("CL_COMMAND_BARRIER", text);
+
+        let text = command_type_text(CL_COMMAND_SVM_FREE);
+        assert_eq!("CL_COMMAND_SVM_FREE", text);
+
+        let text = command_type_text(CL_COMMAND_SVM_MIGRATE_MEM + 1);
+        assert_eq!("UNKNOWN_COMMAND_TYPE", text);
     }
 }
