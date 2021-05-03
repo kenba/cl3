@@ -70,6 +70,7 @@
 
 extern crate cl_sys;
 
+pub mod cl_ext;
 pub mod command_queue;
 pub mod context;
 pub mod device;
