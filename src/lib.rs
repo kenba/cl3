@@ -76,6 +76,7 @@ pub mod context;
 pub mod device;
 pub mod error_codes;
 pub mod event;
+pub mod ext;
 pub mod gl;
 pub mod info_type;
 pub mod kernel;

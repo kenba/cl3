@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! FFI bindings for cl_ext.h
+//! FFI bindings for cl_ext.h  
 //! cl_ext.h contains OpenCL extensions that don't have external (OpenGL, D3D) dependencies.  
 //! OpenCL extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
@@ -850,6 +850,7 @@ extern "system" {
         context: cl_context,
         device: cl_device_id,
         properties: *const cl_queue_properties_khr,
+        errcode_ret: *mut cl_int,
     ) -> cl_command_queue;
 
     pub fn clReleaseDeviceEXT(device: cl_device_id) -> cl_int;
