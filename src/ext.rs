@@ -16,7 +16,7 @@
 
 #![allow(non_camel_case_types)]
 
-pub use super::cl_ext::*;
+pub use super::ffi::cl_ext::*;
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::info_type::InfoType;
