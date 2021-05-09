@@ -70,14 +70,10 @@
 
 extern crate cl_sys;
 
-// pub mod cl_d3d10;
-// pub mod cl_d3d11;
-// pub mod cl_dx9_media_sharing;
-// pub mod cl_egl;
-// pub mod cl_ext;
 pub mod command_queue;
 pub mod context;
 pub mod device;
+pub mod egl;
 pub mod error_codes;
 pub mod event;
 pub mod ext;

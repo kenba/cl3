@@ -49,8 +49,8 @@ extern "system" {
 
     pub fn clCreateFromEGLImageKHR(
         context: cl_context,
-        egldisplay: CLeglDisplayKHR,
-        eglimage: CLeglImageKHR,
+        display: CLeglDisplayKHR,
+        image: CLeglImageKHR,
         flags: cl_mem_flags,
         properties: *const cl_egl_image_properties_khr,
         errcode_ret: *mut cl_int,
@@ -75,10 +75,10 @@ extern "system" {
     ) -> cl_int;
 
     pub fn clCreateEventFromEGLSyncKHR(
-        command_queue: cl_command_queue,
+        context: cl_context,
         sync: CLeglSyncKHR,
         display: CLeglDisplayKHR,
         errcode_ret: *mut cl_int,
-    ) -> cl_int;
+    ) -> cl_event;
 
 }
