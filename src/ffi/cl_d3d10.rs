@@ -13,7 +13,7 @@
 // limitations under the License.
 
 //! FFI bindings for cl_d3d10.h  
-//! cl_d3d10.h contains OpenCL extensions that external D3D dependencies.  
+//! cl_d3d10.h contains OpenCL extensions that provide interoperability with Direct3D 10.
 //! OpenCL extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
 #![allow(non_camel_case_types, non_upper_case_globals)]

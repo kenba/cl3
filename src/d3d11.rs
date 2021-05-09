@@ -13,25 +13,25 @@
 // limitations under the License.
 
 //! FFI bindings for cl_d3d10.h  
-//! cl_d3d10.h contains OpenCL extensions that provide interoperability with Direct3D 10.
+//! cl_d3d11.h contains OpenCL extensions that provide interoperability with Direct3D 11.  
 //! OpenCL extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-pub use super::ffi::cl_d3d10::*;
+pub use super::ffi::cl_d3d11::*;
 pub use cl_sys::{cl_device_id, cl_platform_id, cl_uint};
 use libc::c_void;
 use std::ptr;
 
 #[inline]
-pub fn get_device_ids_from_dx3d10_khr(
+pub fn get_device_ids_from_dx3d11_khr(
     platform: cl_platform_id,
-    d3d_device_source: cl_d3d10_device_source_khr,
+    d3d_device_source: cl_d3d11_device_source_khr,
     d3d_object: *mut c_void,
-    d3d_device_set: cl_d3d10_device_set_khr,
+    d3d_device_set: cl_d3d11_device_set_khr,
 ) -> Result<Vec<cl_device_id>, cl_int> {
     let mut count: cl_uint = 0;
     let status: cl_int = unsafe {
-        clGetDeviceIDsFromD3D10KHR(
+        clGetDeviceIDsFromD3D11KHR(
             platform,
             d3d_device_source,
             d3d_object,
@@ -49,7 +49,7 @@ pub fn get_device_ids_from_dx3d10_khr(
             let len = count as usize;
             let mut ids: Vec<cl_device_id> = Vec::with_capacity(len);
             let status: cl_int = unsafe {
-                clGetDeviceIDsFromD3D10KHR(
+                clGetDeviceIDsFromD3D11KHR(
                     platform,
                     d3d_device_source,
                     d3d_object,
@@ -71,13 +71,13 @@ pub fn get_device_ids_from_dx3d10_khr(
 }
 
 #[inline]
-pub fn create_from_d3d10_buffer_khr(
+pub fn create_from_d3d11_buffer_khr(
     context: cl_context,
     flags: cl_mem_flags,
-    resource: ID3D10Buffer_ptr,
+    resource: ID3D11Buffer_ptr,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = unsafe { clCreateFromD3D10BufferKHR(context, flags, resource, &mut status) };
+    let mem = unsafe { clCreateFromD3D11BufferKHR(context, flags, resource, &mut status) };
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -86,15 +86,15 @@ pub fn create_from_d3d10_buffer_khr(
 }
 
 #[inline]
-pub fn create_from_d3d10_texture2d_khr(
+pub fn create_from_d3d11_texture2d_khr(
     context: cl_context,
     flags: cl_mem_flags,
-    resource: ID3D10Texture2D_ptr,
+    resource: ID3D11Texture2D_ptr,
     subresource: cl_uint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem = unsafe {
-        clCreateFromD3D10Texture2DKHR(context, flags, resource, subresource, &mut status)
+        clCreateFromD3D11Texture2DKHR(context, flags, resource, subresource, &mut status)
     };
     if CL_SUCCESS != status {
         Err(status)
@@ -104,15 +104,15 @@ pub fn create_from_d3d10_texture2d_khr(
 }
 
 #[inline]
-pub fn create_from_d3d10_texture3d_khr(
+pub fn create_from_d3d11_texture3d_khr(
     context: cl_context,
     flags: cl_mem_flags,
-    resource: ID3D10Texture3D_ptr,
+    resource: ID3D11Texture3D_ptr,
     subresource: cl_uint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem = unsafe {
-        clCreateFromD3D10Texture3DKHR(context, flags, resource, subresource, &mut status)
+        clCreateFromD3D11Texture3DKHR(context, flags, resource, subresource, &mut status)
     };
     if CL_SUCCESS != status {
         Err(status)
@@ -122,7 +122,7 @@ pub fn create_from_d3d10_texture3d_khr(
 }
 
 #[inline]
-pub fn enqueue_acquire_dx10_objects_khr(
+pub fn enqueue_acquire_dx11_objects_khr(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -131,7 +131,7 @@ pub fn enqueue_acquire_dx10_objects_khr(
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
     let status: cl_int = unsafe {
-        clEnqueueAcquireD3D10ObjectsKHR(
+        clEnqueueAcquireD3D11ObjectsKHR(
             command_queue,
             num_objects,
             mem_objects,
@@ -148,7 +148,7 @@ pub fn enqueue_acquire_dx10_objects_khr(
 }
 
 #[inline]
-pub fn enqueue_release_dx10_objects_khr(
+pub fn enqueue_release_dx11_objects_khr(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -157,7 +157,7 @@ pub fn enqueue_release_dx10_objects_khr(
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
     let status: cl_int = unsafe {
-        clEnqueueReleaseD3D10ObjectsKHR(
+        clEnqueueReleaseD3D11ObjectsKHR(
             command_queue,
             num_objects,
             mem_objects,

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! FFI bindings for cl_dx9_media_sharing.h  
-//! cl_ecl_dx9_media_sharingxt.h contains OpenCL extensions that external D3D dependencies.  
+//! FFI bindings for cl_d3d11.h  
+//! cl_d3d11.h contains OpenCL extensions that provide interoperability with Direct3D 11.  
 //! OpenCL extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
 #![allow(non_camel_case_types, non_upper_case_globals)]
