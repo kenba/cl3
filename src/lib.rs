@@ -73,6 +73,7 @@ extern crate cl_sys;
 pub mod command_queue;
 pub mod context;
 pub mod device;
+pub mod dx9_media_sharing;
 pub mod egl;
 pub mod error_codes;
 pub mod event;
