@@ -293,6 +293,7 @@ pub enum DeviceInfo {
     CL_DEVICE_PIPE_SUPPORT = 0x1071,
     CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED = 0x1072,
     // #endif
+    CL_DEVICE_PCI_BUS_ID_NV = 0x4008,
 }
 
 /// Get specific information about an OpenCL device.  
@@ -413,6 +414,7 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_PIPE_SUPPORT // CL_VERSION_3_0
+        | DeviceInfo::CL_DEVICE_PCI_BUS_ID_NV
         => {
             api_info_value!(get_value, cl_uint, clGetDeviceInfo);
             Ok(InfoType::Uint(get_value(device, param_id)?))
@@ -1081,6 +1083,16 @@ mod tests {
         let value = value.to_size();
         println!("CL_DEVICE_PRINTF_BUFFER_SIZE: {}", value);
         assert!(0 < value);
+
+        println!("CL_DEVICE_PCI_BUS_ID_NV: {}", value);
+        // Device may not support CL_DEVICE_PCI_BUS_ID_NV
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCI_BUS_ID_NV) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_PCI_BUS_ID_NV: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_PCI_BUS_ID_NV: {}", ClError(e))
+        };
 
         // CL_VERSION_2_0
         if is_opencl_2 {
