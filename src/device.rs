@@ -41,7 +41,10 @@ use super::types::{
     cl_device_type, cl_int, cl_name_version, cl_platform_id, cl_uint, cl_ulong,
     cl_device_atomic_capabilities, cl_device_device_enqueue_capabilities, cl_version
 };
-use super::ffi::cl_ext::{CL_DEVICE_PCI_BUS_ID_NV, CL_DEVICE_PCI_SLOT_ID_NV};
+use super::ffi::cl_ext::{CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV,
+    CL_DEVICE_REGISTERS_PER_BLOCK_NV, CL_DEVICE_WARP_SIZE_NV, CL_DEVICE_GPU_OVERLAP_NV,
+    CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV, CL_DEVICE_INTEGRATED_MEMORY_NV,
+    CL_DEVICE_PCI_BUS_ID_NV, CL_DEVICE_PCI_SLOT_ID_NV};
 use super::{api_info_size, api_info_value, api_info_vector};
 #[allow(unused_imports)]
 use cl_sys::{
@@ -296,6 +299,14 @@ pub enum DeviceInfo {
     // #endif
 
     // cl_nv_device_attribute_query extension
+    CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV = CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV as isize,
+    CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV = CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV as isize,
+    CL_DEVICE_REGISTERS_PER_BLOCK_NV = CL_DEVICE_REGISTERS_PER_BLOCK_NV as isize,
+    CL_DEVICE_WARP_SIZE_NV = CL_DEVICE_WARP_SIZE_NV as isize,
+    CL_DEVICE_GPU_OVERLAP_NV = CL_DEVICE_GPU_OVERLAP_NV as isize,
+    CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV = CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV as isize,
+    CL_DEVICE_INTEGRATED_MEMORY_NV = CL_DEVICE_INTEGRATED_MEMORY_NV as isize,
+    
     // undocumented tokens for clGetDeviceInfo, see: https://anteru.net/blog/2014/associating-opencl-device-ids-with-gpus/
     CL_DEVICE_PCI_BUS_ID_NV = CL_DEVICE_PCI_BUS_ID_NV as isize,
     CL_DEVICE_PCI_SLOT_ID_NV = CL_DEVICE_PCI_SLOT_ID_NV as isize,
@@ -419,8 +430,17 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_PIPE_SUPPORT // CL_VERSION_3_0
-        | DeviceInfo::CL_DEVICE_PCI_BUS_ID_NV
-        | DeviceInfo::CL_DEVICE_PCI_SLOT_ID_NV
+
+        | DeviceInfo::CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV // cl_nv_device_attribute_query
+        | DeviceInfo::CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV // cl_nv_device_attribute_query
+        | DeviceInfo::CL_DEVICE_REGISTERS_PER_BLOCK_NV // cl_nv_device_attribute_query
+        | DeviceInfo::CL_DEVICE_WARP_SIZE_NV // cl_nv_device_attribute_query
+        | DeviceInfo::CL_DEVICE_GPU_OVERLAP_NV // cl_nv_device_attribute_query
+        | DeviceInfo::CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV // cl_nv_device_attribute_query
+        | DeviceInfo::CL_DEVICE_INTEGRATED_MEMORY_NV // cl_nv_device_attribute_query
+       
+        | DeviceInfo::CL_DEVICE_PCI_BUS_ID_NV // cl_nv_device_attribute_query, undocumented
+        | DeviceInfo::CL_DEVICE_PCI_SLOT_ID_NV // cl_nv_device_attribute_query, undocumented
         => {
             api_info_value!(get_value, cl_uint, clGetDeviceInfo);
             Ok(InfoType::Uint(get_value(device, param_id)?))
@@ -1090,7 +1110,70 @@ mod tests {
         println!("CL_DEVICE_PRINTF_BUFFER_SIZE: {}", value);
         assert!(0 < value);
 
-        // Device may not support CL_DEVICE_PCI_BUS_ID_NV
+        // Nvidia specific extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV: {}", ClError(e))
+        };
+
+        // Nvidia specific extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV: {}", ClError(e))
+        };
+
+        // Nvidia specific extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_REGISTERS_PER_BLOCK_NV) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_REGISTERS_PER_BLOCK_NV: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_REGISTERS_PER_BLOCK_NV: {}", ClError(e))
+        };
+
+        // Nvidia specific extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_WARP_SIZE_NV) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_WARP_SIZE_NV: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_WARP_SIZE_NV: {}", ClError(e))
+        };
+
+        // Nvidia specific extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_GPU_OVERLAP_NV) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_GPU_OVERLAP_NV: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_GPU_OVERLAP_NV: {}", ClError(e))
+        };
+
+        // Nvidia specific extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV: {}", ClError(e))
+        };
+
+        // Nvidia specific extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_INTEGRATED_MEMORY_NV) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_INTEGRATED_MEMORY_NV: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_INTEGRATED_MEMORY_NV: {}", ClError(e))
+        };
+
+        // Nvidia specific extension, undocumented
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCI_BUS_ID_NV) {
             Ok(value) => {
                 let value = value.to_uint();
@@ -1099,7 +1182,7 @@ mod tests {
             Err(e) => println!("OpenCL error, CL_DEVICE_PCI_BUS_ID_NV: {}", ClError(e))
         };
 
-        // Device may not support CL_DEVICE_PCI_SLOT_ID_NV
+        // Nvidia specific extension, undocumented
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCI_SLOT_ID_NV) {
             Ok(value) => {
                 let value = value.to_uint();
