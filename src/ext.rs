@@ -18,11 +18,17 @@
 
 pub use super::ffi::cl_ext::*;
 
+#[allow(unused_imports)]
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
+#[allow(unused_imports)]
 use super::info_type::InfoType;
+#[allow(unused_imports)]
 use super::{api_info_size, api_info_value, api_info_vector};
+#[allow(unused_imports)]
 use libc::{c_void, intptr_t, size_t};
+#[allow(unused_imports)]
 use std::mem;
+#[allow(unused_imports)]
 use std::ptr;
 
 #[inline]
@@ -39,7 +45,7 @@ pub fn set_mem_object_destructor_apple(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_icd")]
 pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
     let mut count: cl_uint = 0;
@@ -68,7 +74,7 @@ pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_il_program")]
 pub fn create_program_with_il_khr(
     context: cl_context,
     il: *const c_void,
@@ -83,7 +89,7 @@ pub fn create_program_with_il_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_terminate_context")]
 pub fn terminate_context_khr(context: cl_context) -> Result<(), cl_int> {
     let status = unsafe { clTerminateContextKHR(context) };
     if CL_SUCCESS != status {
@@ -93,7 +99,7 @@ pub fn terminate_context_khr(context: cl_context) -> Result<(), cl_int> {
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_create_command_queue")]
 pub fn create_command_queue_with_properties_khr(
     context: cl_context,
     device: cl_device_id,
@@ -109,7 +115,7 @@ pub fn create_command_queue_with_properties_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_ext_device_fission")]
 pub fn release_device_ext(device: cl_device_id) -> Result<(), cl_int> {
     let status = unsafe { clReleaseDeviceEXT(device) };
     if CL_SUCCESS != status {
@@ -119,7 +125,7 @@ pub fn release_device_ext(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_ext_device_fission")]
 pub fn retain_device_ext(device: cl_device_id) -> Result<(), cl_int> {
     let status = unsafe { clRetainDeviceEXT(device) };
     if CL_SUCCESS != status {
@@ -130,7 +136,7 @@ pub fn retain_device_ext(device: cl_device_id) -> Result<(), cl_int> {
 }
 
 // helper function for create_sub_devices_ext
-#[inline]
+#[cfg(feature = "cl_ext_device_fission")]
 fn count_sub_devices_ext(
     in_device: cl_device_id,
     properties: &[cl_device_partition_property_ext],
@@ -152,7 +158,7 @@ fn count_sub_devices_ext(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_ext_device_fission")]
 pub fn create_sub_devices_ext(
     in_device: cl_device_id,
     properties: &[cl_device_partition_property_ext],
@@ -180,7 +186,7 @@ pub fn create_sub_devices_ext(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_ext_migrate_memobject")]
 pub fn enqueue_migrate_mem_object_ext(
     command_queue: cl_command_queue,
     num_mem_objects: cl_uint,
@@ -208,7 +214,7 @@ pub fn enqueue_migrate_mem_object_ext(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_qcom_ext_host_ptr")]
 pub fn get_device_image_info_qcom(
     device: cl_device_id,
     image_width: size_t,
@@ -237,7 +243,7 @@ pub fn get_device_image_info_qcom(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_img_use_gralloc_ptr")]
 pub fn enqueue_acquire_gralloc_objects_img(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
@@ -263,7 +269,7 @@ pub fn enqueue_acquire_gralloc_objects_img(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_img_use_gralloc_ptr")]
 pub fn enqueue_release_gralloc_objects_img(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
@@ -289,7 +295,7 @@ pub fn enqueue_release_gralloc_objects_img(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_img_generate_mipmap")]
 pub fn enqueue_generate_mipmap_img(
     command_queue: cl_command_queue,
     src_image: cl_mem,
@@ -321,35 +327,50 @@ pub fn enqueue_generate_mipmap_img(
     }
 }
 
+// cl_kernel_sub_group_info
+#[derive(Clone, Copy, Debug)]
+pub enum KernelSubGroupInfoKhr {
+    CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR = 0x2033,
+    CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR = 0x2034,
+}
+
+#[cfg(feature = "cl_khr_subgroups")]
 pub fn get_kernel_sub_group_info_khr(
     kernel: cl_kernel,
     device: cl_device_id,
-    param_name: cl_kernel_sub_group_info,
+    param_name: KernelSubGroupInfoKhr,
     input_value_size: size_t,
     input_value: *const c_void,
 ) -> Result<size_t, cl_int> {
-    let mut data: size_t = 0;
-    let data_ptr: *mut size_t = &mut data;
-    let status = unsafe {
-        clGetKernelSubGroupInfoKHR(
-            kernel,
-            device,
-            param_name,
-            input_value_size,
-            input_value,
-            mem::size_of::<size_t>(),
-            data_ptr as *mut c_void,
-            ptr::null_mut(),
-        )
-    };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
-        Ok(data)
+    let param_id = param_name as cl_kernel_sub_group_info;
+    match param_name {
+        KernelSubGroupInfoKhr::CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR
+        | KernelSubGroupInfoKhr::CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR => {
+            // get the value
+            let mut data: size_t = 0;
+            let data_ptr: *mut size_t = &mut data;
+            let status = unsafe {
+                clGetKernelSubGroupInfoKHR(
+                    kernel,
+                    device,
+                    param_id,
+                    input_value_size,
+                    input_value,
+                    mem::size_of::<size_t>(),
+                    data_ptr as *mut c_void,
+                    ptr::null_mut(),
+                )
+            };
+            if CL_SUCCESS != status {
+                Err(status)
+            } else {
+                Ok(data)
+            }
+        }
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_suggested_local_work_size")]
 pub fn get_kernel_suggested_local_work_size_khr(
     command_queue: cl_command_queue,
     kernel: cl_kernel,
@@ -375,7 +396,7 @@ pub fn get_kernel_suggested_local_work_size_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_arm_import_memory")]
 pub fn import_memory_arm(
     context: cl_context,
     flags: cl_mem_flags,
@@ -393,7 +414,7 @@ pub fn import_memory_arm(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_arm_shared_virtual_memory")]
 pub fn svm_alloc_arm(
     context: cl_context,
     flags: cl_svm_mem_flags_arm,
@@ -408,12 +429,12 @@ pub fn svm_alloc_arm(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_arm_shared_virtual_memory")]
 pub fn svm_free_arm(context: cl_context, svm_pointer: *mut c_void) {
     unsafe { clSVMFreeARM(context, svm_pointer) };
 }
 
-#[inline]
+#[cfg(feature = "cl_arm_shared_virtual_memory")]
 pub fn enqueue_svm_free_arm(
     command_queue: cl_command_queue,
     num_svm_pointers: cl_uint,
@@ -450,7 +471,7 @@ pub fn enqueue_svm_free_arm(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_arm_shared_virtual_memory")]
 pub fn enqueue_svm_mem_cpy_arm(
     command_queue: cl_command_queue,
     blocking_copy: cl_bool,
@@ -480,7 +501,7 @@ pub fn enqueue_svm_mem_cpy_arm(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_arm_shared_virtual_memory")]
 pub fn enqueue_svm_mem_fill_arm(
     command_queue: cl_command_queue,
     svm_ptr: *mut c_void,
@@ -510,7 +531,7 @@ pub fn enqueue_svm_mem_fill_arm(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_arm_shared_virtual_memory")]
 pub fn enqueue_svm_map_arm(
     command_queue: cl_command_queue,
     blocking_map: cl_bool,
@@ -540,7 +561,7 @@ pub fn enqueue_svm_map_arm(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_arm_shared_virtual_memory")]
 pub fn enqueue_svm_unmap_arm(
     command_queue: cl_command_queue,
     svm_ptr: *mut c_void,
@@ -564,7 +585,7 @@ pub fn enqueue_svm_unmap_arm(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_arm_shared_virtual_memory")]
 pub fn set_kernel_arg_svm_pointer(
     kernel: cl_kernel,
     arg_index: cl_uint,
@@ -578,7 +599,7 @@ pub fn set_kernel_arg_svm_pointer(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_arm_shared_virtual_memory")]
 pub fn set_kernel_exec_info_arm(
     kernel: cl_kernel,
     param_name: cl_kernel_exec_info_arm,
@@ -594,7 +615,7 @@ pub fn set_kernel_exec_info_arm(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_accelerator")]
 pub fn create_accelerator_intel(
     context: cl_context,
     accelerator_type: cl_accelerator_type_intel,
@@ -627,6 +648,7 @@ pub enum AcceleratorInfoIntel {
     CL_ACCELERATOR_TYPE_INTEL = 0x4093,
 }
 
+#[cfg(feature = "cl_intel_accelerator")]
 pub fn get_accelerator_info_intel(
     accelerator: cl_accelerator_intel,
     param_name: AcceleratorInfoIntel,
@@ -653,6 +675,7 @@ pub fn get_accelerator_info_intel(
     }
 }
 
+#[cfg(feature = "cl_intel_accelerator")]
 pub fn retain_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<(), cl_int> {
     let status = unsafe { clRetainAcceleratorINTEL(accelerator) };
     if CL_SUCCESS != status {
@@ -662,6 +685,7 @@ pub fn retain_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<(),
     }
 }
 
+#[cfg(feature = "cl_intel_accelerator")]
 pub fn release_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<(), cl_int> {
     let status = unsafe { clReleaseAcceleratorINTEL(accelerator) };
     if CL_SUCCESS != status {
@@ -671,7 +695,7 @@ pub fn release_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<()
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn host_mem_alloc_intel(
     context: cl_context,
     properties: *const cl_mem_properties_intel,
@@ -687,7 +711,7 @@ pub fn host_mem_alloc_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn device_mem_alloc_intel(
     context: cl_context,
     device: cl_device_id,
@@ -704,7 +728,7 @@ pub fn device_mem_alloc_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn shared_mem_alloc_intel(
     context: cl_context,
     device: cl_device_id,
@@ -721,7 +745,7 @@ pub fn shared_mem_alloc_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn mem_free_intel(context: cl_context) -> Result<(), cl_int> {
     let status = unsafe { clMemFreeINTEL(context) };
     if CL_SUCCESS != status {
@@ -731,7 +755,7 @@ pub fn mem_free_intel(context: cl_context) -> Result<(), cl_int> {
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn mem_blocking_free_intel(context: cl_context, ptr: *mut c_void) -> Result<(), cl_int> {
     let status = unsafe { clMemBlockingFreeINTEL(context, ptr) };
     if CL_SUCCESS != status {
@@ -751,6 +775,7 @@ pub enum MemAllocInfoIntel {
     CL_MEM_ALLOC_FLAGS_INTEL = 0x4195,
 }
 
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 fn mem_alloc_info_intel<T: Default>(
     context: cl_context,
     ptr: *const c_void,
@@ -775,6 +800,7 @@ fn mem_alloc_info_intel<T: Default>(
     }
 }
 
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn get_mem_alloc_info_intel(
     context: cl_context,
     ptr: *const c_void,
@@ -804,7 +830,7 @@ pub fn get_mem_alloc_info_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn set_kernel_arg_mem_pointer_intel(
     kernel: cl_kernel,
     arg_index: cl_uint,
@@ -818,7 +844,7 @@ pub fn set_kernel_arg_mem_pointer_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn enqueue_mem_set_intel(
     command_queue: cl_command_queue,
     dst_ptr: *mut c_void,
@@ -846,7 +872,7 @@ pub fn enqueue_mem_set_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn enqueue_mem_fill_intel(
     command_queue: cl_command_queue,
     dst_ptr: *mut c_void,
@@ -876,7 +902,7 @@ pub fn enqueue_mem_fill_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn enqueue_mem_copy_intel(
     command_queue: cl_command_queue,
     blocking: cl_bool,
@@ -906,7 +932,7 @@ pub fn enqueue_mem_copy_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn enqueue_migrate_mem_intel(
     command_queue: cl_command_queue,
     ptr: *const c_void,
@@ -934,7 +960,7 @@ pub fn enqueue_migrate_mem_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_unified_shared_memory")]
 pub fn enqueue_mem_advise_intel(
     command_queue: cl_command_queue,
     ptr: *const c_void,
@@ -962,7 +988,7 @@ pub fn enqueue_mem_advise_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_create_buffer_with_properties")]
 pub fn create_buffer_with_properties_intel(
     context: cl_context,
     properties: *const cl_mem_properties_intel,

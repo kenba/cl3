@@ -20,6 +20,32 @@ CL_VERSION_2_1 = []
 CL_VERSION_2_2 = []
 CL_VERSION_3_0 = []
 
+cl_khr_icd = []
+cl_khr_il_program = []
+cl_khr_terminate_context = []
+cl_khr_create_command_queue = []
+cl_ext_device_fission = []
+cl_ext_migrate_memobject = []
+cl_qcom_ext_host_ptr = []
+cl_img_use_gralloc_ptr = []
+cl_img_generate_mipmap = []
+cl_khr_subgroups = []
+cl_khr_suggested_local_work_size = []
+cl_arm_import_memory = []
+cl_arm_shared_virtual_memory = []
+cl_intel_accelerator = []
+cl_intel_unified_shared_memory = []
+cl_intel_create_buffer_with_properties = []
+
+cl_khr_gl_sharing = []
+cl_khr_egl_image = []
+cl_khr_egl_event = []
+
+cl_khr_dx9_media_sharing = []
+cl_intel_dx9_media_sharing = []
+cl_khr_d3d10_sharing = []
+cl_khr_d3d11_sharing = []
+
 # Default features:
 default = ["CL_VERSION_1_2", "CL_VERSION_2_0"]
 

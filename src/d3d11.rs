@@ -16,13 +16,17 @@
 //! cl_d3d11.h contains OpenCL extensions that provide interoperability with Direct3D 11.  
 //! OpenCL extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
+#[allow(unused_imports)]
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 pub use super::ffi::cl_d3d11::*;
+#[allow(unused_imports)]
 pub use cl_sys::{cl_device_id, cl_platform_id, cl_uint};
+#[allow(unused_imports)]
 use libc::c_void;
+#[allow(unused_imports)]
 use std::ptr;
 
-#[inline]
+#[cfg(feature = "cl_khr_d3d11_sharing")]
 pub fn get_device_ids_from_dx3d11_khr(
     platform: cl_platform_id,
     d3d_device_source: cl_d3d11_device_source_khr,
@@ -70,7 +74,7 @@ pub fn get_device_ids_from_dx3d11_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_d3d11_sharing")]
 pub fn create_from_d3d11_buffer_khr(
     context: cl_context,
     flags: cl_mem_flags,
@@ -85,7 +89,7 @@ pub fn create_from_d3d11_buffer_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_d3d11_sharing")]
 pub fn create_from_d3d11_texture2d_khr(
     context: cl_context,
     flags: cl_mem_flags,
@@ -103,7 +107,7 @@ pub fn create_from_d3d11_texture2d_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_d3d11_sharing")]
 pub fn create_from_d3d11_texture3d_khr(
     context: cl_context,
     flags: cl_mem_flags,
@@ -121,7 +125,7 @@ pub fn create_from_d3d11_texture3d_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_d3d11_sharing")]
 pub fn enqueue_acquire_dx11_objects_khr(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
@@ -147,7 +151,7 @@ pub fn enqueue_acquire_dx11_objects_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_d3d11_sharing")]
 pub fn enqueue_release_dx11_objects_khr(
     command_queue: cl_command_queue,
     num_objects: cl_uint,

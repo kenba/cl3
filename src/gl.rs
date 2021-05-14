@@ -39,6 +39,7 @@ use cl_sys::{
 
 use super::api_info_value;
 
+#[allow(unused_imports)]
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
@@ -377,6 +378,7 @@ pub enum GlContextInfo {
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "cl_khr_gl_sharing")]
 pub fn get_gl_context_info_khr(
     properties: *mut cl_context_properties,
     param_name: GlContextInfo,
@@ -447,7 +449,7 @@ pub fn get_gl_context_info_khr(
 ///
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
-#[inline]
+#[cfg(feature = "cl_khr_gl_sharing")]
 pub fn create_event_from_gl_sync_khr(
     context: cl_context,
     sync: gl_sync,

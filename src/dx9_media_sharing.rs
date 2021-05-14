@@ -18,13 +18,17 @@
 
 #![allow(non_camel_case_types)]
 
+#[allow(unused_imports)]
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 pub use super::ffi::cl_dx9_media_sharing::*;
+#[allow(unused_imports)]
 pub use cl_sys::{cl_device_id, cl_platform_id, cl_uint};
+#[allow(unused_imports)]
 use libc::c_void;
+#[allow(unused_imports)]
 use std::ptr;
 
-#[inline]
+#[cfg(feature = "cl_khr_dx9_media_sharing")]
 pub fn get_device_ids_from_dx9_media_adapter_khr(
     platform: cl_platform_id,
     num_media_adapters: cl_uint,
@@ -75,7 +79,7 @@ pub fn get_device_ids_from_dx9_media_adapter_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_dx9_media_sharing")]
 pub fn create_from_dx9_media_surface_khr(
     context: cl_context,
     flags: cl_mem_flags,
@@ -101,7 +105,7 @@ pub fn create_from_dx9_media_surface_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_dx9_media_sharing")]
 pub fn enqueue_aquire_dx9_media_surfaces_khr(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
@@ -127,7 +131,7 @@ pub fn enqueue_aquire_dx9_media_surfaces_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_khr_dx9_media_sharing")]
 pub fn enqueue_release_dx9_media_surfaces_khr(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
@@ -153,7 +157,7 @@ pub fn enqueue_release_dx9_media_surfaces_khr(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_dx9_media_sharing")]
 pub fn get_device_ids_from_dx9_intel(
     platform: cl_platform_id,
     dx9_device_source: cl_dx9_device_source_intel,
@@ -201,7 +205,7 @@ pub fn get_device_ids_from_dx9_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_dx9_media_sharing")]
 pub fn create_from_dx9_media_surface_intel(
     context: cl_context,
     flags: cl_mem_flags,
@@ -227,7 +231,7 @@ pub fn create_from_dx9_media_surface_intel(
     }
 }
 
-#[inline]
+#[cfg(feature = "cl_intel_dx9_media_sharing")]
 pub fn enqueue_aquire_dx9_objects_intel(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
@@ -252,7 +256,8 @@ pub fn enqueue_aquire_dx9_objects_intel(
         Ok(event)
     }
 }
-#[inline]
+
+#[cfg(feature = "cl_intel_dx9_media_sharing")]
 pub fn enqueue_release_dx9_objects_intel(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
