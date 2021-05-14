@@ -62,6 +62,10 @@ pub const CL_DEVICE_GPU_OVERLAP_NV: cl_nv_device_attribute_query = 0x4004;
 pub const CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV: cl_nv_device_attribute_query = 0x4005;
 pub const CL_DEVICE_INTEGRATED_MEMORY_NV: cl_nv_device_attribute_query = 0x4006;
 
+// undocumented tokens for clGetDeviceInfo, see: https://anteru.net/blog/2014/associating-opencl-device-ids-with-gpus/
+pub const CL_DEVICE_PCI_BUS_ID_NV: cl_nv_device_attribute_query = 0x4008;
+pub const CL_DEVICE_PCI_SLOT_ID_NV: cl_nv_device_attribute_query = 0x4009;
+
 pub type cl_amd_device_attribute_query = cl_uint;
 pub const CL_DEVICE_PROFILING_TIMER_OFFSET_AMD: cl_amd_device_attribute_query = 0x4036;
 pub const CL_DEVICE_TOPOLOGY_AMD: cl_amd_device_attribute_query = 0x4037;

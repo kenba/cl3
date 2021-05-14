@@ -41,6 +41,7 @@ use super::types::{
     cl_device_type, cl_int, cl_name_version, cl_platform_id, cl_uint, cl_ulong,
     cl_device_atomic_capabilities, cl_device_device_enqueue_capabilities, cl_version
 };
+use super::ffi::cl_ext::{CL_DEVICE_PCI_BUS_ID_NV, CL_DEVICE_PCI_SLOT_ID_NV};
 use super::{api_info_size, api_info_value, api_info_vector};
 #[allow(unused_imports)]
 use cl_sys::{
@@ -293,7 +294,11 @@ pub enum DeviceInfo {
     CL_DEVICE_PIPE_SUPPORT = 0x1071,
     CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED = 0x1072,
     // #endif
-    CL_DEVICE_PCI_BUS_ID_NV = 0x4008,
+
+    // cl_nv_device_attribute_query extension
+    // undocumented tokens for clGetDeviceInfo, see: https://anteru.net/blog/2014/associating-opencl-device-ids-with-gpus/
+    CL_DEVICE_PCI_BUS_ID_NV = CL_DEVICE_PCI_BUS_ID_NV as isize,
+    CL_DEVICE_PCI_SLOT_ID_NV = CL_DEVICE_PCI_SLOT_ID_NV as isize,
 }
 
 /// Get specific information about an OpenCL device.  
@@ -415,6 +420,7 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_PIPE_SUPPORT // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_PCI_BUS_ID_NV
+        | DeviceInfo::CL_DEVICE_PCI_SLOT_ID_NV
         => {
             api_info_value!(get_value, cl_uint, clGetDeviceInfo);
             Ok(InfoType::Uint(get_value(device, param_id)?))
@@ -1084,7 +1090,6 @@ mod tests {
         println!("CL_DEVICE_PRINTF_BUFFER_SIZE: {}", value);
         assert!(0 < value);
 
-        println!("CL_DEVICE_PCI_BUS_ID_NV: {}", value);
         // Device may not support CL_DEVICE_PCI_BUS_ID_NV
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCI_BUS_ID_NV) {
             Ok(value) => {
@@ -1092,6 +1097,15 @@ mod tests {
                 println!("CL_DEVICE_PCI_BUS_ID_NV: {}", value)
             }
             Err(e) => println!("OpenCL error, CL_DEVICE_PCI_BUS_ID_NV: {}", ClError(e))
+        };
+
+        // Device may not support CL_DEVICE_PCI_SLOT_ID_NV
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCI_SLOT_ID_NV) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_PCI_SLOT_ID_NV: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_PCI_SLOT_ID_NV: {}", ClError(e))
         };
 
         // CL_VERSION_2_0
