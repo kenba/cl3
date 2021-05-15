@@ -41,7 +41,7 @@ use super::types::{
     cl_device_type, cl_int, cl_name_version, cl_platform_id, cl_uint, cl_ulong,
     cl_device_atomic_capabilities, cl_device_device_enqueue_capabilities, cl_version
 };
-use super::ffi::cl_ext::{cl_amd_device_topology,
+use super::ffi::cl_ext::{cl_amd_device_topology, cl_device_pci_bus_info_khr,
     CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV,
     CL_DEVICE_REGISTERS_PER_BLOCK_NV, CL_DEVICE_WARP_SIZE_NV, CL_DEVICE_GPU_OVERLAP_NV,
     CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV, CL_DEVICE_INTEGRATED_MEMORY_NV,
@@ -56,7 +56,7 @@ use super::ffi::cl_ext::{cl_amd_device_topology,
     CL_DEVICE_GFXIP_MAJOR_AMD, CL_DEVICE_GFXIP_MINOR_AMD,
     CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD,
     CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD, CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD,
-    CL_DEVICE_PCIE_ID_AMD,
+    CL_DEVICE_PCIE_ID_AMD, CL_DEVICE_PCI_BUS_INFO_KHR,
 };
 use super::{api_info_size, api_info_value, api_info_vector};
 #[allow(unused_imports)]
@@ -346,6 +346,7 @@ pub enum DeviceInfo {
     CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD = CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD as isize,
     CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD = CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD as isize,
     CL_DEVICE_PCIE_ID_AMD = CL_DEVICE_PCIE_ID_AMD as isize,
+    CL_DEVICE_PCI_BUS_INFO_KHR = CL_DEVICE_PCI_BUS_INFO_KHR as isize,
 }
 
 /// Get specific information about an OpenCL device.  
@@ -406,6 +407,7 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_TOPOLOGY_AMD // cl_amd_device_attribute_query
         | DeviceInfo::CL_DEVICE_BOARD_NAME_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_PCI_BUS_INFO_KHR // cl_khr_pci_bus_info
         => {
             api_info_vector!(get_string, u8, clGetDeviceInfo);
             let size = get_size(device, param_id)?;
@@ -595,6 +597,18 @@ pub fn get_amd_device_topology(bytes: &[u8]) -> cl_amd_device_topology {
             .copy_from_slice(&bytes);
     }
     topology
+}
+
+/// Convert a u8 slice (e.g. from get_device_info) into a cl_device_pci_bus_info_khr structure.
+pub fn get_device_pci_bus_info_khr(bytes: &[u8]) -> cl_device_pci_bus_info_khr {
+    let size = bytes.len();
+    assert_eq!(size, std::mem::size_of::<cl_device_pci_bus_info_khr>());
+    let mut pci_bus_info = cl_device_pci_bus_info_khr::default();
+    unsafe {
+        std::slice::from_raw_parts_mut(&mut pci_bus_info as *mut cl_device_pci_bus_info_khr as *mut u8, size)
+            .copy_from_slice(&bytes);
+    }
+    pci_bus_info
 }
 
 // cl_device_partition_property:
@@ -1432,6 +1446,20 @@ mod tests {
                 println!("CL_DEVICE_PCIE_ID_AMD: {}", value)
             }
             Err(e) => println!("OpenCL error, CL_DEVICE_PCIE_ID_AMD: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCI_BUS_INFO_KHR) {
+            Ok(value) => {
+                let value = value.to_vec_uchar();
+                println!("CL_DEVICE_PCI_BUS_INFO_KHR: {:?}", value);
+
+                let pci_bus_info = get_device_pci_bus_info_khr(&value);
+                println!("CL_DEVICE_PCI_BUS_INFO_KHR pci_domain: {}", pci_bus_info.pci_domain);
+                println!("CL_DEVICE_PCI_BUS_INFO_KHR pci_bus: {}", pci_bus_info.pci_bus);
+                println!("CL_DEVICE_PCI_BUS_INFO_KHR pci_device: {}", pci_bus_info.pci_device);
+                println!("CL_DEVICE_PCI_BUS_INFO_KHR pci_function: {}", pci_bus_info.pci_function);
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_PCI_BUS_INFO_KHR: {}", ClError(e))
         };
 
         // CL_VERSION_2_0

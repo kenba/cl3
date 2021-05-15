@@ -158,7 +158,7 @@ pub const CL_MEM_HOST_WRITE_COMBINING_QCOM: cl_qcom_ext_host_ptr = 0x40A7;
 
 pub type cl_image_pitch_info_qcom = cl_uint;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Default)]
 #[repr(C)]
 pub struct cl_mem_ext_host_ptr {
     pub allocation_type: cl_uint,
@@ -315,7 +315,7 @@ pub const CL_DEVICE_LUID_KHR: cl_device_info = 0x106D;
 pub const CL_DEVICE_NODE_MASK_KHR: cl_device_info = 0x106E;
 
 // cl_khr_pci_bus_info
-#[derive(Debug)]
+#[derive(Debug, Clone, Default)]
 #[repr(C)]
 pub struct cl_device_pci_bus_info_khr {
     pub pci_domain: cl_uint,
@@ -446,7 +446,7 @@ pub const CL_DEVICE_PARTITION_BY_NAMES_INTEL: cl_device_info = 0x4052;
 
 pub type cl_accelerator_intel = *mut c_void;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Default)]
 #[repr(C)]
 pub struct cl_motion_estimation_desc_intel {
     pub mb_block_type: cl_uint,
