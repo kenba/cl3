@@ -57,6 +57,8 @@ use super::ffi::cl_ext::{cl_amd_device_topology, cl_device_pci_bus_info_khr,
     CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD,
     CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD, CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD,
     CL_DEVICE_PCIE_ID_AMD, CL_DEVICE_PCI_BUS_INFO_KHR,
+    CL_DEVICE_UUID_KHR, CL_DRIVER_UUID_KHR, CL_DEVICE_LUID_VALID_KHR,
+    CL_DEVICE_LUID_KHR, CL_DEVICE_NODE_MASK_KHR,
 };
 use super::{api_info_size, api_info_value, api_info_vector};
 #[allow(unused_imports)]
@@ -304,7 +306,12 @@ pub enum DeviceInfo {
     CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE = 0x1067,
     CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT = 0x1068,
     CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT = 0x1069,
-    // 0x106A to 0x106E - Reserved for upcoming KHR extension
+    // 0x106A to 0x106E - Reserved for KHR extension, cl_khr_device_uuid
+    CL_DEVICE_UUID_KHR = CL_DEVICE_UUID_KHR as isize,
+    CL_DRIVER_UUID_KHR = CL_DRIVER_UUID_KHR as isize,
+    CL_DEVICE_LUID_VALID_KHR = CL_DEVICE_LUID_VALID_KHR as isize,
+    CL_DEVICE_LUID_KHR = CL_DEVICE_LUID_KHR as isize,
+    CL_DEVICE_NODE_MASK_KHR = CL_DEVICE_NODE_MASK_KHR as isize,
     CL_DEVICE_OPENCL_C_FEATURES = 0x106F,
     CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES = 0x1070,
     CL_DEVICE_PIPE_SUPPORT = 0x1071,
@@ -404,6 +411,9 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_OPENCL_C_VERSION
         | DeviceInfo::CL_DEVICE_BUILT_IN_KERNELS
         | DeviceInfo::CL_DEVICE_IL_VERSION
+        | DeviceInfo::CL_DEVICE_UUID_KHR // cl_khr_device_uuid
+        | DeviceInfo::CL_DRIVER_UUID_KHR // cl_khr_device_uuid
+        | DeviceInfo::CL_DEVICE_LUID_KHR // cl_khr_device_uuid
         | DeviceInfo::CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_TOPOLOGY_AMD // cl_amd_device_attribute_query
         | DeviceInfo::CL_DEVICE_BOARD_NAME_AMD // cl_amd_device_attribute_query
@@ -465,11 +475,15 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT
         | DeviceInfo::CL_DEVICE_MAX_NUM_SUB_GROUPS
         | DeviceInfo::CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS
+
         | DeviceInfo::CL_DEVICE_NUMERIC_VERSION // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_PIPE_SUPPORT // CL_VERSION_3_0
+
+        | DeviceInfo::CL_DEVICE_LUID_VALID_KHR // cl_khr_device_uuid
+        | DeviceInfo::CL_DEVICE_NODE_MASK_KHR // cl_khr_device_uuid
 
         | DeviceInfo::CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV // cl_nv_device_attribute_query
         | DeviceInfo::CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV // cl_nv_device_attribute_query
@@ -1193,6 +1207,51 @@ mod tests {
         let value = value.to_size();
         println!("CL_DEVICE_PRINTF_BUFFER_SIZE: {}", value);
         assert!(0 < value);
+
+        // cl_khr_device_uuid extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_UUID_KHR) {
+            Ok(value) => {
+                let value = value.to_vec_uchar();
+                println!("CL_DEVICE_UUID_KHR: {:?}", value);
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_UUID_KHR: {}", ClError(e))
+        };
+
+        // cl_khr_device_uuid extension
+        match get_device_info(device_id, DeviceInfo::CL_DRIVER_UUID_KHR) {
+            Ok(value) => {
+                let value = value.to_vec_uchar();
+                println!("CL_DRIVER_UUID_KHR: {:?}", value);
+            }
+            Err(e) => println!("OpenCL error, CL_DRIVER_UUID_KHR: {}", ClError(e))
+        };
+
+        // cl_khr_device_uuid extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_LUID_VALID_KHR) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_LUID_VALID_KHR: {:?}", value);
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_LUID_VALID_KHR: {}", ClError(e))
+        };
+
+        // cl_khr_device_uuid extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_LUID_KHR) {
+            Ok(value) => {
+                let value = value.to_vec_uchar();
+                println!("CL_DEVICE_LUID_KHR: {:?}", value);
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_LUID_KHR: {}", ClError(e))
+        };
+
+        // cl_khr_device_uuid extension
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_NODE_MASK_KHR) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_NODE_MASK_KHR: {:?}", value);
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_NODE_MASK_KHR: {}", ClError(e))
+        };
 
         // Nvidia specific extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV) {
