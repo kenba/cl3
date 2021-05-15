@@ -44,7 +44,19 @@ use super::types::{
 use super::ffi::cl_ext::{CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV,
     CL_DEVICE_REGISTERS_PER_BLOCK_NV, CL_DEVICE_WARP_SIZE_NV, CL_DEVICE_GPU_OVERLAP_NV,
     CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV, CL_DEVICE_INTEGRATED_MEMORY_NV,
-    CL_DEVICE_PCI_BUS_ID_NV, CL_DEVICE_PCI_SLOT_ID_NV};
+    CL_DEVICE_PCI_BUS_ID_NV, CL_DEVICE_PCI_SLOT_ID_NV,
+    CL_DEVICE_PROFILING_TIMER_OFFSET_AMD, CL_DEVICE_TOPOLOGY_AMD,
+    CL_DEVICE_BOARD_NAME_AMD, CL_DEVICE_GLOBAL_FREE_MEMORY_AMD,
+    CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD, CL_DEVICE_SIMD_WIDTH_AMD,
+    CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD, CL_DEVICE_WAVEFRONT_WIDTH_AMD,
+    CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD,
+    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD, CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD,
+    CL_DEVICE_LOCAL_MEM_BANKS_AMD, CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD,
+    CL_DEVICE_GFXIP_MAJOR_AMD, CL_DEVICE_GFXIP_MINOR_AMD,
+    CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD,
+    CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD, CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD,
+    CL_DEVICE_PCIE_ID_AMD,
+};
 use super::{api_info_size, api_info_value, api_info_vector};
 #[allow(unused_imports)]
 use cl_sys::{
@@ -310,6 +322,29 @@ pub enum DeviceInfo {
     // undocumented tokens for clGetDeviceInfo, see: https://anteru.net/blog/2014/associating-opencl-device-ids-with-gpus/
     CL_DEVICE_PCI_BUS_ID_NV = CL_DEVICE_PCI_BUS_ID_NV as isize,
     CL_DEVICE_PCI_SLOT_ID_NV = CL_DEVICE_PCI_SLOT_ID_NV as isize,
+
+    // cl_amd_device_attribute_query
+    CL_DEVICE_PROFILING_TIMER_OFFSET_AMD = CL_DEVICE_PROFILING_TIMER_OFFSET_AMD as isize,
+    CL_DEVICE_TOPOLOGY_AMD = CL_DEVICE_TOPOLOGY_AMD as isize,
+    CL_DEVICE_BOARD_NAME_AMD = CL_DEVICE_BOARD_NAME_AMD as isize,
+    CL_DEVICE_GLOBAL_FREE_MEMORY_AMD = CL_DEVICE_GLOBAL_FREE_MEMORY_AMD as isize,
+    CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD = CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD as isize,
+    CL_DEVICE_SIMD_WIDTH_AMD = CL_DEVICE_SIMD_WIDTH_AMD as isize,
+    CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD = CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD as isize,
+    CL_DEVICE_WAVEFRONT_WIDTH_AMD = CL_DEVICE_WAVEFRONT_WIDTH_AMD as isize,
+    CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD = CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD as isize,
+    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD = CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD as isize,
+    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD = CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD as isize,
+    CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD = CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD as isize,
+    CL_DEVICE_LOCAL_MEM_BANKS_AMD = CL_DEVICE_LOCAL_MEM_BANKS_AMD as isize,
+    CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD = CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD as isize,
+    CL_DEVICE_GFXIP_MAJOR_AMD = CL_DEVICE_GFXIP_MAJOR_AMD as isize,
+    CL_DEVICE_GFXIP_MINOR_AMD = CL_DEVICE_GFXIP_MINOR_AMD as isize,
+    CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD = CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD as isize,
+    CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD = CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD as isize,
+    CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD = CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD as isize,
+    CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD = CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD as isize,
+    CL_DEVICE_PCIE_ID_AMD = CL_DEVICE_PCIE_ID_AMD as isize,
 }
 
 /// Get specific information about an OpenCL device.  
@@ -368,6 +403,8 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_BUILT_IN_KERNELS
         | DeviceInfo::CL_DEVICE_IL_VERSION
         | DeviceInfo::CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED // CL_VERSION_3_0
+        | DeviceInfo::CL_DEVICE_TOPOLOGY_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_BOARD_NAME_AMD // cl_amd_device_attribute_query
         => {
             api_info_vector!(get_string, u8, clGetDeviceInfo);
             let size = get_size(device, param_id)?;
@@ -441,6 +478,21 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
        
         | DeviceInfo::CL_DEVICE_PCI_BUS_ID_NV // cl_nv_device_attribute_query, undocumented
         | DeviceInfo::CL_DEVICE_PCI_SLOT_ID_NV // cl_nv_device_attribute_query, undocumented
+
+        | DeviceInfo::CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_SIMD_WIDTH_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_WAVEFRONT_WIDTH_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_LOCAL_MEM_BANKS_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_GFXIP_MAJOR_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_GFXIP_MINOR_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_PCIE_ID_AMD // cl_amd_device_attribute_query
         => {
             api_info_value!(get_value, cl_uint, clGetDeviceInfo);
             Ok(InfoType::Uint(get_value(device, param_id)?))
@@ -482,6 +534,11 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE
         | DeviceInfo::CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE 
         | DeviceInfo::CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE // CL_VERSION_3_0
+        | DeviceInfo::CL_DEVICE_PROFILING_TIMER_OFFSET_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_GLOBAL_FREE_MEMORY_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD // cl_amd_device_attribute_query
         => {
             api_info_value!(get_value, size_t, clGetDeviceInfo);
             Ok(InfoType::Size(get_value(device, param_id)?))
@@ -1189,6 +1246,174 @@ mod tests {
                 println!("CL_DEVICE_PCI_SLOT_ID_NV: {}", value)
             }
             Err(e) => println!("OpenCL error, CL_DEVICE_PCI_SLOT_ID_NV: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_PROFILING_TIMER_OFFSET_AMD) {
+            Ok(value) => {
+                let value = value.to_size();
+                println!("CL_DEVICE_PROFILING_TIMER_OFFSET_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_PROFILING_TIMER_OFFSET_AMD: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_TOPOLOGY_AMD) {
+            Ok(value) => {
+                let value = value.to_vec_uchar();
+                println!("CL_DEVICE_TOPOLOGY_AMD: {:?}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_TOPOLOGY_AMD: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_BOARD_NAME_AMD) {
+            Ok(value) => {
+                let value = value.to_string();
+                println!("CL_DEVICE_BOARD_NAME_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_BOARD_NAME_AMD: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_FREE_MEMORY_AMD) {
+            Ok(value) => {
+                let value = value.to_size();
+                println!("CL_DEVICE_GLOBAL_FREE_MEMORY_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_GLOBAL_FREE_MEMORY_AMD: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_SIMD_WIDTH_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_SIMD_WIDTH_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_SIMD_WIDTH_AMD: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_WAVEFRONT_WIDTH_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_WAVEFRONT_WIDTH_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_WAVEFRONT_WIDTH_AMD: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_LOCAL_MEM_BANKS_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_LOCAL_MEM_BANKS_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_LOCAL_MEM_BANKS_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_GFXIP_MAJOR_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_GFXIP_MAJOR_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_GFXIP_MAJOR_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_GFXIP_MINOR_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_GFXIP_MINOR_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_GFXIP_MINOR_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD) {
+            Ok(value) => {
+                let value = value.to_size();
+                println!("CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD) {
+            Ok(value) => {
+                let value = value.to_size();
+                println!("CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD) {
+            Ok(value) => {
+                let value = value.to_size();
+                println!("CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD: {}", ClError(e))
+        };
+        
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCIE_ID_AMD) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_PCIE_ID_AMD: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_PCIE_ID_AMD: {}", ClError(e))
         };
 
         // CL_VERSION_2_0
