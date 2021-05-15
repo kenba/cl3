@@ -21,6 +21,8 @@ is a unified specification that adds little new functionality to previous OpenCL
 It specifies that all **OpenCL 1.2** features are **mandatory**, while all
 OpenCL 2.x and 3.0 features are now optional.
 
+OpenCL also has extensions that enable other features such as OpenGL and Direct X interoperability, see [OpenCL Extensions](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_Ext.html). This library includes FFI bindings to use OpenCL extensions.
+
 ## Design
 
 This crate applies the [adapter pattern](https://en.wikipedia.org/wiki/Adapter_pattern)
@@ -58,6 +60,14 @@ following to your project's `Cargo.toml` instead:
 [dependencies.cl3]
 version = "0.2"
 features = ["CL_VERSION_2_1", "CL_VERSION_2_2"]
+```
+
+OpenCL extensions can also be enabled by adding their features, e.g.:
+
+```toml
+[dependencies.cl3]
+version = "0.2"
+features = ["cl_khr_gl_sharing", "cl_khr_dx9_media_sharing"]
 ```
 
 Whichever version of OpenCL ICD loader you use, add the following to your

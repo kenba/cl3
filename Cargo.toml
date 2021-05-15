@@ -1,14 +1,14 @@
 [package]
 name = "cl3"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Ken Barker <ken.barker@via-technology.aero>"]
-description = "A Rust implementation of the Khronos OpenCL 3.0 API."
+description = "A Rust implementation of the Khronos OpenCL 3.0 API and extensions."
 documentation = "https://docs.rs/cl3/"
 homepage = "https://github.com/kenba/cl3"
 repository = "https://github.com/kenba/cl3"
 readme = "README.md"
-keywords = ["opencl", "gpu", "gpgpu"]
-categories = ["api-bindings", "asynchronous"]
+keywords = ["opencl", "gpu", "gpgpu", "ffi", "api"]
+categories = ["api-bindings", "asynchronous", "extension ffi bindings"]
 license = "Apache-2.0"
 edition = "2018"
 
