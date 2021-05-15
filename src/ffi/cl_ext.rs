@@ -67,6 +67,17 @@ pub const CL_DEVICE_PCI_BUS_ID_NV: cl_nv_device_attribute_query = 0x4008;
 pub const CL_DEVICE_PCI_SLOT_ID_NV: cl_nv_device_attribute_query = 0x4009;
 
 pub type cl_amd_device_attribute_query = cl_uint;
+
+#[derive(Debug, Clone, Default)]
+#[repr(C)]
+pub struct cl_amd_device_topology {
+    r#type: u32,
+    unused: [u8; 17],
+    pub bus: u8,
+    pub device: u8,
+    pub function: u8,
+}
+
 pub const CL_DEVICE_PROFILING_TIMER_OFFSET_AMD: cl_amd_device_attribute_query = 0x4036;
 pub const CL_DEVICE_TOPOLOGY_AMD: cl_amd_device_attribute_query = 0x4037;
 pub const CL_DEVICE_BOARD_NAME_AMD: cl_amd_device_attribute_query = 0x4038;

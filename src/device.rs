@@ -41,7 +41,8 @@ use super::types::{
     cl_device_type, cl_int, cl_name_version, cl_platform_id, cl_uint, cl_ulong,
     cl_device_atomic_capabilities, cl_device_device_enqueue_capabilities, cl_version
 };
-use super::ffi::cl_ext::{CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV,
+use super::ffi::cl_ext::{cl_amd_device_topology,
+    CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV,
     CL_DEVICE_REGISTERS_PER_BLOCK_NV, CL_DEVICE_WARP_SIZE_NV, CL_DEVICE_GPU_OVERLAP_NV,
     CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV, CL_DEVICE_INTEGRATED_MEMORY_NV,
     CL_DEVICE_PCI_BUS_ID_NV, CL_DEVICE_PCI_SLOT_ID_NV,
@@ -582,6 +583,18 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
 
         // _ => Err(CL_INVALID_VALUE),
     }
+}
+
+/// Convert a u8 slice (e.g. from get_device_info) into a cl_amd_device_topology structure.
+pub fn get_amd_device_topology(bytes: &[u8]) -> cl_amd_device_topology {
+    let size = bytes.len();
+    assert_eq!(size, std::mem::size_of::<cl_amd_device_topology>());
+    let mut topology = cl_amd_device_topology::default();
+    unsafe {
+        std::slice::from_raw_parts_mut(&mut topology as *mut cl_amd_device_topology as *mut u8, size)
+            .copy_from_slice(&bytes);
+    }
+    topology
 }
 
 // cl_device_partition_property:
@@ -1259,7 +1272,12 @@ mod tests {
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_TOPOLOGY_AMD) {
             Ok(value) => {
                 let value = value.to_vec_uchar();
-                println!("CL_DEVICE_TOPOLOGY_AMD: {:?}", value)
+                println!("CL_DEVICE_TOPOLOGY_AMD: {:?}", value);
+
+                let topology = get_amd_device_topology(&value);
+                println!("CL_DEVICE_TOPOLOGY_AMD bus: {}", topology.bus);
+                println!("CL_DEVICE_TOPOLOGY_AMD device: {}", topology.device);
+                println!("CL_DEVICE_TOPOLOGY_AMD function: {}", topology.function);
             }
             Err(e) => println!("OpenCL error, CL_DEVICE_TOPOLOGY_AMD: {}", ClError(e))
         };
