@@ -441,7 +441,7 @@ pub fn get_gl_context_info_khr(
 }
 
 /// Create an event object linked to an OpenGL sync object.  
-/// Requires the cl_khr_glevent e_xtension
+/// Requires the cl_khr_gl_event extension
 /// Calls clCreateEventFromGLsyncKHR.  
 ///
 /// * `context` - a valid OpenCL context.
@@ -449,7 +449,7 @@ pub fn get_gl_context_info_khr(
 ///
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
-#[cfg(feature = "cl_khr_gl_sharing")]
+#[cfg(feature = "cl_khr_gl_event")]
 #[inline]
 pub fn create_event_from_gl_sync_khr(
     context: cl_context,
