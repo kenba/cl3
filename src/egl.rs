@@ -36,6 +36,7 @@ use std::ptr;
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "cl_khr_egl_image")]
+#[inline]
 pub fn create_from_egl_image(
     context: cl_context,
     display: CLeglDisplayKHR,
@@ -66,6 +67,7 @@ pub fn create_from_egl_image(
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "cl_khr_egl_image")]
+#[inline]
 pub fn enqueue_acquire_egl_objects(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
@@ -104,6 +106,7 @@ pub fn enqueue_acquire_egl_objects(
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "cl_khr_egl_image")]
+#[inline]
 pub fn enqueue_release_egl_objects(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
@@ -140,6 +143,7 @@ pub fn enqueue_release_egl_objects(
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "cl_khr_egl_event")]
+#[inline]
 pub fn create_event_from_egl_sync_khr(
     context: cl_context,
     sync: CLeglSyncKHR,
