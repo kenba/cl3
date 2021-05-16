@@ -106,7 +106,7 @@ pub fn create_from_dx9_media_surface_khr(
 }
 
 #[cfg(feature = "cl_khr_dx9_media_sharing")]
-pub fn enqueue_aquire_dx9_media_surfaces_khr(
+pub fn enqueue_acquire_dx9_media_surfaces_khr(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -232,7 +232,7 @@ pub fn create_from_dx9_media_surface_intel(
 }
 
 #[cfg(feature = "cl_intel_dx9_media_sharing")]
-pub fn enqueue_aquire_dx9_objects_intel(
+pub fn enqueue_acquire_dx9_objects_intel(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,

@@ -219,7 +219,7 @@ pub fn get_gl_texture_info(memobj: cl_mem, param_name: TextureInfo) -> Result<In
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
 #[inline]
-pub fn enqueue_aquire_gl_objects(
+pub fn enqueue_acquire_gl_objects(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -450,6 +450,7 @@ pub fn get_gl_context_info_khr(
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "cl_khr_gl_sharing")]
+#[inline]
 pub fn create_event_from_gl_sync_khr(
     context: cl_context,
     sync: gl_sync,

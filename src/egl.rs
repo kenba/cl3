@@ -66,7 +66,7 @@ pub fn create_from_egl_image(
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "cl_khr_egl_image")]
-pub fn enqueue_aquire_egl_objects(
+pub fn enqueue_acquire_egl_objects(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
