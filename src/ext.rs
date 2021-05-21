@@ -75,13 +75,16 @@ pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
 }
 
 #[cfg(feature = "cl_khr_il_program")]
-pub fn create_program_with_il_khr(
-    context: cl_context,
-    il: *const c_void,
-    length: size_t,
-) -> Result<cl_program, cl_int> {
+pub fn create_program_with_il_khr(context: cl_context, il: &[u8]) -> Result<cl_program, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program = unsafe { clCreateProgramWithILKHR(context, il, length, &mut status) };
+    let program = unsafe {
+        clCreateProgramWithILKHR(
+            context,
+            il.as_ptr() as *const c_void,
+            il.len() as size_t,
+            &mut status,
+        )
+    };
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -621,7 +624,7 @@ pub fn create_accelerator_intel(
     accelerator_type: cl_accelerator_type_intel,
     descriptor_size: size_t,
     descriptor: *const c_void,
-) -> Result<*mut c_void, cl_int> {
+) -> Result<cl_accelerator_intel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let ptr = unsafe {
         clCreateAcceleratorINTEL(
