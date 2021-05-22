@@ -31,7 +31,7 @@ use std::mem;
 #[allow(unused_imports)]
 use std::ptr;
 
-#[inline]
+#[cfg(feature = "cl_apple_setmemobjectdestructor")]
 pub fn set_mem_object_destructor_apple(
     memobj: cl_mem,
     pfn_notify: extern "C" fn(cl_context, *const c_void),
