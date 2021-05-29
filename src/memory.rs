@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -417,6 +417,18 @@ pub fn get_supported_image_formats(
     }
 }
 
+/// Get data about an OpenCL memory object.
+/// Calls clGetMemObjectInfo to get the desired data about the memory object.
+pub fn get_mem_object_data(
+    memobj: cl_mem,
+    param_name: cl_mem_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetMemObjectInfo);
+    let size = get_size(memobj, param_name)?;
+    api_info_vector!(get_vector, u8, clGetMemObjectInfo);
+    Ok(get_vector(memobj, param_name, size)?)
+}
+
 // cl_mem_info
 #[derive(Clone, Copy, Debug)]
 pub enum MemInfo {
@@ -482,6 +494,18 @@ pub fn get_mem_object_info(memobj: cl_mem, param_name: MemInfo) -> Result<InfoTy
     }
 }
 
+/// Get data about an OpenCL image object.
+/// Calls clGetImageInfo to get the desired data about the image object.
+pub fn get_image_data(
+    image: cl_mem,
+    param_name: cl_image_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetImageInfo);
+    let size = get_size(image, param_name)?;
+    api_info_vector!(get_vector, u8, clGetImageInfo);
+    Ok(get_vector(image, param_name, size)?)
+}
+
 // cl_image_info
 #[derive(Clone, Copy, Debug)]
 pub enum ImageInfo {
@@ -539,6 +563,18 @@ pub fn get_image_info(image: cl_mem, param_name: ImageInfo) -> Result<InfoType, 
             Ok(InfoType::Uint(get_value(image, param_id)?))
         }
     }
+}
+
+/// Get data about an OpenCL pipe object.
+/// Calls clGetPipeInfo to get the desired data about the pipe object.
+pub fn get_pipe_data(
+    pipe: cl_mem,
+    param_name: cl_pipe_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetPipeInfo);
+    let size = get_size(pipe, param_name)?;
+    api_info_vector!(get_vector, u8, clGetPipeInfo);
+    Ok(get_vector(pipe, param_name, size)?)
 }
 
 // cl_pipe_info

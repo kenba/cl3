@@ -185,6 +185,18 @@ pub fn get_device_ids(
     }
 }
 
+/// Get data about an OpenCL device.
+/// Calls clGetDeviceInfo to get the desired data about the device.
+pub fn get_device_data(
+    device: cl_device_id,
+    param_name: cl_device_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetDeviceInfo);
+    let size = get_size(device, param_name)?;
+    api_info_vector!(get_vector, u8, clGetDeviceInfo);
+    Ok(get_vector(device, param_name, size)?)
+}
+
 // cl_device_info
 #[derive(Clone, Copy, Debug)]
 pub enum DeviceInfo {
@@ -419,9 +431,7 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_BOARD_NAME_AMD // cl_amd_device_attribute_query
         | DeviceInfo::CL_DEVICE_PCI_BUS_INFO_KHR // cl_khr_pci_bus_info
         => {
-            api_info_vector!(get_string, u8, clGetDeviceInfo);
-            let size = get_size(device, param_id)?;
-            Ok(InfoType::VecUchar(get_string(device, param_id, size)?))
+            Ok(InfoType::VecUchar(get_device_data(device, param_id)?))
         }
 
         DeviceInfo::CL_DEVICE_VENDOR_ID

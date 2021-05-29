@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ use cl_sys::{
     clSetEventCallback, clSetUserEventStatus, clWaitForEvents,
 };
 
-use super::api_info_value;
+use super::{api_info_size, api_info_value, api_info_vector};
 
 use libc::{c_void, intptr_t, size_t};
 use std::fmt;
@@ -72,6 +72,18 @@ pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
     } else {
         Ok(())
     }
+}
+
+/// Get data about an OpenCL event.
+/// Calls clGetEventInfo to get the desired data about the event.
+pub fn get_event_data(
+    event: cl_event,
+    param_name: cl_event_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetEventInfo);
+    let size = get_size(event, param_name)?;
+    api_info_vector!(get_vector, u8, clGetEventInfo);
+    Ok(get_vector(event, param_name, size)?)
 }
 
 // cl_event_info
@@ -208,6 +220,18 @@ pub fn set_event_callback(
     } else {
         Ok(())
     }
+}
+
+/// Get profiling data about an OpenCL event.
+/// Calls clGetEventProfilingInfo to get the desired profiling data about the event.
+pub fn get_event_profiling_data(
+    event: cl_event,
+    param_name: cl_profiling_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetEventProfilingInfo);
+    let size = get_size(event, param_name)?;
+    api_info_vector!(get_vector, u8, clGetEventProfilingInfo);
+    Ok(get_vector(event, param_name, size)?)
 }
 
 // cl_profiling_info

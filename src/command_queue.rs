@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -132,6 +132,18 @@ pub fn release_command_queue(command_queue: cl_command_queue) -> Result<(), cl_i
     } else {
         Ok(())
     }
+}
+
+/// Get data about an OpenCL command-queue.
+/// Calls clGetCommandQueueInfo to get the desired data about the command-queue.
+pub fn get_command_queue_data(
+    command_queue: cl_command_queue,
+    param_name: cl_command_queue_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetCommandQueueInfo);
+    let size = get_size(command_queue, param_name)?;
+    api_info_vector!(get_vector, u8, clGetCommandQueueInfo);
+    Ok(get_vector(command_queue, param_name, size)?)
 }
 
 // cl_command_queue_info

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -126,6 +126,18 @@ pub fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     } else {
         Ok(())
     }
+}
+
+/// Get data about an OpenCL sampler object.
+/// Calls clGetDeviceInfo to get the desired data about the sampler object.
+pub fn get_sampler_data(
+    sampler: cl_sampler,
+    param_name: cl_sampler_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetSamplerInfo);
+    let size = get_size(sampler, param_name)?;
+    api_info_vector!(get_vector, u8, clGetSamplerInfo);
+    Ok(get_vector(sampler, param_name, size)?)
 }
 
 // cl_sampler_info

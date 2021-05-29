@@ -228,6 +228,18 @@ pub fn set_kernel_exec_info(
     }
 }
 
+/// Get data about an OpenCL kernel.
+/// Calls clGetKernelInfo to get the desired data about the kernel.
+pub fn get_kernel_data(
+    kernel: cl_kernel,
+    param_name: cl_kernel_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetKernelInfo);
+    let size = get_size(kernel, param_name)?;
+    api_info_vector!(get_vector, u8, clGetKernelInfo);
+    Ok(get_vector(kernel, param_name, size)?)
+}
+
 // cl_kernel_info
 #[derive(Clone, Copy, Debug)]
 pub enum KernelInfo {
@@ -250,14 +262,10 @@ pub enum KernelInfo {
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
 pub fn get_kernel_info(kernel: cl_kernel, param_name: KernelInfo) -> Result<InfoType, cl_int> {
-    api_info_size!(get_size, clGetKernelInfo);
-
     let param_id = param_name as cl_kernel_info;
     match param_name {
         KernelInfo::CL_KERNEL_FUNCTION_NAME | KernelInfo::CL_KERNEL_ATTRIBUTES => {
-            api_info_vector!(get_string, u8, clGetKernelInfo);
-            let size = get_size(kernel, param_id)?;
-            Ok(InfoType::VecUchar(get_string(kernel, param_id, size)?))
+            Ok(InfoType::VecUchar(get_kernel_data(kernel, param_id)?))
         }
 
         KernelInfo::CL_KERNEL_NUM_ARGS | KernelInfo::CL_KERNEL_REFERENCE_COUNT => {
@@ -271,6 +279,20 @@ pub fn get_kernel_info(kernel: cl_kernel, param_name: KernelInfo) -> Result<Info
         }
     }
 }
+
+/// Get data about arguments of an OpenCL kernel.
+/// Calls clGetKernelArgInfo to get the desired data about arguments of the kernel.
+pub fn get_kernel_arg_data(
+    kernel: cl_kernel,
+    arg_indx: cl_uint,
+    param_name: cl_kernel_info,
+) -> Result<Vec<u8>, cl_int> {
+    api2_info_size!(get_size, cl_uint, clGetKernelArgInfo);
+    let size = get_size(kernel, arg_indx, param_name)?;
+    api2_info_vector!(get_vector, cl_uint, u8, clGetKernelArgInfo);
+    Ok(get_vector(kernel, arg_indx, param_name, size)?)
+}
+
 // cl_kernel_arg_info
 #[derive(Clone, Copy, Debug)]
 pub enum KernelArgInfo {
@@ -312,15 +334,24 @@ pub fn get_kernel_arg_info(
         }
 
         KernelArgInfo::CL_KERNEL_ARG_TYPE_NAME | KernelArgInfo::CL_KERNEL_ARG_NAME => {
-            api2_info_size!(get_device_size, cl_uint, clGetKernelArgInfo);
-            api2_info_vector!(get_device_string, cl_uint, u8, clGetKernelArgInfo);
-            let size = get_device_size(kernel, arg_indx, param_id)?;
-            Ok(InfoType::VecUchar(get_device_string(
-                kernel, arg_indx, param_id, size,
-            )?))
+            Ok(InfoType::VecUchar(get_kernel_arg_data(kernel, arg_indx, param_id)?))
         }
     }
 }
+
+/// Get data about work groups of an OpenCL kernel.
+/// Calls clGetKernelArgInfo to get the desired data about work groups of the kernel.
+pub fn get_kernel_work_group_data(
+    kernel: cl_kernel,
+    device: cl_device_id,
+    param_name: cl_kernel_work_group_info,
+) -> Result<Vec<u8>, cl_int> {
+    api2_info_size!(get_size, cl_device_id, clGetKernelWorkGroupInfo);
+    let size = get_size(kernel, device, param_name)?;
+    api2_info_vector!(get_vector, cl_device_id, u8, clGetKernelWorkGroupInfo);
+    Ok(get_vector(kernel, device, param_name, size)?)
+}
+
 // cl_kernel_work_group_info
 #[derive(Clone, Copy, Debug)]
 pub enum KernelWorkGroupInfo {

@@ -37,7 +37,7 @@ use cl_sys::{
     clEnqueueReleaseGLObjects, clGetGLContextInfoKHR, clGetGLObjectInfo, clGetGLTextureInfo,
 };
 
-use super::api_info_value;
+use super::{api_info_size, api_info_value, api_info_vector};
 
 #[allow(unused_imports)]
 use libc::{c_void, intptr_t, size_t};
@@ -173,6 +173,19 @@ pub fn get_gl_object_info(memobj: cl_mem) -> Result<(gl_uint, gl_uint), cl_int> 
     } else {
         Ok((object_type, object_name))
     }
+}
+
+
+/// Get data about an OpenGL texture object.
+/// Calls clGetGLTextureInfo to get the desired data about the texture object.
+pub fn get_gl_texture_data(
+    memobj: cl_mem,
+    param_name: cl_gl_texture_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetGLTextureInfo);
+    let size = get_size(memobj, param_name)?;
+    api_info_vector!(get_vector, u8, clGetGLTextureInfo);
+    Ok(get_vector(memobj, param_name, size)?)
 }
 
 // cl_gl_texture_info

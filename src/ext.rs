@@ -642,6 +642,17 @@ pub fn create_accelerator_intel(
     }
 }
 
+#[cfg(feature = "cl_intel_accelerator")]
+pub fn get_accelerator_data_intel(
+    accelerator: cl_accelerator_intel,
+    param_name: cl_accelerator_info_intel,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetAcceleratorInfoINTEL);
+    let size = get_size(accelerator, param_name)?;
+    api_info_vector!(get_vector, u8, clGetAcceleratorInfoINTEL);
+    Ok(get_vector(accelerator, param_name, size)?)
+}
+
 // cl_accelerator_info_intel
 #[derive(Clone, Copy, Debug)]
 pub enum AcceleratorInfoIntel {
@@ -661,10 +672,7 @@ pub fn get_accelerator_info_intel(
         AcceleratorInfoIntel::CL_ACCELERATOR_DESCRIPTOR_INTEL => {
             // Return the complete descriptor structure supplied when the
             // accelerator was created as a vector of cl_uchars.
-            api_info_size!(get_size, clGetAcceleratorInfoINTEL);
-            api_info_vector!(get_vec, cl_uchar, clGetAcceleratorInfoINTEL);
-            let size = get_size(accelerator, param_id)?;
-            Ok(InfoType::VecUchar(get_vec(accelerator, param_id, size)?))
+            Ok(InfoType::VecUchar(get_accelerator_data_intel(accelerator, param_id)?))
         }
         AcceleratorInfoIntel::CL_ACCELERATOR_REFERENCE_COUNT_INTEL
         | AcceleratorInfoIntel::CL_ACCELERATOR_TYPE_INTEL => {

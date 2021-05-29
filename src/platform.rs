@@ -66,6 +66,18 @@ pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
     }
 }
 
+/// Get data about an OpenCL platform.
+/// Calls clGetPlatformInfo to get the desired data about the platform.
+pub fn get_platform_data(
+    platform: cl_platform_id,
+    param_name: cl_platform_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetPlatformInfo);
+    let size = get_size(platform, param_name)?;
+    api_info_vector!(get_vector, u8, clGetPlatformInfo);
+    Ok(get_vector(platform, param_name, size)?)
+}
+
 // cl_platform_info
 #[derive(Clone, Copy, Debug)]
 pub enum PlatformInfo {
@@ -115,8 +127,6 @@ pub fn get_platform_info(
     platform: cl_platform_id,
     param_name: PlatformInfo,
 ) -> Result<InfoType, cl_int> {
-    api_info_size!(get_size, clGetPlatformInfo);
-
     let param_id = param_name as cl_platform_info;
     match param_name {
         PlatformInfo::CL_PLATFORM_PROFILE
@@ -124,10 +134,9 @@ pub fn get_platform_info(
         | PlatformInfo::CL_PLATFORM_NAME
         | PlatformInfo::CL_PLATFORM_VENDOR
         | PlatformInfo::CL_PLATFORM_EXTENSIONS => {
-            api_info_vector!(get_string, u8, clGetPlatformInfo);
-            let size = get_size(platform, param_id)?;
-            Ok(InfoType::VecUchar(get_string(platform, param_id, size)?))
+            Ok(InfoType::VecUchar(get_platform_data(platform, param_id)?))
         }
+
         // CL_VERSION_3_0
         PlatformInfo::CL_PLATFORM_NUMERIC_VERSION => {
             api_info_value!(get_value, cl_uint, clGetPlatformInfo);
@@ -142,8 +151,9 @@ pub fn get_platform_info(
 
         // CL_VERSION_3_0
         PlatformInfo::CL_PLATFORM_EXTENSIONS_WITH_VERSION => {
-            api_info_vector!(get_vec, cl_name_version, clGetPlatformInfo);
+            api_info_size!(get_size, clGetPlatformInfo);
             let size = get_size(platform, param_id)?;
+            api_info_vector!(get_vec, cl_name_version, clGetPlatformInfo);
             Ok(InfoType::VecNameVersion(get_vec(platform, param_id, size)?))
         }
     }

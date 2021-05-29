@@ -434,6 +434,18 @@ pub fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), cl_int> 
     }
 }
 
+/// Get data about an OpenCL program.
+/// Calls clGetProgramInfo to get the desired data about the program.
+pub fn get_program_data(
+    program: cl_program,
+    param_name: cl_program_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetProgramInfo);
+    let size = get_size(program, param_name)?;
+    api_info_vector!(get_vector, u8, clGetProgramInfo);
+    Ok(get_vector(program, param_name, size)?)
+}
+
 // cl_program_info
 #[derive(Clone, Copy, Debug)]
 pub enum ProgramInfo {
@@ -453,7 +465,6 @@ pub enum ProgramInfo {
     CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT = 0x116A,
     CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT = 0x116B,
 }
-
 
 /// Get specific information about an OpenCL program.  
 /// Calls clGetProgramInfo to get the desired information about the program.
@@ -493,9 +504,7 @@ pub fn get_program_info(
         }
 
         ProgramInfo::CL_PROGRAM_SOURCE | ProgramInfo::CL_PROGRAM_KERNEL_NAMES | ProgramInfo::CL_PROGRAM_IL => {
-            api_info_vector!(get_string, u8, clGetProgramInfo);
-            let size = get_size(program, param_id)?;
-            Ok(InfoType::VecUchar(get_string(program, param_id, size)?))
+            Ok(InfoType::VecUchar(get_program_data(program, param_id)?))
         }
 
         ProgramInfo::CL_PROGRAM_BINARY_SIZES => {
@@ -545,6 +554,19 @@ pub fn get_program_info(
     }
 }
 
+/// Get data about an OpenCL program build.
+/// Calls clGetProgramBuildInfo to get the desired data about the program build.
+pub fn get_program_build_data(
+    program: cl_program,
+    device: cl_device_id,
+    param_name: cl_program_info,
+) -> Result<Vec<u8>, cl_int> {
+    api2_info_size!(get_size, cl_device_id, clGetProgramBuildInfo);
+    let size = get_size(program, device, param_name)?;
+    api2_info_vector!(get_vector, cl_device_id, u8, clGetProgramBuildInfo);
+    Ok(get_vector(program, device, param_name, size)?)
+}
+
 // cl_program_build_info
 #[derive(Clone, Copy, Debug)]
 pub enum ProgramBuildInfo {
@@ -580,10 +602,7 @@ pub fn get_program_build_info(
 
         ProgramBuildInfo::CL_PROGRAM_BUILD_OPTIONS 
         | ProgramBuildInfo::CL_PROGRAM_BUILD_LOG => {
-            api2_info_size!(get_device_size, cl_device_id, clGetProgramBuildInfo);
-            api2_info_vector!(get_device_string, cl_device_id, u8, clGetProgramBuildInfo);
-            let size = get_device_size(program, device, param_id)?;
-            Ok(InfoType::VecUchar(get_device_string(program, device, param_id, size)?))
+            Ok(InfoType::VecUchar(get_program_build_data(program, device, param_id)?))
         }
 
         ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE => {

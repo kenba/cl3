@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -140,6 +140,18 @@ pub fn release_context(context: cl_context) -> Result<(), cl_int> {
     } else {
         Ok(())
     }
+}
+
+/// Get data about an OpenCL context.
+/// Calls clGetContextInfo to get the desired data about the context.
+pub fn get_context_data(
+    context: cl_context,
+    param_name: cl_context_info,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetContextInfo);
+    let size = get_size(context, param_name)?;
+    api_info_vector!(get_vector, u8, clGetContextInfo);
+    Ok(get_vector(context, param_name, size)?)
 }
 
 // cl_context_info
