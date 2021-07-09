@@ -25,7 +25,7 @@ use cl3::kernel::{create_kernel, release_kernel, set_kernel_arg};
 use cl3::memory::{create_buffer, release_mem_object, CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY};
 use cl3::platform::{get_platform_ids, get_platform_info, PlatformInfo};
 use cl3::program::{build_program, create_program_with_source, release_program};
-use cl3::types::{cl_event, cl_float, cl_mem, CL_FALSE, CL_TRUE};
+use cl3::types::{cl_event, cl_float, cl_mem, CL_NON_BLOCKING, CL_BLOCKING};
 use libc::{c_void, size_t};
 use std::ffi::CString;
 use std::mem;
@@ -124,7 +124,7 @@ fn test_opencl_1_2_example() {
     let x_write_event = enqueue_write_buffer(
         queue,
         x,
-        CL_TRUE,
+        CL_BLOCKING,
         0,
         ones.len() * mem::size_of::<cl_float>(),
         ones.as_ptr() as cl_mem,
@@ -136,7 +136,7 @@ fn test_opencl_1_2_example() {
     let y_write_event = enqueue_write_buffer(
         queue,
         y,
-        CL_FALSE,
+        CL_NON_BLOCKING,
         0,
         sums.len() * mem::size_of::<cl_float>(),
         sums.as_ptr() as cl_mem,
@@ -210,7 +210,7 @@ fn test_opencl_1_2_example() {
     let read_event = enqueue_read_buffer(
         queue,
         z,
-        CL_FALSE,
+        CL_NON_BLOCKING,
         0,
         results.len() * mem::size_of::<cl_float>(),
         results.as_ptr() as cl_mem,
