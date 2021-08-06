@@ -56,7 +56,7 @@ use super::ffi::cl_ext::{cl_amd_device_topology, cl_device_pci_bus_info_khr,
     CL_DEVICE_GFXIP_MAJOR_AMD, CL_DEVICE_GFXIP_MINOR_AMD,
     CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD,
     CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD, CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD,
-    CL_DEVICE_PCIE_ID_AMD, CL_DEVICE_PCI_BUS_INFO_KHR,
+    CL_DEVICE_PCIE_ID_AMD, CL_DEVICE_PCI_BUS_INFO_KHR, CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR,
     CL_DEVICE_UUID_KHR, CL_DRIVER_UUID_KHR, CL_DEVICE_LUID_VALID_KHR,
     CL_DEVICE_LUID_KHR, CL_DEVICE_NODE_MASK_KHR,
 };
@@ -330,6 +330,9 @@ pub enum DeviceInfo {
     CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED = 0x1072,
     // #endif
 
+    // cl_khr_integer_dot_product extension
+    CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR = CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR as isize,
+
     // cl_nv_device_attribute_query extension
     CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV = CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV as isize,
     CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV = CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV as isize,
@@ -540,6 +543,7 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_ATOMIC_FENCE_CAPABILITIES // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES // CL_VERSION_3_0
+        | DeviceInfo::CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR
          => {
             api_info_value!(get_value, cl_ulong, clGetDeviceInfo);
             Ok(InfoType::Ulong(get_value(device, param_id)?))

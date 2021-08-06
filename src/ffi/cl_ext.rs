@@ -326,6 +326,16 @@ pub struct cl_device_pci_bus_info_khr {
 
 pub const CL_DEVICE_PCI_BUS_INFO_KHR: cl_device_info = 0x410F;
 
+// cl_khr_integer_dot_product
+
+pub type cl_device_integer_dot_product_capabilities_khr = cl_bitfield;
+pub const CL_DEVICE_INTEGER_DOT_PRODUCT_INPUT_4x8BIT_PACKED_KHR:
+    cl_device_integer_dot_product_capabilities_khr = 1 << 0;
+pub const CL_DEVICE_INTEGER_DOT_PRODUCT_INPUT_4x8BIT_KHR:
+    cl_device_integer_dot_product_capabilities_khr = 1 << 1;
+
+pub const CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR: cl_device_info = 0x1073;
+
 // cl_arm_import_memory extension
 
 pub type cl_import_properties_arm = intptr_t;
