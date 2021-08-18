@@ -25,22 +25,35 @@ use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::info_type::InfoType;
 use super::types::{
     cl_bool, cl_command_queue, cl_command_queue_info, cl_command_queue_properties, cl_context,
-    cl_device_id, cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_mem_migration_flags,
-    cl_queue_properties, cl_uint, cl_ulong,
+    cl_device_id, cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_uint, cl_ulong,
 };
+#[cfg(feature = "CL_VERSION_1_2")]
+use super::types::cl_mem_migration_flags;
+#[cfg(feature = "CL_VERSION_2_0")]
+use super::types::cl_queue_properties;
+#[cfg(feature = "CL_VERSION_2_1")]
+use super::types::cl_mem_migration_flags;
 use super::{api_info_size, api_info_value, api_info_vector};
-#[allow(unused_imports)]
 use cl_sys::{
-    clCreateCommandQueue, clCreateCommandQueueWithProperties, clEnqueueBarrierWithWaitList,
-    clEnqueueCopyBuffer, clEnqueueCopyBufferRect, clEnqueueCopyBufferToImage, clEnqueueCopyImage,
-    clEnqueueCopyImageToBuffer, clEnqueueFillBuffer, clEnqueueFillImage, clEnqueueMapBuffer,
-    clEnqueueMapImage, clEnqueueMarkerWithWaitList, clEnqueueMigrateMemObjects,
+    clCreateCommandQueue, clEnqueueCopyBuffer, clEnqueueCopyBufferRect, clEnqueueCopyBufferToImage,
+    clEnqueueCopyImage, clEnqueueCopyImageToBuffer, clEnqueueMapBuffer, clEnqueueMapImage,
     clEnqueueNDRangeKernel, clEnqueueNativeKernel, clEnqueueReadBuffer, clEnqueueReadBufferRect,
-    clEnqueueReadImage, clEnqueueSVMFree, clEnqueueSVMMap, clEnqueueSVMMemFill, clEnqueueSVMMemcpy,
-    clEnqueueSVMMigrateMem, clEnqueueSVMUnmap, clEnqueueTask, clEnqueueUnmapMemObject,
-    clEnqueueWriteBuffer, clEnqueueWriteBufferRect, clEnqueueWriteImage, clFinish, clFlush,
-    clGetCommandQueueInfo, clReleaseCommandQueue, clRetainCommandQueue,
+    clEnqueueReadImage, clEnqueueUnmapMemObject, clEnqueueWriteBuffer, clEnqueueWriteBufferRect,
+    clEnqueueWriteImage, clFinish, clFlush, clGetCommandQueueInfo, clReleaseCommandQueue,
+    clRetainCommandQueue,
 };
+#[cfg(feature = "CL_VERSION_1_2")]
+use cl_sys::{
+    clEnqueueBarrierWithWaitList, clEnqueueFillBuffer, clEnqueueFillImage,
+    clEnqueueMarkerWithWaitList, clEnqueueMigrateMemObjects, clEnqueueTask,
+};
+#[cfg(feature = "CL_VERSION_2_0")]
+use cl_sys::{
+   clCreateCommandQueueWithProperties, clEnqueueSVMFree, clEnqueueSVMMap, clEnqueueSVMMemFill,
+   clEnqueueSVMMemcpy, clEnqueueSVMUnmap,
+};
+#[cfg(feature = "CL_VERSION_2_1")]
+use cl_sys::clEnqueueSVMMigrateMem;
 
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
@@ -57,7 +70,6 @@ use std::ptr;
 ///
 /// returns a Result containing the new OpenCL command-queue
 /// or the error code from the OpenCL C API function.
-#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn create_command_queue(
     context: cl_context,
@@ -392,6 +404,7 @@ pub fn enqueue_write_buffer_rect(
     }
 }
 
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn enqueue_fill_buffer(
     command_queue: cl_command_queue,
@@ -568,6 +581,7 @@ pub fn enqueue_write_image(
     }
 }
 
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn enqueue_fill_image(
     command_queue: cl_command_queue,
@@ -798,6 +812,7 @@ pub fn enqueue_unmap_mem_object(
     }
 }
 
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn enqueue_migrate_mem_object(
     command_queue: cl_command_queue,
@@ -918,6 +933,7 @@ pub fn enqueue_native_kernel(
     }
 }
 
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn enqueue_marker_with_wait_list(
     command_queue: cl_command_queue,
@@ -940,6 +956,7 @@ pub fn enqueue_marker_with_wait_list(
     }
 }
 
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn enqueue_barrier_with_wait_list(
     command_queue: cl_command_queue,
@@ -962,6 +979,7 @@ pub fn enqueue_barrier_with_wait_list(
     }
 }
 
+#[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn enqueue_svm_free(
     command_queue: cl_command_queue,
@@ -999,6 +1017,7 @@ pub fn enqueue_svm_free(
     }
 }
 
+#[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn enqueue_svm_mem_cpy(
     command_queue: cl_command_queue,
@@ -1029,6 +1048,7 @@ pub fn enqueue_svm_mem_cpy(
     }
 }
 
+#[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn enqueue_svm_mem_fill(
     command_queue: cl_command_queue,
@@ -1059,6 +1079,7 @@ pub fn enqueue_svm_mem_fill(
     }
 }
 
+#[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn enqueue_svm_map(
     command_queue: cl_command_queue,
@@ -1089,6 +1110,7 @@ pub fn enqueue_svm_map(
     }
 }
 
+#[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn enqueue_svm_unmap(
     command_queue: cl_command_queue,

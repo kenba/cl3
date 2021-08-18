@@ -61,13 +61,14 @@ use super::ffi::cl_ext::{cl_amd_device_topology, cl_device_pci_bus_info_khr,
     CL_DEVICE_LUID_KHR, CL_DEVICE_NODE_MASK_KHR,
 };
 use super::{api_info_size, api_info_value, api_info_vector};
-#[allow(unused_imports)]
-use cl_sys::{
-    clCreateSubDevices, clGetDeviceIDs, clGetDeviceInfo, clReleaseDevice, clRetainDevice, 
-    clSetDefaultDeviceCommandQueue, 
-};
+use cl_sys::{clGetDeviceIDs, clGetDeviceInfo};
+#[cfg(feature = "CL_VERSION_1_2")]
+use cl_sys::{clCreateSubDevices, clReleaseDevice, clRetainDevice};
+#[cfg(feature = "CL_VERSION_2_1")]
+use cl_sys::clSetDefaultDeviceCommandQueue;
 
 // clGetDeviceAndHostTimer, clGetHostTimer, are incorrect in cl_sys
+#[cfg(feature = "CL_VERSION_2_1")]
 #[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
 #[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
 extern "system" {
@@ -646,6 +647,7 @@ pub const CL_DEVICE_PARTITION_BY_COUNTS_LIST_END: cl_device_partition_property =
 pub const CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN: cl_device_partition_property = 0x1088;
 
 // helper function for create_sub_devices
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 fn count_sub_devices(
     in_device: cl_device_id,
@@ -677,6 +679,7 @@ fn count_sub_devices(
 ///
 /// returns a Result containing a vector of available sub-device ids
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn create_sub_devices(
     in_device: cl_device_id,
@@ -712,6 +715,7 @@ pub fn create_sub_devices(
 /// * `device` - the cl_device_id of the OpenCL device.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clRetainDevice(device) };
@@ -729,6 +733,7 @@ pub fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 /// * `device` - the cl_device_id of the OpenCL device.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn release_device(device: cl_device_id) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clReleaseDevice(device) };
@@ -1753,6 +1758,7 @@ mod tests {
         assert!(!value.is_empty());
     }
 
+    #[cfg(feature = "CL_VERSION_1_2")]
     #[test]
     fn test_get_sub_devices() {
         let platform_ids = get_platform_ids().unwrap();
