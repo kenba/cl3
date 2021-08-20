@@ -23,19 +23,21 @@ pub use cl_sys::{
 };
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-#[allow(unused_imports)]
 use cl_sys::{
-    clCreateProgramWithSource, clCreateProgramWithBinary, 
-    clCreateProgramWithIL, clLinkProgram, clCompileProgram, clRetainProgram, clReleaseProgram,
+    clCreateProgramWithSource, clCreateProgramWithBinary, clRetainProgram, clReleaseProgram,
     clBuildProgram, clGetProgramInfo, clGetProgramBuildInfo,
-    // clUnloadPlatformCompiler, clCreateProgramWithBuiltInKernels,
-    // clSetProgramReleaseCallback, clSetProgramSpecializationConstant,
 };
+#[cfg(feature = "CL_VERSION_1_2")]
+use cl_sys::{clLinkProgram, clCompileProgram};
+#[cfg(feature = "CL_VERSION_2_1")]
+use cl_sys::clCreateProgramWithIL;
 use super::info_type::InfoType;
 use super::types::{
-    cl_int, cl_program, cl_program_info, cl_platform_id, cl_context, cl_device_id,
+    cl_int, cl_program, cl_program_info, cl_context, cl_device_id,
     cl_uint, cl_program_build_info,
 };
+#[cfg(feature = "CL_VERSION_1_2")]
+use super::types::cl_platform_id;
 use super::{api_info_size, api_info_value, api_info_vector,
     api2_info_size, api2_info_vector, api2_info_value};
 
@@ -51,8 +53,10 @@ use std::ffi::CStr;
 #[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
 #[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
 extern "system" {
+    #[cfg(feature = "CL_VERSION_1_2")]
     pub fn clUnloadPlatformCompiler(platform: cl_platform_id) -> cl_int;
 
+    #[cfg(feature = "CL_VERSION_1_2")]
     pub fn clCreateProgramWithBuiltInKernels(
         context: cl_context,
         num_devices: cl_uint,
@@ -61,12 +65,14 @@ extern "system" {
         errcode_ret: *mut cl_int,
     ) -> cl_program;
 
+    #[cfg(feature = "CL_VERSION_2_2")]
     pub fn clSetProgramReleaseCallback(
         program: cl_program,
         pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
         user_data: *mut c_void,
     ) -> cl_int;
 
+    #[cfg(feature = "CL_VERSION_2_2")]
     pub fn clSetProgramSpecializationConstant(
         program: cl_program,
         spec_id: cl_uint,
@@ -152,6 +158,7 @@ pub fn create_program_with_binary(
 /// 
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn create_program_with_builtin_kernels(
     context: cl_context,
@@ -290,6 +297,7 @@ pub fn build_program(
 /// 
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn compile_program(
     program: cl_program,
@@ -333,6 +341,7 @@ pub fn compile_program(
 /// 
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn link_program(
     context: cl_context,
@@ -424,6 +433,7 @@ pub fn set_program_specialization_constant(
 /// * `platform` - the platform.
 /// 
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clUnloadPlatformCompiler(platform) };
@@ -624,6 +634,12 @@ mod tests {
     use crate::context::{create_context, release_context};
     use crate::device::{get_device_ids, CL_DEVICE_TYPE_ALL};
     use crate::platform::get_platform_ids;
+    #[cfg(any(
+        feature = "CL_VERSION_1_2",
+        feature = "CL_VERSION_2_0",
+        feature = "CL_VERSION_2_1",
+        feature = "CL_VERSION_2_2"
+    ))]
     use crate::error_codes::error_text;
     use std::ffi::CString;
 
@@ -713,7 +729,7 @@ mod tests {
         println!("CL_PROGRAM_BINARY_TYPE: {:?}", value);
         assert_eq!(CL_PROGRAM_BINARY_TYPE_EXECUTABLE as u32, value);
 
-        // CL_VERSION_2_0 value
+        #[cfg(feature = "CL_VERSION_2_0")]
         match get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE) {
             Ok(value) => {
                 let value = value.to_size();
@@ -745,7 +761,7 @@ mod tests {
         println!("CL_PROGRAM_KERNEL_NAMES: {}", value);
         assert!(0 < value.len());
 
-        // CL_VERSION_2_1 value
+        #[cfg(feature = "CL_VERSION_2_1")]
         match get_program_info(program, ProgramInfo::CL_PROGRAM_IL) {
             Ok(value) => {
                 let value = value.to_string();
@@ -754,7 +770,7 @@ mod tests {
             Err(e) => println!("OpenCL error, CL_PROGRAM_IL: {}", error_text(e))
         };
 
-         // CL_VERSION_2_2 value
+        #[cfg(feature = "CL_VERSION_2_2")]
         match get_program_info(program, ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
             Ok(value) => {
                 let value = value.to_uint();
@@ -763,7 +779,7 @@ mod tests {
             Err(e) => println!("OpenCL error, CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: {}", error_text(e))
         };
 
-        // CL_VERSION_2_2 value
+        #[cfg(feature = "CL_VERSION_2_2")]
         match get_program_info(program, ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
             Ok(value) => {
                 let value = value.to_uint();
@@ -772,6 +788,7 @@ mod tests {
             Err(e) => println!("OpenCL error, CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: {}", error_text(e))
         };
 
+        #[cfg(feature = "CL_VERSION_1_2")]
         if let Err(e) = unload_platform_compiler(platform_id) {
             println!("OpenCL error, clUnloadPlatformCompiler: {}", error_text(e));
         }

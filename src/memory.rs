@@ -42,12 +42,12 @@ use super::types::{
     cl_map_flags, cl_mem, cl_mem_flags, cl_mem_info, cl_mem_object_type, cl_mem_properties,
     cl_pipe_info, cl_svm_mem_flags, cl_uint, cl_ulong,
 };
-#[allow(unused_imports)]
 use cl_sys::{
-    clCreateBuffer, clCreatePipe, clCreateSubBuffer, clGetImageInfo, clGetMemObjectInfo,
-    clGetPipeInfo, clReleaseMemObject, clRetainMemObject, clSVMAlloc, clSVMFree,
-    clSetMemObjectDestructorCallback,
+    clCreateBuffer, clCreateSubBuffer, clGetImageInfo, clGetMemObjectInfo, clReleaseMemObject,
+    clRetainMemObject, clSetMemObjectDestructorCallback,
 };
+#[cfg(feature = "CL_VERSION_2_0")]
+use cl_sys::{clCreatePipe, clGetPipeInfo, clSVMAlloc, clSVMFree};
 
 use super::{api_info_size, api_info_value, api_info_vector};
 
@@ -70,6 +70,7 @@ extern "system" {
         num_image_formats: *mut cl_uint,
     ) -> cl_int;
 
+    #[cfg(feature = "CL_VERSION_1_2")]
     pub fn clCreateImage(
         context: cl_context,
         flags: cl_mem_flags,
@@ -80,6 +81,7 @@ extern "system" {
     ) -> cl_mem;
 
     // #ifdef CL_VERSION_3_0
+    #[cfg(feature = "CL_VERSION_3_0")]
     pub fn clCreateBufferWithProperties(
         context: cl_context,
         properties: *const cl_mem_properties,
@@ -89,6 +91,7 @@ extern "system" {
         errcode_ret: *mut cl_int,
     ) -> cl_mem;
 
+    #[cfg(feature = "CL_VERSION_3_0")]
     pub fn clCreateImageWithProperties(
         context: cl_context,
         properties: *const cl_mem_properties,
@@ -183,6 +186,7 @@ pub fn create_sub_buffer(
 ///
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn create_image(
     context: cl_context,
@@ -223,6 +227,7 @@ pub fn create_image(
 ///
 /// returns a Result containing the new OpenCL pipe object
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn create_pipe(
     context: cl_context,
@@ -567,6 +572,7 @@ pub fn get_image_info(image: cl_mem, param_name: ImageInfo) -> Result<InfoType, 
 
 /// Get data about an OpenCL pipe object.
 /// Calls clGetPipeInfo to get the desired data about the pipe object.
+#[cfg(feature = "CL_VERSION_2_0")]
 pub fn get_pipe_data(
     pipe: cl_mem,
     param_name: cl_pipe_info,
@@ -578,6 +584,7 @@ pub fn get_pipe_data(
 }
 
 // cl_pipe_info
+#[cfg(feature = "CL_VERSION_2_0")]
 #[derive(Clone, Copy, Debug)]
 pub enum PipeInfo {
     // CL_VERSION_2_0
@@ -597,6 +604,7 @@ pub enum PipeInfo {
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_2_0")]
 pub fn get_pipe_info(pipe: cl_mem, param_name: PipeInfo) -> Result<InfoType, cl_int> {
     let param_id = param_name as cl_pipe_info;
     match param_name {
@@ -652,6 +660,7 @@ pub fn set_mem_object_destructor_callback(
 ///
 /// returns Result containing the address of the SVM buffer
 /// or the error code: CL_INVALID_VALUE if the address is NULL.
+#[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn svm_alloc(
     context: cl_context,
@@ -673,6 +682,7 @@ pub fn svm_alloc(
 ///
 /// * `context` - the valid OpenCL context used to create the SVM buffer.
 /// * `svm_pointer` - the value returned by a call to clSVMAlloc.
+#[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
     unsafe { clSVMFree(context, svm_pointer) };

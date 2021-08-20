@@ -20,21 +20,20 @@ use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::info_type::InfoType;
 use super::types::{
     cl_addressing_mode, cl_bool, cl_context, cl_filter_mode, cl_int, cl_sampler, cl_sampler_info,
-    cl_sampler_properties, cl_uint, cl_ulong,
+    cl_uint, cl_ulong,
 };
+#[cfg(feature = "CL_VERSION_2_0")]
+use super::types::cl_sampler_properties;
 use super::{api_info_size, api_info_value, api_info_vector};
-#[allow(unused_imports)]
-use cl_sys::{
-    clCreateSampler, clCreateSamplerWithProperties, clGetSamplerInfo, clReleaseSampler,
-    clRetainSampler,
-};
+use cl_sys::{clCreateSampler, clGetSamplerInfo, clReleaseSampler, clRetainSampler};
+#[cfg(feature = "CL_VERSION_2_0")]
+use cl_sys::clCreateSamplerWithProperties;
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
 /// Create an OpenCL buffer sampler for a context.  
 /// Calls clCreateSampler to create an OpenCL sampler object.  
-/// CL_VERSION_1_2
 ///
 /// * `context` - a valid OpenCL context.
 /// * `normalized_coords` - same interpretation as CL_SAMPLER_NORMALIZED_COORDS.
@@ -45,7 +44,6 @@ use std::ptr;
 /// are described in: [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table) table.  
 /// returns a Result containing the new OpenCL sampler object
 /// or the error code from the OpenCL C API function.
-#[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn create_sampler(
     context: cl_context,

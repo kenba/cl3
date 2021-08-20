@@ -39,10 +39,13 @@ use super::{
 };
 #[allow(unused_imports)]
 use cl_sys::{
-    clCloneKernel, clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
-    clGetKernelSubGroupInfo, clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel,
-    clSetKernelArg, clSetKernelArgSVMPointer, clSetKernelExecInfo,
+    clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
+    clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel, clSetKernelArg
 };
+#[cfg(feature = "CL_VERSION_2_0")]
+use cl_sys::{clSetKernelArgSVMPointer, clSetKernelExecInfo};
+#[cfg(feature = "CL_VERSION_2_1")]
+use cl_sys::{clCloneKernel, clGetKernelSubGroupInfo};
 
 use libc::{c_void, intptr_t, size_t};
 use std::ffi::CStr;
@@ -189,6 +192,7 @@ pub fn set_kernel_arg(
 /// * `arg_ptr` - the SVM pointer to the data for the argument at arg_index.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn set_kernel_arg_svm_pointer(
     kernel: cl_kernel,
@@ -212,6 +216,7 @@ pub fn set_kernel_arg_svm_pointer(
 /// * `param_ptr` - pointer to the data for the param_name.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn set_kernel_exec_info(
     kernel: cl_kernel,
@@ -282,6 +287,7 @@ pub fn get_kernel_info(kernel: cl_kernel, param_name: KernelInfo) -> Result<Info
 
 /// Get data about arguments of an OpenCL kernel.
 /// Calls clGetKernelArgInfo to get the desired data about arguments of the kernel.
+#[cfg(feature = "CL_VERSION_1_2")]
 pub fn get_kernel_arg_data(
     kernel: cl_kernel,
     arg_indx: cl_uint,
@@ -294,6 +300,7 @@ pub fn get_kernel_arg_data(
 }
 
 // cl_kernel_arg_info
+#[cfg(feature = "CL_VERSION_1_2")]
 #[derive(Clone, Copy, Debug)]
 pub enum KernelArgInfo {
     CL_KERNEL_ARG_ADDRESS_QUALIFIER = 0x1196,
@@ -313,6 +320,7 @@ pub enum KernelArgInfo {
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
+#[cfg(feature = "CL_VERSION_1_2")]
 pub fn get_kernel_arg_info(
     kernel: cl_kernel,
     arg_indx: cl_uint,
@@ -420,6 +428,7 @@ pub fn get_kernel_work_group_info(
 }
 
 // cl_kernel_sub_group_info
+#[cfg(feature = "CL_VERSION_2_1")]
 #[derive(Clone, Copy, Debug)]
 pub enum KernelSubGroupInfo {
     CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE = 0x2033,
@@ -599,6 +608,7 @@ mod tests {
         let value = value.to_string();
         println!("CL_KERNEL_ATTRIBUTES: {}", value);
 
+        #[cfg(feature = "CL_VERSION_1_2")]
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER) {
             Ok(value) => {
                 let value = value.to_uint();
@@ -610,6 +620,7 @@ mod tests {
             ),
         }
 
+        #[cfg(feature = "CL_VERSION_1_2")]
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ACCESS_QUALIFIER) {
             Ok(value) => {
                 let value = value.to_uint();
@@ -621,6 +632,7 @@ mod tests {
             ),
         }
 
+        #[cfg(feature = "CL_VERSION_1_2")]
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_TYPE_NAME) {
             Ok(value) => {
                 let value = value.to_string();
@@ -630,6 +642,7 @@ mod tests {
             Err(e) => println!("OpenCL error, CL_KERNEL_ARG_TYPE_NAME: {}", error_text(e)),
         }
 
+        #[cfg(feature = "CL_VERSION_1_2")]
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_TYPE_QUALIFIER) {
             Ok(value) => {
                 let value = value.to_ulong();
@@ -641,6 +654,7 @@ mod tests {
             ),
         }
 
+        #[cfg(feature = "CL_VERSION_1_2")]
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_NAME) {
             Ok(value) => {
                 let value = value.to_string();

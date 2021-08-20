@@ -14,10 +14,10 @@ edition = "2018"
 
 [features]
 
-CL_VERSION_1_2 = []
-CL_VERSION_2_0 = []
-CL_VERSION_2_1 = []
-CL_VERSION_2_2 = []
+CL_VERSION_1_2 = ["cl-sys/opencl_version_1_2"]
+CL_VERSION_2_0 = ["cl-sys/opencl_version_2_0"]
+CL_VERSION_2_1 = ["cl-sys/opencl_version_2_1"]
+CL_VERSION_2_2 = ["cl-sys/opencl_version_2_2"]
 CL_VERSION_3_0 = []
 
 cl_apple_setmemobjectdestructor = []
@@ -56,4 +56,9 @@ libc = "0.2"
 
 [dependencies.cl-sys]
 version = "0.4.2"
-features = ["opencl_version_2_0", "opencl_version_2_1", "opencl_version_2_2"]
+default-features = false
+# The `opencl_version_1_2` always needs to be enables, else `cl-sys` won't
+# compile due to
+# https://github.com/cogciprocate/ocl/blob/03086863e95e43033ae67f1530801cb57032e1a3/cl-sys/src/cl_h.rs#L1051
+# accidentally not being commented out.
+features = ["opencl_version_1_2"]
