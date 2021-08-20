@@ -57,7 +57,7 @@ libc = "0.2"
 [dependencies.cl-sys]
 version = "0.4.2"
 default-features = false
-# The `opencl_version_1_2` always needs to be enables, else `cl-sys` won't
+# The `opencl_version_1_2` always needs to be enabled, else `cl-sys` won't
 # compile due to
 # https://github.com/cogciprocate/ocl/blob/03086863e95e43033ae67f1530801cb57032e1a3/cl-sys/src/cl_h.rs#L1051
 # accidentally not being commented out.

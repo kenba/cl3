@@ -23,16 +23,12 @@ pub use cl_sys::{
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::info_type::InfoType;
+#[allow(unused_imports)]
 use super::types::{
     cl_bool, cl_command_queue, cl_command_queue_info, cl_command_queue_properties, cl_context,
-    cl_device_id, cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_uint, cl_ulong,
+    cl_device_id, cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_mem_migration_flags,
+    cl_queue_properties, cl_uint, cl_ulong,
 };
-#[cfg(feature = "CL_VERSION_1_2")]
-use super::types::cl_mem_migration_flags;
-#[cfg(feature = "CL_VERSION_2_0")]
-use super::types::cl_queue_properties;
-#[cfg(feature = "CL_VERSION_2_1")]
-use super::types::cl_mem_migration_flags;
 use super::{api_info_size, api_info_value, api_info_vector};
 use cl_sys::{
     clCreateCommandQueue, clEnqueueCopyBuffer, clEnqueueCopyBufferRect, clEnqueueCopyBufferToImage,
@@ -70,6 +66,7 @@ use std::ptr;
 ///
 /// returns a Result containing the new OpenCL command-queue
 /// or the error code from the OpenCL C API function.
+#[deprecated(since = "CL_VERSION_2_0", note = "Use create_command_queue_with_properties instead.")]
 #[inline]
 pub fn create_command_queue(
     context: cl_context,

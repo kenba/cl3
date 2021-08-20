@@ -23,6 +23,15 @@ pub use cl_sys::{
 };
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
+use super::info_type::InfoType;
+#[allow(unused_imports)]
+use super::types::{
+    cl_int, cl_program, cl_program_info, cl_platform_id, cl_context, cl_device_id,
+    cl_uint, cl_program_build_info,
+};
+use super::{api_info_size, api_info_value, api_info_vector,
+    api2_info_size, api2_info_vector, api2_info_value};
+
 use cl_sys::{
     clCreateProgramWithSource, clCreateProgramWithBinary, clRetainProgram, clReleaseProgram,
     clBuildProgram, clGetProgramInfo, clGetProgramBuildInfo,
@@ -31,15 +40,6 @@ use cl_sys::{
 use cl_sys::{clLinkProgram, clCompileProgram};
 #[cfg(feature = "CL_VERSION_2_1")]
 use cl_sys::clCreateProgramWithIL;
-use super::info_type::InfoType;
-use super::types::{
-    cl_int, cl_program, cl_program_info, cl_context, cl_device_id,
-    cl_uint, cl_program_build_info,
-};
-#[cfg(feature = "CL_VERSION_1_2")]
-use super::types::cl_platform_id;
-use super::{api_info_size, api_info_value, api_info_vector,
-    api2_info_size, api2_info_vector, api2_info_value};
 
 use libc::{c_void, intptr_t, size_t, c_char, c_uchar};
 use std::mem;
@@ -634,12 +634,7 @@ mod tests {
     use crate::context::{create_context, release_context};
     use crate::device::{get_device_ids, CL_DEVICE_TYPE_ALL};
     use crate::platform::get_platform_ids;
-    #[cfg(any(
-        feature = "CL_VERSION_1_2",
-        feature = "CL_VERSION_2_0",
-        feature = "CL_VERSION_2_1",
-        feature = "CL_VERSION_2_2"
-    ))]
+    #[allow(unused_imports)]
     use crate::error_codes::error_text;
     use std::ffi::CString;
 

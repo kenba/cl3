@@ -309,6 +309,7 @@ pub fn enqueue_release_gl_objects(
 ///
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
+#[deprecated(since = "CL_VERSION_1_2", note = "Use create_from_gl_texture instead.")]
 #[inline]
 pub fn create_from_gl_texture_2d(
     context: cl_context,
@@ -349,6 +350,7 @@ pub fn create_from_gl_texture_2d(
 ///
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
+#[deprecated(since = "CL_VERSION_1_2", note = "Use create_from_gl_texture instead.")]
 #[inline]
 pub fn create_from_gl_texture_3d(
     context: cl_context,

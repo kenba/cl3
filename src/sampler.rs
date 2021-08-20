@@ -18,12 +18,11 @@
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::info_type::InfoType;
+#[allow(unused_imports)]
 use super::types::{
     cl_addressing_mode, cl_bool, cl_context, cl_filter_mode, cl_int, cl_sampler, cl_sampler_info,
-    cl_uint, cl_ulong,
+    cl_sampler_properties, cl_uint, cl_ulong,
 };
-#[cfg(feature = "CL_VERSION_2_0")]
-use super::types::cl_sampler_properties;
 use super::{api_info_size, api_info_value, api_info_vector};
 use cl_sys::{clCreateSampler, clGetSamplerInfo, clReleaseSampler, clRetainSampler};
 #[cfg(feature = "CL_VERSION_2_0")]
@@ -44,6 +43,7 @@ use std::ptr;
 /// are described in: [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table) table.  
 /// returns a Result containing the new OpenCL sampler object
 /// or the error code from the OpenCL C API function.
+#[deprecated(since = "CL_VERSION_2_0", note = "Use create_sampler_with_properties instead.")]
 #[inline]
 pub fn create_sampler(
     context: cl_context,
