@@ -66,7 +66,6 @@ use std::ptr;
 ///
 /// returns a Result containing the new OpenCL command-queue
 /// or the error code from the OpenCL C API function.
-#[deprecated(since = "CL_VERSION_2_0", note = "Use create_command_queue_with_properties instead.")]
 #[inline]
 pub fn create_command_queue(
     context: cl_context,

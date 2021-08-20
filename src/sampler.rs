@@ -33,6 +33,7 @@ use std::ptr;
 
 /// Create an OpenCL buffer sampler for a context.  
 /// Calls clCreateSampler to create an OpenCL sampler object.  
+/// Deprecated in CL_VERSION_2_0 by create_sampler_with_properties.
 ///
 /// * `context` - a valid OpenCL context.
 /// * `normalized_coords` - same interpretation as CL_SAMPLER_NORMALIZED_COORDS.
@@ -43,7 +44,6 @@ use std::ptr;
 /// are described in: [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table) table.  
 /// returns a Result containing the new OpenCL sampler object
 /// or the error code from the OpenCL C API function.
-#[deprecated(since = "CL_VERSION_2_0", note = "Use create_sampler_with_properties instead.")]
 #[inline]
 pub fn create_sampler(
     context: cl_context,
