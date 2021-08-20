@@ -45,8 +45,8 @@ use cl_sys::{
 };
 #[cfg(feature = "CL_VERSION_2_0")]
 use cl_sys::{
-   clCreateCommandQueueWithProperties, clEnqueueSVMFree, clEnqueueSVMMap, clEnqueueSVMMemFill,
-   clEnqueueSVMMemcpy, clEnqueueSVMUnmap,
+    clCreateCommandQueueWithProperties, clEnqueueSVMFree, clEnqueueSVMMap, clEnqueueSVMMemFill,
+    clEnqueueSVMMemcpy, clEnqueueSVMUnmap,
 };
 #[cfg(feature = "CL_VERSION_2_1")]
 use cl_sys::clEnqueueSVMMigrateMem;
@@ -1162,14 +1162,13 @@ pub fn enqueue_svm_migrate_mem(
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
     use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
-    use crate::platform::get_platform_ids;
     use crate::error_codes::error_text;
+    use crate::platform::get_platform_ids;
 
     #[test]
     fn test_command_queue() {
@@ -1186,8 +1185,12 @@ mod tests {
         let context = create_context(&device_ids, ptr::null(), None, ptr::null_mut());
         let context = context.unwrap();
 
-        let queue = create_command_queue(context, device_id,
-            CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE).unwrap();
+        let queue = create_command_queue(
+            context,
+            device_id,
+            CL_QUEUE_PROFILING_ENABLE | CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE,
+        )
+        .unwrap();
 
         let value = get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_CONTEXT).unwrap();
         let value = value.to_ptr();
@@ -1199,7 +1202,8 @@ mod tests {
         println!("CL_QUEUE_DEVICE: {:X}", value);
         assert_eq!(device_id, value as cl_device_id);
 
-        let value = get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_REFERENCE_COUNT).unwrap();
+        let value =
+            get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_REFERENCE_COUNT).unwrap();
         let value = value.to_uint();
         println!("CL_QUEUE_REFERENCE_COUNT: {}", value);
         assert_eq!(1, value);
@@ -1214,7 +1218,7 @@ mod tests {
                 let value = value.to_uint();
                 println!("CL_QUEUE_SIZE: {}", value);
             }
-            Err(e) => println!("OpenCL error, CL_QUEUE_SIZE: {}", error_text(e))
+            Err(e) => println!("OpenCL error, CL_QUEUE_SIZE: {}", error_text(e)),
         };
 
         // CL_VERSION_2_1 value
@@ -1223,18 +1227,18 @@ mod tests {
                 let value = value.to_ptr();
                 println!("CL_QUEUE_DEVICE_DEFAULT: {:X}", value);
             }
-            Err(e) => println!("OpenCL error, CL_QUEUE_DEVICE_DEFAULT: {}", error_text(e))
+            Err(e) => println!("OpenCL error, CL_QUEUE_DEVICE_DEFAULT: {}", error_text(e)),
         };
-        
+
         // CL_VERSION_3_0 value
         match get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_PROPERTIES_ARRAY) {
             Ok(value) => {
                 let value = value.to_vec_ulong();
                 println!("CL_QUEUE_PROPERTIES_ARRAY: {}", value.len());
             }
-            Err(e) => println!("OpenCL error, CL_QUEUE_PROPERTIES_ARRAY: {}", error_text(e))
+            Err(e) => println!("OpenCL error, CL_QUEUE_PROPERTIES_ARRAY: {}", error_text(e)),
         };
-        
+
         release_command_queue(queue).unwrap();
 
         release_context(context).unwrap();

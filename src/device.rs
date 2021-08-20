@@ -504,7 +504,7 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_GPU_OVERLAP_NV // cl_nv_device_attribute_query
         | DeviceInfo::CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV // cl_nv_device_attribute_query
         | DeviceInfo::CL_DEVICE_INTEGRATED_MEMORY_NV // cl_nv_device_attribute_query
-       
+
         | DeviceInfo::CL_DEVICE_PCI_BUS_ID_NV // cl_nv_device_attribute_query, undocumented
         | DeviceInfo::CL_DEVICE_PCI_SLOT_ID_NV // cl_nv_device_attribute_query, undocumented
 
@@ -562,7 +562,7 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_MAX_GLOBAL_VARIABLE_SIZE
         | DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE
         | DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE
-        | DeviceInfo::CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE 
+        | DeviceInfo::CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE
         | DeviceInfo::CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_PROFILING_TIMER_OFFSET_AMD // cl_amd_device_attribute_query
         | DeviceInfo::CL_DEVICE_GLOBAL_FREE_MEMORY_AMD // cl_amd_device_attribute_query
@@ -602,7 +602,7 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         // CL_VERSION_3_0
         DeviceInfo::CL_DEVICE_EXTENSIONS_WITH_VERSION
         | DeviceInfo::CL_DEVICE_ILS_WITH_VERSION
-        | DeviceInfo::CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION 
+        | DeviceInfo::CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION
         | DeviceInfo::CL_DEVICE_OPENCL_C_ALL_VERSIONS
         | DeviceInfo::CL_DEVICE_OPENCL_C_FEATURES => {
             api_info_vector!(get_vec, cl_name_version, clGetDeviceInfo);
