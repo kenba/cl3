@@ -45,24 +45,22 @@ pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
 
     if CL_SUCCESS != status {
         Err(status)
-    } else {
-        if 0 < count {
-            // Get the platform ids.
-            let len = count as usize;
-            let mut ids: Vec<cl_platform_id> = Vec::with_capacity(len);
-            unsafe {
-                ids.set_len(len);
-                status = clGetPlatformIDs(count, ids.as_mut_ptr(), ptr::null_mut());
-            };
+    } else if 0 < count {
+        // Get the platform ids.
+        let len = count as usize;
+        let mut ids: Vec<cl_platform_id> = Vec::with_capacity(len);
+        unsafe {
+            ids.set_len(len);
+            status = clGetPlatformIDs(count, ids.as_mut_ptr(), ptr::null_mut());
+        };
 
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
-                Ok(ids)
-            }
+        if CL_SUCCESS != status {
+            Err(status)
         } else {
-            Ok(Vec::default())
+            Ok(ids)
         }
+    } else {
+        Ok(Vec::default())
     }
 }
 
@@ -75,7 +73,7 @@ pub fn get_platform_data(
     api_info_size!(get_size, clGetPlatformInfo);
     let size = get_size(platform, param_name)?;
     api_info_vector!(get_vector, u8, clGetPlatformInfo);
-    Ok(get_vector(platform, param_name, size)?)
+    get_vector(platform, param_name, size)
 }
 
 // cl_platform_info

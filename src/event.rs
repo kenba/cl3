@@ -83,7 +83,7 @@ pub fn get_event_data(
     api_info_size!(get_size, clGetEventInfo);
     let size = get_size(event, param_name)?;
     api_info_vector!(get_vector, u8, clGetEventInfo);
-    Ok(get_vector(event, param_name, size)?)
+    get_vector(event, param_name, size)
 }
 
 // cl_event_info
@@ -231,7 +231,7 @@ pub fn get_event_profiling_data(
     api_info_size!(get_size, clGetEventProfilingInfo);
     let size = get_size(event, param_name)?;
     api_info_vector!(get_vector, u8, clGetEventProfilingInfo);
-    Ok(get_vector(event, param_name, size)?)
+    get_vector(event, param_name, size)
 }
 
 // cl_profiling_info

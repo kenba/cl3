@@ -650,7 +650,7 @@ pub fn get_accelerator_data_intel(
     api_info_size!(get_size, clGetAcceleratorInfoINTEL);
     let size = get_size(accelerator, param_name)?;
     api_info_vector!(get_vector, u8, clGetAcceleratorInfoINTEL);
-    Ok(get_vector(accelerator, param_name, size)?)
+    get_vector(accelerator, param_name, size)
 }
 
 // cl_accelerator_info_intel

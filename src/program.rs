@@ -453,7 +453,7 @@ pub fn get_program_data(
     api_info_size!(get_size, clGetProgramInfo);
     let size = get_size(program, param_name)?;
     api_info_vector!(get_vector, u8, clGetProgramInfo);
-    Ok(get_vector(program, param_name, size)?)
+    get_vector(program, param_name, size)
 }
 
 // cl_program_info
@@ -574,7 +574,7 @@ pub fn get_program_build_data(
     api2_info_size!(get_size, cl_device_id, clGetProgramBuildInfo);
     let size = get_size(program, device, param_name)?;
     api2_info_vector!(get_vector, cl_device_id, u8, clGetProgramBuildInfo);
-    Ok(get_vector(program, device, param_name, size)?)
+    get_vector(program, device, param_name, size)
 }
 
 // cl_program_build_info

@@ -242,7 +242,7 @@ pub fn get_kernel_data(
     api_info_size!(get_size, clGetKernelInfo);
     let size = get_size(kernel, param_name)?;
     api_info_vector!(get_vector, u8, clGetKernelInfo);
-    Ok(get_vector(kernel, param_name, size)?)
+    get_vector(kernel, param_name, size)
 }
 
 // cl_kernel_info
@@ -296,7 +296,7 @@ pub fn get_kernel_arg_data(
     api2_info_size!(get_size, cl_uint, clGetKernelArgInfo);
     let size = get_size(kernel, arg_indx, param_name)?;
     api2_info_vector!(get_vector, cl_uint, u8, clGetKernelArgInfo);
-    Ok(get_vector(kernel, arg_indx, param_name, size)?)
+    get_vector(kernel, arg_indx, param_name, size)
 }
 
 // cl_kernel_arg_info
@@ -357,7 +357,7 @@ pub fn get_kernel_work_group_data(
     api2_info_size!(get_size, cl_device_id, clGetKernelWorkGroupInfo);
     let size = get_size(kernel, device, param_name)?;
     api2_info_vector!(get_vector, cl_device_id, u8, clGetKernelWorkGroupInfo);
-    Ok(get_vector(kernel, device, param_name, size)?)
+    get_vector(kernel, device, param_name, size)
 }
 
 // cl_kernel_work_group_info

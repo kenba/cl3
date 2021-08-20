@@ -151,7 +151,7 @@ pub fn get_context_data(
     api_info_size!(get_size, clGetContextInfo);
     let size = get_size(context, param_name)?;
     api_info_vector!(get_vector, u8, clGetContextInfo);
-    Ok(get_vector(context, param_name, size)?)
+    get_vector(context, param_name, size)
 }
 
 // cl_context_info

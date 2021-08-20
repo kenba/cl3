@@ -431,7 +431,7 @@ pub fn get_mem_object_data(
     api_info_size!(get_size, clGetMemObjectInfo);
     let size = get_size(memobj, param_name)?;
     api_info_vector!(get_vector, u8, clGetMemObjectInfo);
-    Ok(get_vector(memobj, param_name, size)?)
+    get_vector(memobj, param_name, size)
 }
 
 // cl_mem_info
@@ -508,7 +508,7 @@ pub fn get_image_data(
     api_info_size!(get_size, clGetImageInfo);
     let size = get_size(image, param_name)?;
     api_info_vector!(get_vector, u8, clGetImageInfo);
-    Ok(get_vector(image, param_name, size)?)
+    get_vector(image, param_name, size)
 }
 
 // cl_image_info
@@ -580,7 +580,7 @@ pub fn get_pipe_data(
     api_info_size!(get_size, clGetPipeInfo);
     let size = get_size(pipe, param_name)?;
     api_info_vector!(get_vector, u8, clGetPipeInfo);
-    Ok(get_vector(pipe, param_name, size)?)
+    get_vector(pipe, param_name, size)
 }
 
 // cl_pipe_info
@@ -669,7 +669,7 @@ pub fn svm_alloc(
     alignment: cl_uint,
 ) -> Result<*mut c_void, cl_int> {
     let ptr = unsafe { clSVMAlloc(context, flags, size, alignment) };
-    if ptr::null_mut() == ptr {
+    if ptr.is_null() {
         Err(CL_INVALID_VALUE)
     } else {
         Ok(ptr)

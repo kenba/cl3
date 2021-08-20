@@ -185,7 +185,7 @@ pub fn get_gl_texture_data(
     api_info_size!(get_size, clGetGLTextureInfo);
     let size = get_size(memobj, param_name)?;
     api_info_vector!(get_vector, u8, clGetGLTextureInfo);
-    Ok(get_vector(memobj, param_name, size)?)
+    get_vector(memobj, param_name, size)
 }
 
 // cl_gl_texture_info

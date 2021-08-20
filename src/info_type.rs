@@ -46,7 +46,7 @@ impl fmt::Display for InfoType {
             InfoType::VecNameVersion(a) => {
                 let mut s = String::default();
                 for b in a.iter() {
-                    s.push_str("\n");
+                    s.push('\n');
 
                     s.push_str(&b.version.to_string());
                     s.push_str(": ");
@@ -60,7 +60,7 @@ impl fmt::Display for InfoType {
                 let mut s = String::default();
 
                 for b in a.iter() {
-                    s.push_str("\n");
+                    s.push('\n');
 
                     s.push_str(&b.image_channel_order.to_string());
                     s.push_str(": ");
@@ -75,7 +75,7 @@ impl fmt::Display for InfoType {
             InfoType::VecVecUchar(a) => {
                 let mut s = String::default();
                 for b in a.iter() {
-                    s.push_str("\n");
+                    s.push('\n');
                     s.push_str(&String::from_utf8_lossy(b).into_owned());
                 }
 

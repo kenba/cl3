@@ -152,7 +152,7 @@ pub fn get_command_queue_data(
     api_info_size!(get_size, clGetCommandQueueInfo);
     let size = get_size(command_queue, param_name)?;
     api_info_vector!(get_vector, u8, clGetCommandQueueInfo);
-    Ok(get_vector(command_queue, param_name, size)?)
+    get_vector(command_queue, param_name, size)
 }
 
 // cl_command_queue_info

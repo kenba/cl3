@@ -135,7 +135,7 @@ pub fn get_sampler_data(
     api_info_size!(get_size, clGetSamplerInfo);
     let size = get_size(sampler, param_name)?;
     api_info_vector!(get_vector, u8, clGetSamplerInfo);
-    Ok(get_vector(sampler, param_name, size)?)
+    get_vector(sampler, param_name, size)
 }
 
 // cl_sampler_info

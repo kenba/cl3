@@ -159,30 +159,28 @@ pub fn get_device_ids(
 
     if (CL_SUCCESS != status) && (CL_DEVICE_NOT_FOUND != status) {
         Err(status)
-    } else {
-        if 0 < count {
-            // Get the device ids.
-            let len = count as usize;
-            let mut ids: Vec<cl_device_id> = Vec::with_capacity(len);
-            unsafe {
-                ids.set_len(len);
-                status = clGetDeviceIDs(
-                    platform,
-                    device_type,
-                    count,
-                    ids.as_mut_ptr(),
-                    ptr::null_mut(),
-                );
-            };
+    } else if 0 < count {
+        // Get the device ids.
+        let len = count as usize;
+        let mut ids: Vec<cl_device_id> = Vec::with_capacity(len);
+        unsafe {
+            ids.set_len(len);
+            status = clGetDeviceIDs(
+                platform,
+                device_type,
+                count,
+                ids.as_mut_ptr(),
+                ptr::null_mut(),
+            );
+        };
 
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
-                Ok(ids)
-            }
+        if CL_SUCCESS != status {
+            Err(status)
         } else {
-            Ok(Vec::default())
+            Ok(ids)
         }
+    } else {
+        Ok(Vec::default())
     }
 }
 
@@ -195,7 +193,7 @@ pub fn get_device_data(
     api_info_size!(get_size, clGetDeviceInfo);
     let size = get_size(device, param_name)?;
     api_info_vector!(get_vector, u8, clGetDeviceInfo);
-    Ok(get_vector(device, param_name, size)?)
+    get_vector(device, param_name, size)
 }
 
 // cl_device_info
@@ -623,7 +621,7 @@ pub fn get_amd_device_topology(bytes: &[u8]) -> cl_amd_device_topology {
     let mut topology = cl_amd_device_topology::default();
     unsafe {
         std::slice::from_raw_parts_mut(&mut topology as *mut cl_amd_device_topology as *mut u8, size)
-            .copy_from_slice(&bytes);
+            .copy_from_slice(bytes);
     }
     topology
 }
@@ -635,7 +633,7 @@ pub fn get_device_pci_bus_info_khr(bytes: &[u8]) -> cl_device_pci_bus_info_khr {
     let mut pci_bus_info = cl_device_pci_bus_info_khr::default();
     unsafe {
         std::slice::from_raw_parts_mut(&mut pci_bus_info as *mut cl_device_pci_bus_info_khr as *mut u8, size)
-            .copy_from_slice(&bytes);
+            .copy_from_slice(bytes);
     }
     pci_bus_info
 }
