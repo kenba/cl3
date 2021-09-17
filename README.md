@@ -105,9 +105,16 @@ The tests provide examples of how the crate may be used, e.g. see:
 [context](https://github.com/kenba/cl3/tree/main/src/context.rs) and
 [integration_test](https://github.com/kenba/cl3/tree/main/tests/integration_test.rs).
 
+## Contribution
+
+If you want to contribute through code or documentation, the [Contributing](CONTRIBUTING.md) guide is the best place to start. If you have any questions, please feel free to ask.
+Just please abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## License
 
 Licensed under the Apache License, Version 2.0, as per Khronos Group OpenCL.  
 You may obtain a copy of the License at: http://www.apache.org/licenses/LICENSE-2.0
 
-OpenCL and the OpenCL logo are trademarks of Apple Inc. used under license by Khronos.
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be licensed as above, without any additional terms or conditions.
+
+OpenCL and the OpenCL logo are trademarks of Apple Inc. used by permission by Khronos.
