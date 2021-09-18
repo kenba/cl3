@@ -334,7 +334,20 @@ pub const CL_DEVICE_INTEGER_DOT_PRODUCT_INPUT_4x8BIT_PACKED_KHR:
 pub const CL_DEVICE_INTEGER_DOT_PRODUCT_INPUT_4x8BIT_KHR:
     cl_device_integer_dot_product_capabilities_khr = 1 << 1;
 
+#[derive(Debug, Clone, Default)]
+#[repr(C)]
+pub struct cl_device_integer_dot_product_acceleration_properties_khr {
+    pub signed_accelerated: cl_bool,
+    pub unsigned_accelerated: cl_bool,
+    pub mixed_signedness_accelerated: cl_bool,
+    pub accumulating_saturating_signed_accelerated: cl_bool,
+    pub accumulating_saturating_unsigned_accelerated: cl_bool,
+    pub accumulating_saturating_mixed_signedness_accelerated: cl_bool,
+}
+
 pub const CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR: cl_device_info = 0x1073;
+pub const CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR: cl_device_info = 0x1074;
+pub const CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR: cl_device_info = 0x1075;
 
 // cl_arm_import_memory extension
 
