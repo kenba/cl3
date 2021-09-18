@@ -493,7 +493,7 @@ pub fn get_program_info(
 
     let param_id = param_name as cl_program_info;
     match param_name {
-        ProgramInfo::CL_PROGRAM_REFERENCE_COUNT 
+        ProgramInfo::CL_PROGRAM_REFERENCE_COUNT
         | ProgramInfo::CL_PROGRAM_NUM_DEVICES
         | ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT // CL_VERSION_2_2 only
         | ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT // CL_VERSION_2_2 only
