@@ -61,7 +61,10 @@ use super::ffi::cl_ext::{cl_amd_device_topology, cl_device_pci_bus_info_khr,
     CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR,
     CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR,
     CL_DEVICE_UUID_KHR, CL_DRIVER_UUID_KHR, CL_DEVICE_LUID_VALID_KHR,
-    CL_DEVICE_LUID_KHR, CL_DEVICE_NODE_MASK_KHR,
+    CL_DEVICE_LUID_KHR, CL_DEVICE_NODE_MASK_KHR, CL_DEVICE_IP_VERSION_INTEL,
+    CL_DEVICE_ID_INTEL, CL_DEVICE_NUM_SLICES_INTEL, CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL,
+    CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL, CL_DEVICE_NUM_THREADS_PER_EU_INTEL,
+    CL_DEVICE_FEATURE_CAPABILITIES_INTEL,
 };
 use super::{api_info_size, api_info_value, api_info_vector};
 use cl_sys::{clGetDeviceIDs, clGetDeviceInfo};
@@ -373,6 +376,13 @@ pub enum DeviceInfo {
     CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD = CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD as isize,
     CL_DEVICE_PCIE_ID_AMD = CL_DEVICE_PCIE_ID_AMD as isize,
     CL_DEVICE_PCI_BUS_INFO_KHR = CL_DEVICE_PCI_BUS_INFO_KHR as isize,
+    CL_DEVICE_IP_VERSION_INTEL = CL_DEVICE_IP_VERSION_INTEL as isize,
+    CL_DEVICE_ID_INTEL = CL_DEVICE_ID_INTEL as isize,
+    CL_DEVICE_NUM_SLICES_INTEL = CL_DEVICE_NUM_SLICES_INTEL as isize,
+    CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL = CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL as isize,
+    CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL = CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL as isize,
+    CL_DEVICE_NUM_THREADS_PER_EU_INTEL = CL_DEVICE_NUM_THREADS_PER_EU_INTEL as isize,
+    CL_DEVICE_FEATURE_CAPABILITIES_INTEL = CL_DEVICE_FEATURE_CAPABILITIES_INTEL as isize,
 }
 
 /// Get specific information about an OpenCL device.  
@@ -439,6 +449,13 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_TOPOLOGY_AMD // cl_amd_device_attribute_query
         | DeviceInfo::CL_DEVICE_BOARD_NAME_AMD // cl_amd_device_attribute_query
         | DeviceInfo::CL_DEVICE_PCI_BUS_INFO_KHR // cl_khr_pci_bus_info
+        | DeviceInfo::CL_DEVICE_IP_VERSION_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_ID_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_NUM_SLICES_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_NUM_THREADS_PER_EU_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_FEATURE_CAPABILITIES_INTEL // cl_intel_device_attribute_query
         => {
             Ok(InfoType::VecUchar(get_device_data(device, param_id)?))
         }

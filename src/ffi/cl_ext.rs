@@ -459,6 +459,21 @@ pub const CL_COMMAND_TERMINATION_ERROR_ARM: cl_command_termination_reason_arm = 
 // cl_intel_thread_local_exec extension
 pub const CL_QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: cl_bitfield = 1 << 31;
 
+// cl_intel_device_attribute_query
+pub type cl_device_feature_capabilities_intel = cl_bitfield;
+pub const CL_DEVICE_FEATURE_FLAG_DP4A_INTEL:
+    cl_device_feature_capabilities_intel = 1 << 0;
+pub const CL_DEVICE_FEATURE_FLAG_DPAS_INTEL:
+    cl_device_feature_capabilities_intel = 1 << 1;
+
+pub const CL_DEVICE_IP_VERSION_INTEL: cl_device_info = 0x4250;
+pub const CL_DEVICE_ID_INTEL: cl_device_info = 0x4251;
+pub const CL_DEVICE_NUM_SLICES_INTEL: cl_device_info = 0x4252;
+pub const CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL: cl_device_info = 0x4253;
+pub const CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL: cl_device_info = 0x4254;
+pub const CL_DEVICE_NUM_THREADS_PER_EU_INTEL: cl_device_info = 0x4255;
+pub const CL_DEVICE_FEATURE_CAPABILITIES_INTEL: cl_device_info = 0x4256;
+
 // cl_intel_device_partition_by_names extension
 
 pub const CL_DEVICE_PARTITION_BY_NAMES_INTEL: cl_device_info = 0x4052;
