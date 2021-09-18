@@ -15,6 +15,7 @@
 //! OpenCL OpenGl Interoperability API.
 
 #![allow(non_camel_case_types)]
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use cl_sys::{
     cl_command_queue, cl_context_properties, cl_event, cl_gl_context_info, cl_gl_object_type,

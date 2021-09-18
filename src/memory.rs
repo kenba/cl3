@@ -15,6 +15,7 @@
 //! OpenCL Memory Object API.
 
 #![allow(non_camel_case_types)]
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use cl_sys::{
     CL_RGBx, CL_RGx, CL_Rx, CL_sRGB, CL_sRGBA, CL_sRGBx, CL_A, CL_ABGR, CL_ADDRESS_CLAMP,

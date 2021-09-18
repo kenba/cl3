@@ -15,6 +15,7 @@
 //! OpenCL Program Object API.
 
 #![allow(non_camel_case_types)]
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use cl_sys::{
     CL_BUILD_SUCCESS, CL_BUILD_NONE, CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS,

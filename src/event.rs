@@ -15,6 +15,7 @@
 //! OpenCL Event Object API.
 
 #![allow(non_camel_case_types)]
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use super::ffi::cl_egl::{
     CL_COMMAND_ACQUIRE_EGL_OBJECTS_KHR, CL_COMMAND_EGL_FENCE_SYNC_OBJECT_KHR,

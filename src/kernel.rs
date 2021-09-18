@@ -15,6 +15,7 @@
 //! OpenCL Kernel Object API.
 
 #![allow(non_camel_case_types)]
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use cl_sys::{
     CL_KERNEL_ARG_ACCESS_NONE, CL_KERNEL_ARG_ACCESS_READ_ONLY, CL_KERNEL_ARG_ACCESS_READ_WRITE,

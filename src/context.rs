@@ -15,6 +15,7 @@
 //! OpenCL Context API.
 
 #![allow(non_camel_case_types)]
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use cl_sys::{CL_CONTEXT_INTEROP_USER_SYNC, CL_CONTEXT_PLATFORM};
 

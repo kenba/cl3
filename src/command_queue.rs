@@ -16,6 +16,7 @@
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::too_many_arguments)]
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use cl_sys::{
     CL_QUEUE_ON_DEVICE, CL_QUEUE_ON_DEVICE_DEFAULT, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE,
