@@ -42,6 +42,7 @@ use super::types::{
     cl_device_atomic_capabilities, cl_device_device_enqueue_capabilities, cl_version
 };
 use super::ffi::cl_ext::{cl_amd_device_topology, cl_device_pci_bus_info_khr,
+    cl_device_integer_dot_product_acceleration_properties_khr,
     CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV,
     CL_DEVICE_REGISTERS_PER_BLOCK_NV, CL_DEVICE_WARP_SIZE_NV, CL_DEVICE_GPU_OVERLAP_NV,
     CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV, CL_DEVICE_INTEGRATED_MEMORY_NV,
@@ -642,6 +643,18 @@ pub fn get_device_pci_bus_info_khr(bytes: &[u8]) -> cl_device_pci_bus_info_khr {
             .copy_from_slice(bytes);
     }
     pci_bus_info
+}
+
+/// Convert a u8 slice (e.g. from get_device_info) into a cl_device_integer_dot_product_acceleration_properties_khr structure.
+pub fn get_device_integer_dot_product_acceleration_properties_khr(bytes: &[u8]) -> cl_device_integer_dot_product_acceleration_properties_khr {
+    let size = bytes.len();
+    assert_eq!(size, std::mem::size_of::<cl_device_integer_dot_product_acceleration_properties_khr>());
+    let mut value = cl_device_integer_dot_product_acceleration_properties_khr::default();
+    unsafe {
+        std::slice::from_raw_parts_mut(&mut value as *mut cl_device_integer_dot_product_acceleration_properties_khr as *mut u8, size)
+            .copy_from_slice(bytes);
+    }
+    value
 }
 
 // cl_device_partition_property:
