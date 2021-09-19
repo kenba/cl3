@@ -55,10 +55,6 @@ I recommend installing and running `clippy`:
 ```shell
 cargo clippy
 ```
-and `fmt`:
-```shell
-cargo fmt
-```
 
 ## Make a Pull Request
 
