@@ -449,13 +449,6 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_TOPOLOGY_AMD // cl_amd_device_attribute_query
         | DeviceInfo::CL_DEVICE_BOARD_NAME_AMD // cl_amd_device_attribute_query
         | DeviceInfo::CL_DEVICE_PCI_BUS_INFO_KHR // cl_khr_pci_bus_info
-        | DeviceInfo::CL_DEVICE_IP_VERSION_INTEL // cl_intel_device_attribute_query
-        | DeviceInfo::CL_DEVICE_ID_INTEL // cl_intel_device_attribute_query
-        | DeviceInfo::CL_DEVICE_NUM_SLICES_INTEL // cl_intel_device_attribute_query
-        | DeviceInfo::CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL // cl_intel_device_attribute_query
-        | DeviceInfo::CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL // cl_intel_device_attribute_query
-        | DeviceInfo::CL_DEVICE_NUM_THREADS_PER_EU_INTEL // cl_intel_device_attribute_query
-        | DeviceInfo::CL_DEVICE_FEATURE_CAPABILITIES_INTEL // cl_intel_device_attribute_query
         => {
             Ok(InfoType::VecUchar(get_device_data(device, param_id)?))
         }
@@ -546,6 +539,12 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_GFXIP_MINOR_AMD // cl_amd_device_attribute_query
         | DeviceInfo::CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD // cl_amd_device_attribute_query
         | DeviceInfo::CL_DEVICE_PCIE_ID_AMD // cl_amd_device_attribute_query
+        | DeviceInfo::CL_DEVICE_IP_VERSION_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_ID_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_NUM_SLICES_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL // cl_intel_device_attribute_query
+        | DeviceInfo::CL_DEVICE_NUM_THREADS_PER_EU_INTEL // cl_intel_device_attribute_query
         => {
             api_info_value!(get_value, cl_uint, clGetDeviceInfo);
             Ok(InfoType::Uint(get_value(device, param_id)?))
@@ -567,7 +566,8 @@ pub fn get_device_info(device: cl_device_id, param_name: DeviceInfo) -> Result<I
         | DeviceInfo::CL_DEVICE_ATOMIC_FENCE_CAPABILITIES // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES // CL_VERSION_3_0
         | DeviceInfo::CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR
-         => {
+        | DeviceInfo::CL_DEVICE_FEATURE_CAPABILITIES_INTEL // cl_intel_device_attribute_query
+        => {
             api_info_value!(get_value, cl_ulong, clGetDeviceInfo);
             Ok(InfoType::Ulong(get_value(device, param_id)?))
         }
@@ -1572,6 +1572,62 @@ mod tests {
                 println!("CL_DEVICE_PCI_BUS_INFO_KHR pci_function: {}", pci_bus_info.pci_function);
             }
             Err(e) => println!("OpenCL error, CL_DEVICE_PCI_BUS_INFO_KHR: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_IP_VERSION_INTEL) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_IP_VERSION_INTEL: {:?}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_IP_VERSION_INTEL: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_ID_INTEL) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_ID_INTEL: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_ID_INTEL: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_NUM_SLICES_INTEL) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_NUM_SLICES_INTEL: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_NUM_SLICES_INTEL: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_NUM_THREADS_PER_EU_INTEL) {
+            Ok(value) => {
+                let value = value.to_uint();
+                println!("CL_DEVICE_NUM_THREADS_PER_EU_INTEL: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_NUM_THREADS_PER_EU_INTEL: {}", ClError(e))
+        };
+
+        match get_device_info(device_id, DeviceInfo::CL_DEVICE_FEATURE_CAPABILITIES_INTEL) {
+            Ok(value) => {
+                let value = value.to_ulong();
+                println!("CL_DEVICE_FEATURE_CAPABILITIES_INTEL: {}", value)
+            }
+            Err(e) => println!("OpenCL error, CL_DEVICE_FEATURE_CAPABILITIES_INTEL: {}", ClError(e))
         };
 
         // CL_VERSION_2_0
