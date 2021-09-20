@@ -88,23 +88,6 @@ impl fmt::Display for InfoType {
 }
 
 impl InfoType {
-    /// Get a `Vec<cl_uchar>` aka `Vec<u8>` as a String.
-    /// Note: it uses from_utf8_lossy to convert any invalid characters to
-    /// std::char::REPLACEMENT_CHARACTER.
-    ///
-    /// returns a utf8 String.
-    pub fn to_string(self) -> String {
-        let mut a = self.to_vec_uchar();
-
-        // remove all trailing nulls, if any
-        while let Some(0) = a.last() {
-            a.pop();
-        }
-
-        // convert invalid characters to std::char::REPLACEMENT_CHARACTER
-        String::from_utf8_lossy(&a).into_owned()
-    }
-
     pub fn to_int(self) -> cl_int {
         match self {
             InfoType::Int(a) => a,
@@ -187,6 +170,25 @@ impl InfoType {
             InfoType::VecVecUchar(a) => a,
             _ => panic!("not a Vec<Vec<cl_uchar>"),
         }
+    }
+}
+
+impl From<InfoType> for String {
+    /// Get a `Vec<cl_uchar>` aka `Vec<u8>` as a String.
+    /// Note: it uses from_utf8_lossy to convert any invalid characters to
+    /// std::char::REPLACEMENT_CHARACTER.
+    ///
+    /// returns a utf8 String.
+    fn from(info_type: InfoType) -> Self {
+        let mut a = info_type.to_vec_uchar();
+
+        // remove all trailing nulls, if any
+        while let Some(0) = a.last() {
+            a.pop();
+        }
+
+        // convert invalid characters to std::char::REPLACEMENT_CHARACTER
+        String::from_utf8_lossy(&a).into_owned()
     }
 }
 
