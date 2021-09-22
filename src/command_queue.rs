@@ -32,6 +32,8 @@ use super::types::{
     cl_queue_properties, cl_uint, cl_ulong,
 };
 use super::{api_info_size, api_info_value, api_info_vector};
+#[cfg(feature = "CL_VERSION_2_1")]
+use cl_sys::clEnqueueSVMMigrateMem;
 use cl_sys::{
     clCreateCommandQueue, clEnqueueCopyBuffer, clEnqueueCopyBufferRect, clEnqueueCopyBufferToImage,
     clEnqueueCopyImage, clEnqueueCopyImageToBuffer, clEnqueueMapBuffer, clEnqueueMapImage,
@@ -40,18 +42,16 @@ use cl_sys::{
     clEnqueueWriteImage, clFinish, clFlush, clGetCommandQueueInfo, clReleaseCommandQueue,
     clRetainCommandQueue,
 };
-#[cfg(feature = "CL_VERSION_1_2")]
-use cl_sys::{
-    clEnqueueBarrierWithWaitList, clEnqueueFillBuffer, clEnqueueFillImage,
-    clEnqueueMarkerWithWaitList, clEnqueueMigrateMemObjects, clEnqueueTask,
-};
 #[cfg(feature = "CL_VERSION_2_0")]
 use cl_sys::{
     clCreateCommandQueueWithProperties, clEnqueueSVMFree, clEnqueueSVMMap, clEnqueueSVMMemFill,
     clEnqueueSVMMemcpy, clEnqueueSVMUnmap,
 };
-#[cfg(feature = "CL_VERSION_2_1")]
-use cl_sys::clEnqueueSVMMigrateMem;
+#[cfg(feature = "CL_VERSION_1_2")]
+use cl_sys::{
+    clEnqueueBarrierWithWaitList, clEnqueueFillBuffer, clEnqueueFillImage,
+    clEnqueueMarkerWithWaitList, clEnqueueMigrateMemObjects, clEnqueueTask,
+};
 
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
@@ -1195,29 +1195,29 @@ mod tests {
         .unwrap();
 
         let value = get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_CONTEXT).unwrap();
-        let value = value.to_ptr();
+        let value = intptr_t::from(value);
         println!("CL_QUEUE_CONTEXT: {:X}", value);
         assert_eq!(context, value as cl_context);
 
         let value = get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_DEVICE).unwrap();
-        let value = value.to_ptr();
+        let value = intptr_t::from(value);
         println!("CL_QUEUE_DEVICE: {:X}", value);
         assert_eq!(device_id, value as cl_device_id);
 
         let value =
             get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_REFERENCE_COUNT).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_QUEUE_REFERENCE_COUNT: {}", value);
         assert_eq!(1, value);
 
         let value = get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_PROPERTIES).unwrap();
-        let value = value.to_ulong();
+        let value = u64::from(value);
         println!("CL_QUEUE_PROPERTIES: {}", value);
 
         // CL_VERSION_2_0 value
         match get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_SIZE) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_QUEUE_SIZE: {}", value);
             }
             Err(e) => println!("OpenCL error, CL_QUEUE_SIZE: {}", error_text(e)),
@@ -1226,7 +1226,7 @@ mod tests {
         // CL_VERSION_2_1 value
         match get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_DEVICE_DEFAULT) {
             Ok(value) => {
-                let value = value.to_ptr();
+                let value = intptr_t::from(value);
                 println!("CL_QUEUE_DEVICE_DEFAULT: {:X}", value);
             }
             Err(e) => println!("OpenCL error, CL_QUEUE_DEVICE_DEFAULT: {}", error_text(e)),
@@ -1235,7 +1235,7 @@ mod tests {
         // CL_VERSION_3_0 value
         match get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_PROPERTIES_ARRAY) {
             Ok(value) => {
-                let value = value.to_vec_ulong();
+                let value = Vec::<cl_ulong>::from(value);
                 println!("CL_QUEUE_PROPERTIES_ARRAY: {}", value.len());
             }
             Err(e) => println!("OpenCL error, CL_QUEUE_PROPERTIES_ARRAY: {}", error_text(e)),

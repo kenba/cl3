@@ -18,34 +18,36 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use cl_sys::{
-    CL_BUILD_SUCCESS, CL_BUILD_NONE, CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS,
-    CL_PROGRAM_BINARY_TYPE_NONE, CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT,
-    CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_EXECUTABLE,
+    CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE, CL_BUILD_SUCCESS,
+    CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT, CL_PROGRAM_BINARY_TYPE_EXECUTABLE,
+    CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_NONE,
 };
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 use super::info_type::InfoType;
 #[allow(unused_imports)]
 use super::types::{
-    cl_int, cl_program, cl_program_info, cl_platform_id, cl_context, cl_device_id,
-    cl_uint, cl_program_build_info,
+    cl_context, cl_device_id, cl_int, cl_platform_id, cl_program, cl_program_build_info,
+    cl_program_info, cl_uint,
 };
-use super::{api_info_size, api_info_value, api_info_vector,
-    api2_info_size, api2_info_vector, api2_info_value};
+use super::{
+    api2_info_size, api2_info_value, api2_info_vector, api_info_size, api_info_value,
+    api_info_vector,
+};
 
-use cl_sys::{
-    clCreateProgramWithSource, clCreateProgramWithBinary, clRetainProgram, clReleaseProgram,
-    clBuildProgram, clGetProgramInfo, clGetProgramBuildInfo,
-};
-#[cfg(feature = "CL_VERSION_1_2")]
-use cl_sys::{clLinkProgram, clCompileProgram};
 #[cfg(feature = "CL_VERSION_2_1")]
 use cl_sys::clCreateProgramWithIL;
+use cl_sys::{
+    clBuildProgram, clCreateProgramWithBinary, clCreateProgramWithSource, clGetProgramBuildInfo,
+    clGetProgramInfo, clReleaseProgram, clRetainProgram,
+};
+#[cfg(feature = "CL_VERSION_1_2")]
+use cl_sys::{clCompileProgram, clLinkProgram};
 
-use libc::{c_void, intptr_t, size_t, c_char, c_uchar};
+use libc::{c_char, c_uchar, c_void, intptr_t, size_t};
+use std::ffi::CStr;
 use std::mem;
 use std::ptr;
-use std::ffi::CStr;
 
 // clUnloadPlatformCompiler disabled in cl_sys due to platform incompatibility.
 // clCreateProgramWithBuiltInKernels kernel_names mutability incorrect in cl_sys
@@ -87,7 +89,7 @@ extern "system" {
 ///
 /// * `context` - a valid OpenCL context.
 /// * `sources` - an array of slices of source code strings.
-/// 
+///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
 #[inline]
@@ -97,12 +99,14 @@ pub fn create_program_with_source(
 ) -> Result<cl_program, cl_int> {
     let lengths: Vec<size_t> = sources.iter().map(|src| src.len()).collect();
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program: cl_program = unsafe { clCreateProgramWithSource(
-        context,
-        sources.len() as cl_uint,
-        sources.as_ptr() as *const *const c_char,
-        lengths.as_ptr(),
-        &mut status) 
+    let program: cl_program = unsafe {
+        clCreateProgramWithSource(
+            context,
+            sources.len() as cl_uint,
+            sources.as_ptr() as *const *const c_char,
+            lengths.as_ptr(),
+            &mut status,
+        )
     };
 
     if CL_SUCCESS != status {
@@ -118,7 +122,7 @@ pub fn create_program_with_source(
 /// * `context` - a valid OpenCL context.
 /// * `devices` - a slice of devices that are in context.
 /// * `binaries` - a slice of program binaries slices.
-/// 
+///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
 pub fn create_program_with_binary(
@@ -131,7 +135,7 @@ pub fn create_program_with_binary(
     let mut binary_status: Vec<cl_int> = Vec::with_capacity(binaries_length);
     unsafe { binary_status.set_len(binaries_length) };
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program: cl_program = unsafe { 
+    let program: cl_program = unsafe {
         clCreateProgramWithBinary(
             context,
             devices.len() as cl_uint,
@@ -139,8 +143,8 @@ pub fn create_program_with_binary(
             lengths.as_ptr(),
             binaries.as_ptr() as *const *const c_uchar,
             binary_status.as_mut_ptr(),
-            &mut status
-        ) 
+            &mut status,
+        )
     };
     if CL_SUCCESS != status {
         Err(status)
@@ -156,7 +160,7 @@ pub fn create_program_with_binary(
 /// * `context` - a valid OpenCL context.
 /// * `devices` - a slice of devices that are in context.
 /// * `kernel_names` - a semi-colon separated list of built-in kernel names.
-/// 
+///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
@@ -167,14 +171,14 @@ pub fn create_program_with_builtin_kernels(
     kernel_names: &CStr,
 ) -> Result<cl_program, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program: cl_program = unsafe { 
+    let program: cl_program = unsafe {
         clCreateProgramWithBuiltInKernels(
             context,
             devices.len() as cl_uint,
             devices.as_ptr(),
             kernel_names.as_ptr(),
-            &mut status
-        ) 
+            &mut status,
+        )
     };
     if CL_SUCCESS != status {
         Err(status)
@@ -190,23 +194,20 @@ pub fn create_program_with_builtin_kernels(
 ///
 /// * `context` - a valid OpenCL context.
 /// * `il` - a slice of program intermediate language code.
-/// 
+///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
 #[inline]
-pub fn create_program_with_il(
-    context: cl_context,
-    il: &[u8],
-) -> Result<cl_program, cl_int> {
+pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_program, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program: cl_program = unsafe { 
+    let program: cl_program = unsafe {
         clCreateProgramWithIL(
             context,
             il.as_ptr() as *const c_void,
             il.len() as size_t,
-            &mut status
-        ) 
+            &mut status,
+        )
     };
     if CL_SUCCESS != status {
         Err(status)
@@ -252,10 +253,10 @@ pub fn release_program(program: cl_program) -> Result<(), cl_int> {
 ///
 /// * `program` - a valid OpenCL program.
 /// * `devices` - a slice of devices that are in context.
-/// * `options` - the build options in a null-terminated string. 
+/// * `options` - the build options in a null-terminated string.
 /// * `pfn_notify` - an optional function pointer to a notification routine.
 /// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
-/// 
+///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
 #[inline]
@@ -266,14 +267,14 @@ pub fn build_program(
     pfn_notify: Option<extern "C" fn(cl_program, *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { 
+    let status: cl_int = unsafe {
         clBuildProgram(
             program,
             devices.len() as cl_uint,
             devices.as_ptr(),
             options.as_ptr(),
             pfn_notify,
-            user_data
+            user_data,
         )
     };
     if CL_SUCCESS != status {
@@ -289,13 +290,13 @@ pub fn build_program(
 ///
 /// * `program` - a valid OpenCL program.
 /// * `devices` - a slice of devices that are in context.
-/// * `options` - the compilation options in a null-terminated string. 
+/// * `options` - the compilation options in a null-terminated string.
 /// * `input_headers` - a slice of programs that describe headers in the input_headers.
 /// * `header_include_names` - an array that has a one to one correspondence with
 /// input_headers.
 /// * `pfn_notify` - an optional function pointer to a notification routine.
 /// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
-/// 
+///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
@@ -319,7 +320,7 @@ pub fn compile_program(
             input_headers.as_ptr(),
             header_include_names.as_ptr() as *const *const c_char,
             pfn_notify,
-            user_data
+            user_data,
         )
     };
     if CL_SUCCESS != status {
@@ -335,11 +336,11 @@ pub fn compile_program(
 ///
 /// * `context` - a valid OpenCL context.
 /// * `devices` - a slice of devices that are in context.
-/// * `options` - the link options in a null-terminated string. 
+/// * `options` - the link options in a null-terminated string.
 /// * `input_programs` - a slice of programs that describe headers in the input_headers.
 /// * `pfn_notify` - an optional function pointer to a notification routine.
 /// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
-/// 
+///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
@@ -353,7 +354,7 @@ pub fn link_program(
     user_data: *mut c_void,
 ) -> Result<cl_program, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let programme: cl_program = unsafe { 
+    let programme: cl_program = unsafe {
         clLinkProgram(
             context,
             devices.len() as cl_uint,
@@ -363,8 +364,8 @@ pub fn link_program(
             input_programs.as_ptr(),
             pfn_notify,
             user_data,
-            &mut status
-        ) 
+            &mut status,
+        )
     };
     if CL_SUCCESS != status {
         Err(status)
@@ -381,7 +382,7 @@ pub fn link_program(
 /// * `program` - the program being deleted.
 /// * `pfn_notify` - function pointer to the notification routine.
 /// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
-/// 
+///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_2")]
 #[inline]
@@ -407,7 +408,7 @@ pub fn set_program_release_callback(
 /// * `spec_size` - size in bytes of the data pointed to by spec_value.
 /// * `spec_value` - pointer to the memory location that contains the value
 /// of the specialization constant.
-/// 
+///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_2")]
 #[inline]
@@ -417,10 +418,8 @@ pub fn set_program_specialization_constant(
     spec_size: size_t,
     spec_value: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe {
-        clSetProgramSpecializationConstant(
-            program, spec_id, spec_size, spec_value)
-    };
+    let status: cl_int =
+        unsafe { clSetProgramSpecializationConstant(program, spec_id, spec_size, spec_value) };
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -432,7 +431,7 @@ pub fn set_program_specialization_constant(
 /// Calls clUnloadPlatformCompiler.  
 ///
 /// * `platform` - the platform.
-/// 
+///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
@@ -486,10 +485,7 @@ pub enum ProgramInfo {
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
-pub fn get_program_info(
-    program: cl_program,
-    param_name: ProgramInfo,
-) -> Result<InfoType, cl_int> {
+pub fn get_program_info(program: cl_program, param_name: ProgramInfo) -> Result<InfoType, cl_int> {
     api_info_size!(get_size, clGetProgramInfo);
 
     let param_id = param_name as cl_program_info;
@@ -581,10 +577,10 @@ pub fn get_program_build_data(
 // cl_program_build_info
 #[derive(Clone, Copy, Debug)]
 pub enum ProgramBuildInfo {
-    CL_PROGRAM_BUILD_STATUS= 0x1181,
+    CL_PROGRAM_BUILD_STATUS = 0x1181,
     CL_PROGRAM_BUILD_OPTIONS = 0x1182,
     CL_PROGRAM_BUILD_LOG = 0x1183,
-    CL_PROGRAM_BINARY_TYPE  = 0x1184,
+    CL_PROGRAM_BINARY_TYPE = 0x1184,
     // CL_VERSION_2_0
     CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE = 0x1185,
 }
@@ -607,23 +603,37 @@ pub fn get_program_build_info(
     let param_id = param_name as cl_program_build_info;
     match param_name {
         ProgramBuildInfo::CL_PROGRAM_BUILD_STATUS => {
-            api2_info_value!(get_device_value, cl_device_id, cl_int, clGetProgramBuildInfo);
+            api2_info_value!(
+                get_device_value,
+                cl_device_id,
+                cl_int,
+                clGetProgramBuildInfo
+            );
             Ok(InfoType::Int(get_device_value(program, device, param_id)?))
         }
 
-        ProgramBuildInfo::CL_PROGRAM_BUILD_OPTIONS 
-        | ProgramBuildInfo::CL_PROGRAM_BUILD_LOG => {
-            Ok(InfoType::VecUchar(get_program_build_data(program, device, param_id)?))
-        }
+        ProgramBuildInfo::CL_PROGRAM_BUILD_OPTIONS | ProgramBuildInfo::CL_PROGRAM_BUILD_LOG => Ok(
+            InfoType::VecUchar(get_program_build_data(program, device, param_id)?),
+        ),
 
         ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE => {
-            api2_info_value!(get_device_value, cl_device_id, cl_uint, clGetProgramBuildInfo);
+            api2_info_value!(
+                get_device_value,
+                cl_device_id,
+                cl_uint,
+                clGetProgramBuildInfo
+            );
             Ok(InfoType::Uint(get_device_value(program, device, param_id)?))
         }
 
         // CL_VERSION_2_0
         ProgramBuildInfo::CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE => {
-            api2_info_value!(get_device_value, cl_device_id, size_t, clGetProgramBuildInfo);
+            api2_info_value!(
+                get_device_value,
+                cl_device_id,
+                size_t,
+                clGetProgramBuildInfo
+            );
             Ok(InfoType::Size(get_device_value(program, device, param_id)?))
         }
     }
@@ -634,9 +644,9 @@ mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
     use crate::device::{get_device_ids, CL_DEVICE_TYPE_ALL};
-    use crate::platform::get_platform_ids;
     #[allow(unused_imports)]
     use crate::error_codes::error_text;
+    use crate::platform::get_platform_ids;
     use std::ffi::CString;
 
     #[test]
@@ -680,22 +690,22 @@ mod tests {
         let program = create_program_with_source(context, &sources).unwrap();
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_REFERENCE_COUNT).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_PROGRAM_REFERENCE_COUNT: {}", value);
         assert!(0 < value);
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_CONTEXT).unwrap();
-        let value = value.to_ptr();
+        let value = intptr_t::from(value);
         println!("CL_PROGRAM_CONTEXT: {}", value);
         assert!(0 < value);
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_NUM_DEVICES).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_PROGRAM_NUM_DEVICES: {}", value);
         assert!(0 < value);
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_DEVICES).unwrap();
-        let value = value.to_vec_intptr();
+        let value = Vec::<isize>::from(value);
         println!("CL_PROGRAM_DEVICES: {}", value.len());
         assert!(0 < value.len());
 
@@ -707,48 +717,69 @@ mod tests {
         let options = CString::default();
         build_program(program, &device_ids, &options, None, ptr::null_mut()).unwrap();
 
-        let value = get_program_build_info(program, device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_STATUS).unwrap();
+        let value = get_program_build_info(
+            program,
+            device_id,
+            ProgramBuildInfo::CL_PROGRAM_BUILD_STATUS,
+        )
+        .unwrap();
         let value: cl_int = From::from(value);
         println!("CL_PROGRAM_BUILD_STATUS: {}", value);
         assert_eq!(CL_BUILD_SUCCESS, value);
 
-        let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_OPTIONS).unwrap();
+        let value = get_program_build_info(
+            program,
+            device_id,
+            ProgramBuildInfo::CL_PROGRAM_BUILD_OPTIONS,
+        )
+        .unwrap();
         let value = value.to_string();
         println!("CL_PROGRAM_BUILD_OPTIONS: {}", value);
 
-        let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_LOG).unwrap();
+        let value =
+            get_program_build_info(program, device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_LOG)
+                .unwrap();
         let value = value.to_string();
         println!("CL_PROGRAM_BUILD_LOG: {}", value);
 
-        let value = get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_program_build_info(program, device_id, ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE)
+                .unwrap();
+        let value = u32::from(value);
         println!("CL_PROGRAM_BINARY_TYPE: {:?}", value);
         assert_eq!(CL_PROGRAM_BINARY_TYPE_EXECUTABLE as u32, value);
 
         #[cfg(feature = "CL_VERSION_2_0")]
-        match get_program_build_info(program,  device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE) {
+        match get_program_build_info(
+            program,
+            device_id,
+            ProgramBuildInfo::CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE,
+        ) {
             Ok(value) => {
-                let value = value.to_size();
+                let value = usize::from(value);
                 println!("CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE: {:?}", value)
             }
-            Err(e) => println!("OpenCL error, CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE: {}", error_text(e))
+            Err(e) => println!(
+                "OpenCL error, CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE: {}",
+                error_text(e)
+            ),
         }
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES).unwrap();
-        let value = value.to_vec_size();
+        let value = Vec::<usize>::from(value);
         println!("CL_PROGRAM_BINARY_SIZES: {}", value.len());
         println!("CL_PROGRAM_BINARY_SIZES: {:?}", value);
         assert!(0 < value.len());
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_BINARIES).unwrap();
         // println!("CL_PROGRAM_BINARIES: {:?}", value);
-        let value = value.to_vec_vec_uchar();
+        let value = Vec::<Vec<u8>>::from(value);
         println!("CL_PROGRAM_BINARIES count: {}", value.len());
         println!("CL_PROGRAM_BINARIES length[0]: {}", value[0].len());
         assert!(0 < value.len());
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_NUM_KERNELS).unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_PROGRAM_NUM_KERNELS: {}", value);
         assert!(0 < value);
 
@@ -763,25 +794,31 @@ mod tests {
                 let value = value.to_string();
                 println!("CL_PROGRAM_IL: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_PROGRAM_IL: {}", error_text(e))
+            Err(e) => println!("OpenCL error, CL_PROGRAM_IL: {}", error_text(e)),
         };
 
         #[cfg(feature = "CL_VERSION_2_2")]
         match get_program_info(program, ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: {}", error_text(e))
+            Err(e) => println!(
+                "OpenCL error, CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: {}",
+                error_text(e)
+            ),
         };
 
         #[cfg(feature = "CL_VERSION_2_2")]
         match get_program_info(program, ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: {}", error_text(e))
+            Err(e) => println!(
+                "OpenCL error, CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: {}",
+                error_text(e)
+            ),
         };
 
         #[cfg(feature = "CL_VERSION_1_2")]

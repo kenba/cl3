@@ -19,59 +19,57 @@
 use super::error_codes::{CL_DEVICE_NOT_FOUND, CL_SUCCESS};
 
 pub use cl_sys::{
-    CL_DEVICE_TYPE_DEFAULT, CL_DEVICE_TYPE_CPU,
-    CL_DEVICE_TYPE_GPU, CL_DEVICE_TYPE_ACCELERATOR,CL_DEVICE_TYPE_CUSTOM, CL_DEVICE_TYPE_ALL,
-    CL_FP_DENORM, CL_FP_INF_NAN, CL_FP_ROUND_TO_NEAREST, CL_FP_ROUND_TO_ZERO,
-    CL_FP_ROUND_TO_INF, CL_FP_FMA, CL_FP_SOFT_FLOAT, CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT,
-    CL_NONE, CL_READ_ONLY_CACHE, CL_READ_WRITE_CACHE, CL_LOCAL, CL_GLOBAL,
-    CL_EXEC_KERNEL, CL_EXEC_NATIVE_KERNEL, 
-    CL_DEVICE_AFFINITY_DOMAIN_NUMA, CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE,
-    CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE, CL_DEVICE_AFFINITY_DOMAIN_L2_CACHE,
-    CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE, CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE,
-    CL_DEVICE_SVM_COARSE_GRAIN_BUFFER, CL_DEVICE_SVM_FINE_GRAIN_BUFFER,
-    CL_DEVICE_SVM_FINE_GRAIN_SYSTEM, CL_DEVICE_SVM_ATOMICS,
+    CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE, CL_DEVICE_AFFINITY_DOMAIN_L2_CACHE,
+    CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE, CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE,
+    CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE, CL_DEVICE_AFFINITY_DOMAIN_NUMA,
+    CL_DEVICE_SVM_ATOMICS, CL_DEVICE_SVM_COARSE_GRAIN_BUFFER, CL_DEVICE_SVM_FINE_GRAIN_BUFFER,
+    CL_DEVICE_SVM_FINE_GRAIN_SYSTEM, CL_DEVICE_TYPE_ACCELERATOR, CL_DEVICE_TYPE_ALL,
+    CL_DEVICE_TYPE_CPU, CL_DEVICE_TYPE_CUSTOM, CL_DEVICE_TYPE_DEFAULT, CL_DEVICE_TYPE_GPU,
+    CL_EXEC_KERNEL, CL_EXEC_NATIVE_KERNEL, CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT, CL_FP_DENORM,
+    CL_FP_FMA, CL_FP_INF_NAN, CL_FP_ROUND_TO_INF, CL_FP_ROUND_TO_NEAREST, CL_FP_ROUND_TO_ZERO,
+    CL_FP_SOFT_FLOAT, CL_GLOBAL, CL_LOCAL, CL_NONE, CL_READ_ONLY_CACHE, CL_READ_WRITE_CACHE,
 };
 
+use super::ffi::cl_ext::{
+    cl_amd_device_topology, cl_device_integer_dot_product_acceleration_properties_khr,
+    cl_device_pci_bus_info_khr,
+    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR,
+    CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD, CL_DEVICE_BOARD_NAME_AMD,
+    CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV,
+    CL_DEVICE_FEATURE_CAPABILITIES_INTEL, CL_DEVICE_GFXIP_MAJOR_AMD, CL_DEVICE_GFXIP_MINOR_AMD,
+    CL_DEVICE_GLOBAL_FREE_MEMORY_AMD, CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD,
+    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD,
+    CL_DEVICE_GPU_OVERLAP_NV, CL_DEVICE_ID_INTEL,
+    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR,
+    CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR, CL_DEVICE_INTEGRATED_MEMORY_NV,
+    CL_DEVICE_IP_VERSION_INTEL, CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV, CL_DEVICE_LOCAL_MEM_BANKS_AMD,
+    CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD, CL_DEVICE_LUID_KHR, CL_DEVICE_LUID_VALID_KHR,
+    CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD, CL_DEVICE_NODE_MASK_KHR,
+    CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL, CL_DEVICE_NUM_SLICES_INTEL,
+    CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL, CL_DEVICE_NUM_THREADS_PER_EU_INTEL,
+    CL_DEVICE_PCIE_ID_AMD, CL_DEVICE_PCI_BUS_ID_NV, CL_DEVICE_PCI_BUS_INFO_KHR,
+    CL_DEVICE_PCI_SLOT_ID_NV, CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD,
+    CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD, CL_DEVICE_PROFILING_TIMER_OFFSET_AMD,
+    CL_DEVICE_REGISTERS_PER_BLOCK_NV, CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD,
+    CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD, CL_DEVICE_SIMD_WIDTH_AMD,
+    CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD, CL_DEVICE_TOPOLOGY_AMD, CL_DEVICE_UUID_KHR,
+    CL_DEVICE_WARP_SIZE_NV, CL_DEVICE_WAVEFRONT_WIDTH_AMD, CL_DRIVER_UUID_KHR,
+};
 use super::info_type::InfoType;
 #[allow(unused_imports)]
 use super::types::{
-    cl_command_queue, cl_context, cl_device_affinity_domain, cl_device_exec_capabilities,
-    cl_device_fp_config, cl_device_id, cl_device_info, cl_device_local_mem_type,
-    cl_device_mem_cache_type, cl_device_partition_property, cl_device_svm_capabilities,
-    cl_device_type, cl_int, cl_name_version, cl_platform_id, cl_uint, cl_ulong,
-    cl_device_atomic_capabilities, cl_device_device_enqueue_capabilities, cl_version
-};
-use super::ffi::cl_ext::{cl_amd_device_topology, cl_device_pci_bus_info_khr,
-    cl_device_integer_dot_product_acceleration_properties_khr,
-    CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV,
-    CL_DEVICE_REGISTERS_PER_BLOCK_NV, CL_DEVICE_WARP_SIZE_NV, CL_DEVICE_GPU_OVERLAP_NV,
-    CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV, CL_DEVICE_INTEGRATED_MEMORY_NV,
-    CL_DEVICE_PCI_BUS_ID_NV, CL_DEVICE_PCI_SLOT_ID_NV,
-    CL_DEVICE_PROFILING_TIMER_OFFSET_AMD, CL_DEVICE_TOPOLOGY_AMD,
-    CL_DEVICE_BOARD_NAME_AMD, CL_DEVICE_GLOBAL_FREE_MEMORY_AMD,
-    CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD, CL_DEVICE_SIMD_WIDTH_AMD,
-    CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD, CL_DEVICE_WAVEFRONT_WIDTH_AMD,
-    CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD,
-    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD, CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD,
-    CL_DEVICE_LOCAL_MEM_BANKS_AMD, CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD,
-    CL_DEVICE_GFXIP_MAJOR_AMD, CL_DEVICE_GFXIP_MINOR_AMD,
-    CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD,
-    CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD, CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD,
-    CL_DEVICE_PCIE_ID_AMD, CL_DEVICE_PCI_BUS_INFO_KHR, CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR,
-    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR,
-    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR,
-    CL_DEVICE_UUID_KHR, CL_DRIVER_UUID_KHR, CL_DEVICE_LUID_VALID_KHR,
-    CL_DEVICE_LUID_KHR, CL_DEVICE_NODE_MASK_KHR, CL_DEVICE_IP_VERSION_INTEL,
-    CL_DEVICE_ID_INTEL, CL_DEVICE_NUM_SLICES_INTEL, CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL,
-    CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL, CL_DEVICE_NUM_THREADS_PER_EU_INTEL,
-    CL_DEVICE_FEATURE_CAPABILITIES_INTEL,
+    cl_command_queue, cl_context, cl_device_affinity_domain, cl_device_atomic_capabilities,
+    cl_device_device_enqueue_capabilities, cl_device_exec_capabilities, cl_device_fp_config,
+    cl_device_id, cl_device_info, cl_device_local_mem_type, cl_device_mem_cache_type,
+    cl_device_partition_property, cl_device_svm_capabilities, cl_device_type, cl_int,
+    cl_name_version, cl_platform_id, cl_uint, cl_ulong, cl_version,
 };
 use super::{api_info_size, api_info_value, api_info_vector};
-use cl_sys::{clGetDeviceIDs, clGetDeviceInfo};
-#[cfg(feature = "CL_VERSION_1_2")]
-use cl_sys::{clCreateSubDevices, clReleaseDevice, clRetainDevice};
 #[cfg(feature = "CL_VERSION_2_1")]
 use cl_sys::clSetDefaultDeviceCommandQueue;
+#[cfg(feature = "CL_VERSION_1_2")]
+use cl_sys::{clCreateSubDevices, clReleaseDevice, clRetainDevice};
+use cl_sys::{clGetDeviceIDs, clGetDeviceInfo};
 
 // clGetDeviceAndHostTimer, clGetHostTimer, are incorrect in cl_sys
 #[cfg(feature = "CL_VERSION_2_1")]
@@ -92,16 +90,16 @@ use std::mem;
 use std::ptr;
 
 // cl_device_atomic_capabilities
-pub const CL_DEVICE_ATOMIC_ORDER_RELAXED:     cl_device_atomic_capabilities = 1 << 0;
-pub const CL_DEVICE_ATOMIC_ORDER_ACQ_REL:     cl_device_atomic_capabilities = 1 << 1;
-pub const CL_DEVICE_ATOMIC_ORDER_SEQ_CST:     cl_device_atomic_capabilities = 1 << 2;
-pub const CL_DEVICE_ATOMIC_SCOPE_WORK_ITEM:   cl_device_atomic_capabilities = 1 << 3;
-pub const CL_DEVICE_ATOMIC_SCOPE_WORK_GROUP:  cl_device_atomic_capabilities = 1 << 4;
-pub const CL_DEVICE_ATOMIC_SCOPE_DEVICE:      cl_device_atomic_capabilities = 1 << 5;
+pub const CL_DEVICE_ATOMIC_ORDER_RELAXED: cl_device_atomic_capabilities = 1 << 0;
+pub const CL_DEVICE_ATOMIC_ORDER_ACQ_REL: cl_device_atomic_capabilities = 1 << 1;
+pub const CL_DEVICE_ATOMIC_ORDER_SEQ_CST: cl_device_atomic_capabilities = 1 << 2;
+pub const CL_DEVICE_ATOMIC_SCOPE_WORK_ITEM: cl_device_atomic_capabilities = 1 << 3;
+pub const CL_DEVICE_ATOMIC_SCOPE_WORK_GROUP: cl_device_atomic_capabilities = 1 << 4;
+pub const CL_DEVICE_ATOMIC_SCOPE_DEVICE: cl_device_atomic_capabilities = 1 << 5;
 pub const CL_DEVICE_ATOMIC_SCOPE_ALL_DEVICES: cl_device_atomic_capabilities = 1 << 6;
 
 // cl_device_device_enqueue_capabilities
-pub const CL_DEVICE_QUEUE_SUPPORTED:           cl_device_device_enqueue_capabilities = 1 << 0;
+pub const CL_DEVICE_QUEUE_SUPPORTED: cl_device_device_enqueue_capabilities = 1 << 0;
 pub const CL_DEVICE_QUEUE_REPLACEABLE_DEFAULT: cl_device_device_enqueue_capabilities = 1 << 1;
 
 // cl_version
@@ -126,9 +124,9 @@ pub fn version_patch(version: cl_version) -> cl_version {
 }
 
 pub fn make_version(major: cl_version, minor: cl_version, patch: cl_version) -> cl_version {
-    ((major & CL_VERSION_MAJOR_MASK) << (CL_VERSION_MINOR_BITS + CL_VERSION_PATCH_BITS)) |
-    ((minor & CL_VERSION_MINOR_MASK) << CL_VERSION_PATCH_BITS) |
-    (patch & CL_VERSION_PATCH_MASK)
+    ((major & CL_VERSION_MAJOR_MASK) << (CL_VERSION_MINOR_BITS + CL_VERSION_PATCH_BITS))
+        | ((minor & CL_VERSION_MINOR_MASK) << CL_VERSION_PATCH_BITS)
+        | (patch & CL_VERSION_PATCH_MASK)
 }
 
 /// Get the list of available devices of the given type on a platform.  
@@ -336,9 +334,12 @@ pub enum DeviceInfo {
     // #endif
 
     // cl_khr_integer_dot_product extension
-    CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR = CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR as isize,
-    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR = CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR as isize,
-    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR = CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR as isize,
+    CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR =
+        CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR as isize,
+    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR =
+        CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR as isize,
+    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR =
+        CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR as isize,
 
     // cl_nv_device_attribute_query extension
     CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV = CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV as isize,
@@ -348,7 +349,7 @@ pub enum DeviceInfo {
     CL_DEVICE_GPU_OVERLAP_NV = CL_DEVICE_GPU_OVERLAP_NV as isize,
     CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV = CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV as isize,
     CL_DEVICE_INTEGRATED_MEMORY_NV = CL_DEVICE_INTEGRATED_MEMORY_NV as isize,
-    
+
     // undocumented tokens for clGetDeviceInfo, see: https://anteru.net/blog/2014/associating-opencl-device-ids-with-gpus/
     CL_DEVICE_PCI_BUS_ID_NV = CL_DEVICE_PCI_BUS_ID_NV as isize,
     CL_DEVICE_PCI_SLOT_ID_NV = CL_DEVICE_PCI_SLOT_ID_NV as isize,
@@ -364,8 +365,10 @@ pub enum DeviceInfo {
     CL_DEVICE_WAVEFRONT_WIDTH_AMD = CL_DEVICE_WAVEFRONT_WIDTH_AMD as isize,
     CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD = CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD as isize,
     CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD = CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD as isize,
-    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD = CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD as isize,
-    CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD = CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD as isize,
+    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD =
+        CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD as isize,
+    CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD =
+        CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD as isize,
     CL_DEVICE_LOCAL_MEM_BANKS_AMD = CL_DEVICE_LOCAL_MEM_BANKS_AMD as isize,
     CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD = CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD as isize,
     CL_DEVICE_GFXIP_MAJOR_AMD = CL_DEVICE_GFXIP_MAJOR_AMD as isize,
@@ -373,7 +376,8 @@ pub enum DeviceInfo {
     CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD = CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD as isize,
     CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD = CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD as isize,
     CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD = CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD as isize,
-    CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD = CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD as isize,
+    CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD =
+        CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD as isize,
     CL_DEVICE_PCIE_ID_AMD = CL_DEVICE_PCIE_ID_AMD as isize,
     CL_DEVICE_PCI_BUS_INFO_KHR = CL_DEVICE_PCI_BUS_INFO_KHR as isize,
     CL_DEVICE_IP_VERSION_INTEL = CL_DEVICE_IP_VERSION_INTEL as isize,
@@ -406,7 +410,7 @@ pub enum DeviceInfo {
 /// let device_id = device_ids[0];
 ///
 /// let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_TYPE).unwrap();
-/// let value = value.to_ulong();
+/// let value = u64::from(value);
 /// println!("CL_DEVICE_TYPE: {}", value);
 /// assert_eq!(CL_DEVICE_TYPE_GPU, value);
 ///
@@ -644,8 +648,11 @@ pub fn get_amd_device_topology(bytes: &[u8]) -> cl_amd_device_topology {
     assert_eq!(size, std::mem::size_of::<cl_amd_device_topology>());
     let mut topology = cl_amd_device_topology::default();
     unsafe {
-        std::slice::from_raw_parts_mut(&mut topology as *mut cl_amd_device_topology as *mut u8, size)
-            .copy_from_slice(bytes);
+        std::slice::from_raw_parts_mut(
+            &mut topology as *mut cl_amd_device_topology as *mut u8,
+            size,
+        )
+        .copy_from_slice(bytes);
     }
     topology
 }
@@ -656,20 +663,31 @@ pub fn get_device_pci_bus_info_khr(bytes: &[u8]) -> cl_device_pci_bus_info_khr {
     assert_eq!(size, std::mem::size_of::<cl_device_pci_bus_info_khr>());
     let mut pci_bus_info = cl_device_pci_bus_info_khr::default();
     unsafe {
-        std::slice::from_raw_parts_mut(&mut pci_bus_info as *mut cl_device_pci_bus_info_khr as *mut u8, size)
-            .copy_from_slice(bytes);
+        std::slice::from_raw_parts_mut(
+            &mut pci_bus_info as *mut cl_device_pci_bus_info_khr as *mut u8,
+            size,
+        )
+        .copy_from_slice(bytes);
     }
     pci_bus_info
 }
 
 /// Convert a u8 slice (e.g. from get_device_info) into a cl_device_integer_dot_product_acceleration_properties_khr structure.
-pub fn get_device_integer_dot_product_acceleration_properties_khr(bytes: &[u8]) -> cl_device_integer_dot_product_acceleration_properties_khr {
+pub fn get_device_integer_dot_product_acceleration_properties_khr(
+    bytes: &[u8],
+) -> cl_device_integer_dot_product_acceleration_properties_khr {
     let size = bytes.len();
-    assert_eq!(size, std::mem::size_of::<cl_device_integer_dot_product_acceleration_properties_khr>());
+    assert_eq!(
+        size,
+        std::mem::size_of::<cl_device_integer_dot_product_acceleration_properties_khr>()
+    );
     let mut value = cl_device_integer_dot_product_acceleration_properties_khr::default();
     unsafe {
-        std::slice::from_raw_parts_mut(&mut value as *mut cl_device_integer_dot_product_acceleration_properties_khr as *mut u8, size)
-            .copy_from_slice(bytes);
+        std::slice::from_raw_parts_mut(
+            &mut value as *mut cl_device_integer_dot_product_acceleration_properties_khr as *mut u8,
+            size,
+        )
+        .copy_from_slice(bytes);
     }
     value
 }
@@ -850,8 +868,8 @@ pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::error_codes::ClError;
     use crate::platform::get_platform_ids;
-    use crate::error_codes::{ClError};
 
     #[test]
     fn test_get_platform_devices() {
@@ -906,12 +924,13 @@ mod tests {
         let is_opencl_2_1: bool = value.contains(&opencl_2_1);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_COMPUTE_UNITS).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_MAX_COMPUTE_UNITS: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS: {}", value);
         assert!(0 < value);
 
@@ -921,192 +940,216 @@ mod tests {
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_WORK_ITEM_SIZES).unwrap();
-        let value = value.to_vec_size();
+        let value = Vec::<usize>::from(value);
         println!("CL_DEVICE_MAX_WORK_ITEM_SIZES len: {:?}", value.len());
         println!("CL_DEVICE_MAX_WORK_ITEM_SIZES: {:?}", value);
         assert!(0 < value.len());
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT).unwrap();
-        let value = value.to_uint();
+        let value = get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT,
+        )
+        .unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT).unwrap();
-        let value = value.to_uint();
+        let value = get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT,
+        )
+        .unwrap();
+        let value = u32::from(value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE).unwrap();
-        let value = value.to_uint();
+        let value = get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE,
+        )
+        .unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_CLOCK_FREQUENCY).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_MAX_CLOCK_FREQUENCY: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_ADDRESS_BITS).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_ADDRESS_BITS: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_READ_IMAGE_ARGS).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_MAX_READ_IMAGE_ARGS: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_WRITE_IMAGE_ARGS).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_MAX_WRITE_IMAGE_ARGS: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_MEM_ALLOC_SIZE).unwrap();
-        let value = value.to_ulong();
+        let value = u64::from(value);
         println!("CL_DEVICE_MAX_MEM_ALLOC_SIZE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE2D_MAX_WIDTH).unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_DEVICE_IMAGE2D_MAX_WIDTH: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE2D_MAX_HEIGHT).unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_DEVICE_IMAGE2D_MAX_HEIGHT: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE3D_MAX_WIDTH).unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_DEVICE_IMAGE3D_MAX_WIDTH: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE3D_MAX_HEIGHT).unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_DEVICE_IMAGE3D_MAX_HEIGHT: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE3D_MAX_DEPTH).unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_DEVICE_IMAGE3D_MAX_DEPTH: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE_SUPPORT).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_IMAGE_SUPPORT: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_PARAMETER_SIZE).unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_DEVICE_MAX_PARAMETER_SIZE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_SAMPLERS).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_MAX_SAMPLERS: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MEM_BASE_ADDR_ALIGN).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_MEM_BASE_ADDR_ALIGN: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_SINGLE_FP_CONFIG).unwrap();
-        let value = value.to_ulong();
+        let value = u64::from(value);
         println!("CL_DEVICE_SINGLE_FP_CONFIG: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CACHE_TYPE).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CACHE_TYPE).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_GLOBAL_MEM_CACHE_TYPE: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CACHE_SIZE).unwrap();
-        let value = value.to_ulong();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CACHE_SIZE).unwrap();
+        let value = u64::from(value);
         println!("CL_DEVICE_GLOBAL_MEM_CACHE_SIZE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_SIZE).unwrap();
-        let value = value.to_ulong();
+        let value = u64::from(value);
         println!("CL_DEVICE_GLOBAL_MEM_SIZE: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE).unwrap();
-        let value = value.to_ulong();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE).unwrap();
+        let value = u64::from(value);
         println!("CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_CONSTANT_ARGS).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_MAX_CONSTANT_ARGS: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_LOCAL_MEM_TYPE).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_LOCAL_MEM_TYPE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_LOCAL_MEM_SIZE).unwrap();
-        let value = value.to_ulong();
+        let value = u64::from(value);
         println!("CL_DEVICE_LOCAL_MEM_SIZE: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_ERROR_CORRECTION_SUPPORT).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_ERROR_CORRECTION_SUPPORT).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_ERROR_CORRECTION_SUPPORT: {}", value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PROFILING_TIMER_RESOLUTION).unwrap();
-        let value = value.to_size();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_PROFILING_TIMER_RESOLUTION).unwrap();
+        let value = usize::from(value);
         println!("CL_DEVICE_PROFILING_TIMER_RESOLUTION: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_ENDIAN_LITTLE).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_ENDIAN_LITTLE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_AVAILABLE).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_AVAILABLE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_COMPILER_AVAILABLE).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_COMPILER_AVAILABLE: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_EXECUTION_CAPABILITIES).unwrap();
-        let value = value.to_ulong();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_EXECUTION_CAPABILITIES).unwrap();
+        let value = u64::from(value);
         println!("CL_DEVICE_EXECUTION_CAPABILITIES: {}", value);
         assert!(0 < value);
 
         if is_opencl_2 {
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_QUEUE_ON_HOST_PROPERTIES).unwrap();
-            let value = value.to_ulong();
+            let value =
+                get_device_info(device_id, DeviceInfo::CL_DEVICE_QUEUE_ON_HOST_PROPERTIES).unwrap();
+            let value = u64::from(value);
             println!("CL_DEVICE_QUEUE_ON_HOST_PROPERTIES: {}", value);
             assert!(0 < value);
         }
@@ -1137,64 +1180,72 @@ mod tests {
         assert!(!value.is_empty());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PLATFORM).unwrap();
-        let value = value.to_ptr();
+        let value = intptr_t::from(value);
         println!("CL_DEVICE_PLATFORM: {}", value);
         assert!(0 < value);
 
         // Device may not support double fp precision
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_DOUBLE_FP_CONFIG) {
             Ok(value) => {
-                let value = value.to_ulong();
+                let value = u64::from(value);
                 println!("CL_DEVICE_DOUBLE_FP_CONFIG: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_DOUBLE_FP_CONFIG: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_DOUBLE_FP_CONFIG: {}", ClError(e)),
         };
 
         // Device may not support half fp precision
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_HALF_FP_CONFIG) {
             Ok(value) => {
-                let value = value.to_ulong();
+                let value = u64::from(value);
                 println!("CL_DEVICE_HALF_FP_CONFIG: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_HALF_FP_CONFIG: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_HALF_FP_CONFIG: {}", ClError(e)),
         };
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF: {}", value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_INT).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_INT).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_NATIVE_VECTOR_WIDTH_INT: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF: {}", value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_OPENCL_C_VERSION).unwrap();
@@ -1203,7 +1254,7 @@ mod tests {
         assert!(!value.is_empty());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_LINKER_AVAILABLE).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_LINKER_AVAILABLE: {}", value);
         assert!(0 < value);
 
@@ -1211,193 +1262,215 @@ mod tests {
         let value = value.to_string();
         println!("CL_DEVICE_BUILT_IN_KERNELS: {}", value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE_MAX_BUFFER_SIZE).unwrap();
-        let value = value.to_size();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE_MAX_BUFFER_SIZE).unwrap();
+        let value = usize::from(value);
         println!("CL_DEVICE_IMAGE_MAX_BUFFER_SIZE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE_MAX_ARRAY_SIZE).unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_DEVICE_IMAGE_MAX_ARRAY_SIZE: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PARENT_DEVICE).unwrap();
-        let value = value.to_ptr();
+        let value = intptr_t::from(value);
         println!("CL_DEVICE_PARENT_DEVICE: {}", value);
         assert!(0 == value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PARTITION_MAX_SUB_DEVICES).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_PARTITION_MAX_SUB_DEVICES).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_PARTITION_MAX_SUB_DEVICES: {}", value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PARTITION_PROPERTIES).unwrap();
-        let value = value.to_vec_intptr();
+        let value = Vec::<isize>::from(value);
         println!("CL_DEVICE_PARTITION_PROPERTIES: {}", value.len());
         println!("CL_DEVICE_PARTITION_PROPERTIES: {:?}", value);
         assert!(0 < value.len());
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PARTITION_AFFINITY_DOMAIN).unwrap();
-        let value = value.to_vec_ulong();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_PARTITION_AFFINITY_DOMAIN).unwrap();
+        let value = Vec::<cl_ulong>::from(value);
         println!("CL_DEVICE_PARTITION_AFFINITY_DOMAIN: {}", value.len());
         println!("CL_DEVICE_PARTITION_AFFINITY_DOMAIN: {:?}", value);
         assert!(0 < value.len());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PARTITION_TYPE).unwrap();
-        let value = value.to_vec_intptr();
+        let value = Vec::<isize>::from(value);
         println!("CL_DEVICE_PARTITION_TYPE: {}", value.len());
         println!("CL_DEVICE_PARTITION_TYPE: {:?}", value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_REFERENCE_COUNT).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_REFERENCE_COUNT: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_INTEROP_USER_SYNC).unwrap();
-        let value = value.to_uint();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_INTEROP_USER_SYNC).unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_PREFERRED_INTEROP_USER_SYNC: {}", value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PRINTF_BUFFER_SIZE).unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_DEVICE_PRINTF_BUFFER_SIZE: {}", value);
         assert!(0 < value);
 
         // cl_khr_device_uuid extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_UUID_KHR) {
             Ok(value) => {
-                let value = value.to_vec_uchar();
+                let value = Vec::<u8>::from(value);
                 println!("CL_DEVICE_UUID_KHR: {:?}", value);
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_UUID_KHR: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_UUID_KHR: {}", ClError(e)),
         };
 
         // cl_khr_device_uuid extension
         match get_device_info(device_id, DeviceInfo::CL_DRIVER_UUID_KHR) {
             Ok(value) => {
-                let value = value.to_vec_uchar();
+                let value = Vec::<u8>::from(value);
                 println!("CL_DRIVER_UUID_KHR: {:?}", value);
             }
-            Err(e) => println!("OpenCL error, CL_DRIVER_UUID_KHR: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DRIVER_UUID_KHR: {}", ClError(e)),
         };
 
         // cl_khr_device_uuid extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_LUID_VALID_KHR) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_LUID_VALID_KHR: {:?}", value);
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_LUID_VALID_KHR: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_LUID_VALID_KHR: {}", ClError(e)),
         };
 
         // cl_khr_device_uuid extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_LUID_KHR) {
             Ok(value) => {
-                let value = value.to_vec_uchar();
+                let value = Vec::<u8>::from(value);
                 println!("CL_DEVICE_LUID_KHR: {:?}", value);
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_LUID_KHR: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_LUID_KHR: {}", ClError(e)),
         };
 
         // cl_khr_device_uuid extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_NODE_MASK_KHR) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_NODE_MASK_KHR: {:?}", value);
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_NODE_MASK_KHR: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_NODE_MASK_KHR: {}", ClError(e)),
         };
 
         // Nvidia specific extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV: {}",
+                ClError(e)
+            ),
         };
 
         // Nvidia specific extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV: {}",
+                ClError(e)
+            ),
         };
 
         // Nvidia specific extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_REGISTERS_PER_BLOCK_NV) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_REGISTERS_PER_BLOCK_NV: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_REGISTERS_PER_BLOCK_NV: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_REGISTERS_PER_BLOCK_NV: {}",
+                ClError(e)
+            ),
         };
 
         // Nvidia specific extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_WARP_SIZE_NV) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_WARP_SIZE_NV: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_WARP_SIZE_NV: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_WARP_SIZE_NV: {}", ClError(e)),
         };
 
         // Nvidia specific extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_GPU_OVERLAP_NV) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_GPU_OVERLAP_NV: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_GPU_OVERLAP_NV: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_GPU_OVERLAP_NV: {}", ClError(e)),
         };
 
         // Nvidia specific extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV: {}",
+                ClError(e)
+            ),
         };
 
         // Nvidia specific extension
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_INTEGRATED_MEMORY_NV) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_INTEGRATED_MEMORY_NV: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_INTEGRATED_MEMORY_NV: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_INTEGRATED_MEMORY_NV: {}",
+                ClError(e)
+            ),
         };
 
         // Nvidia specific extension, undocumented
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCI_BUS_ID_NV) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_PCI_BUS_ID_NV: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_PCI_BUS_ID_NV: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_PCI_BUS_ID_NV: {}", ClError(e)),
         };
 
         // Nvidia specific extension, undocumented
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCI_SLOT_ID_NV) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_PCI_SLOT_ID_NV: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_PCI_SLOT_ID_NV: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_PCI_SLOT_ID_NV: {}", ClError(e)),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_PROFILING_TIMER_OFFSET_AMD) {
             Ok(value) => {
-                let value = value.to_size();
+                let value = usize::from(value);
                 println!("CL_DEVICE_PROFILING_TIMER_OFFSET_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_PROFILING_TIMER_OFFSET_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_PROFILING_TIMER_OFFSET_AMD: {}",
+                ClError(e)
+            ),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_TOPOLOGY_AMD) {
             Ok(value) => {
-                let value = value.to_vec_uchar();
+                let value = Vec::<u8>::from(value);
                 println!("CL_DEVICE_TOPOLOGY_AMD: {:?}", value);
 
                 let topology = get_amd_device_topology(&value);
@@ -1405,7 +1478,7 @@ mod tests {
                 println!("CL_DEVICE_TOPOLOGY_AMD device: {}", topology.device);
                 println!("CL_DEVICE_TOPOLOGY_AMD function: {}", topology.function);
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_TOPOLOGY_AMD: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_TOPOLOGY_AMD: {}", ClError(e)),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_BOARD_NAME_AMD) {
@@ -1413,314 +1486,431 @@ mod tests {
                 let value = value.to_string();
                 println!("CL_DEVICE_BOARD_NAME_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_BOARD_NAME_AMD: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_BOARD_NAME_AMD: {}", ClError(e)),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_FREE_MEMORY_AMD) {
             Ok(value) => {
-                let value = value.to_size();
+                let value = usize::from(value);
                 println!("CL_DEVICE_GLOBAL_FREE_MEMORY_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_GLOBAL_FREE_MEMORY_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_GLOBAL_FREE_MEMORY_AMD: {}",
+                ClError(e)
+            ),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD: {}",
+                ClError(e)
+            ),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_SIMD_WIDTH_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_SIMD_WIDTH_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_SIMD_WIDTH_AMD: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_SIMD_WIDTH_AMD: {}", ClError(e)),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD: {}",
+                ClError(e)
+            ),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_WAVEFRONT_WIDTH_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_WAVEFRONT_WIDTH_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_WAVEFRONT_WIDTH_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_WAVEFRONT_WIDTH_AMD: {}",
+                ClError(e)
+            ),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD: {}", ClError(e))
-        };
-        
-        match get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD) {
-            Ok(value) => {
-                let value = value.to_uint();
-                println!("CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD: {}", value)
-            }
-            Err(e) => println!("OpenCL error, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD: {}", ClError(e))
-        };
-        
-        match get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD) {
-            Ok(value) => {
-                let value = value.to_uint();
-                println!("CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD: {}", value)
-            }
-            Err(e) => println!("OpenCL error, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD: {}",
+                ClError(e)
+            ),
         };
 
-        match get_device_info(device_id, DeviceInfo::CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD) {
+        match get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD,
+        ) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
+                println!("CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD: {}", value)
+            }
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD: {}",
+                ClError(e)
+            ),
+        };
+
+        match get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD,
+        ) {
+            Ok(value) => {
+                let value = u32::from(value);
+                println!("CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD: {}", value)
+            }
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD: {}",
+                ClError(e)
+            ),
+        };
+
+        match get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD,
+        ) {
+            Ok(value) => {
+                let value = u32::from(value);
                 println!("CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD: {}",
+                ClError(e)
+            ),
         };
-        
+
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_LOCAL_MEM_BANKS_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_LOCAL_MEM_BANKS_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_LOCAL_MEM_BANKS_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_LOCAL_MEM_BANKS_AMD: {}",
+                ClError(e)
+            ),
         };
-        
+
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD: {}",
+                ClError(e)
+            ),
         };
-        
+
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_GFXIP_MAJOR_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_GFXIP_MAJOR_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_GFXIP_MAJOR_AMD: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_GFXIP_MAJOR_AMD: {}", ClError(e)),
         };
-        
+
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_GFXIP_MINOR_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_GFXIP_MINOR_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_GFXIP_MINOR_AMD: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_GFXIP_MINOR_AMD: {}", ClError(e)),
         };
-        
+
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD: {}",
+                ClError(e)
+            ),
         };
-        
-        match get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD) {
+
+        match get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD,
+        ) {
             Ok(value) => {
-                let value = value.to_size();
+                let value = usize::from(value);
                 println!("CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD: {}",
+                ClError(e)
+            ),
         };
-        
+
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD) {
             Ok(value) => {
-                let value = value.to_size();
+                let value = usize::from(value);
                 println!("CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD: {}",
+                ClError(e)
+            ),
         };
-        
-        match get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD) {
+
+        match get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD,
+        ) {
             Ok(value) => {
-                let value = value.to_size();
+                let value = usize::from(value);
                 println!("CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD: {}",
+                ClError(e)
+            ),
         };
-        
+
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCIE_ID_AMD) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_PCIE_ID_AMD: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_PCIE_ID_AMD: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_PCIE_ID_AMD: {}", ClError(e)),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_PCI_BUS_INFO_KHR) {
             Ok(value) => {
-                let value = value.to_vec_uchar();
+                let value = Vec::<u8>::from(value);
                 println!("CL_DEVICE_PCI_BUS_INFO_KHR: {:?}", value);
 
                 let pci_bus_info = get_device_pci_bus_info_khr(&value);
-                println!("CL_DEVICE_PCI_BUS_INFO_KHR pci_domain: {}", pci_bus_info.pci_domain);
-                println!("CL_DEVICE_PCI_BUS_INFO_KHR pci_bus: {}", pci_bus_info.pci_bus);
-                println!("CL_DEVICE_PCI_BUS_INFO_KHR pci_device: {}", pci_bus_info.pci_device);
-                println!("CL_DEVICE_PCI_BUS_INFO_KHR pci_function: {}", pci_bus_info.pci_function);
+                println!(
+                    "CL_DEVICE_PCI_BUS_INFO_KHR pci_domain: {}",
+                    pci_bus_info.pci_domain
+                );
+                println!(
+                    "CL_DEVICE_PCI_BUS_INFO_KHR pci_bus: {}",
+                    pci_bus_info.pci_bus
+                );
+                println!(
+                    "CL_DEVICE_PCI_BUS_INFO_KHR pci_device: {}",
+                    pci_bus_info.pci_device
+                );
+                println!(
+                    "CL_DEVICE_PCI_BUS_INFO_KHR pci_function: {}",
+                    pci_bus_info.pci_function
+                );
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_PCI_BUS_INFO_KHR: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_PCI_BUS_INFO_KHR: {}", ClError(e)),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_IP_VERSION_INTEL) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_IP_VERSION_INTEL: {:?}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_IP_VERSION_INTEL: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_IP_VERSION_INTEL: {}", ClError(e)),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_ID_INTEL) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_ID_INTEL: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_ID_INTEL: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_ID_INTEL: {}", ClError(e)),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_NUM_SLICES_INTEL) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_NUM_SLICES_INTEL: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_NUM_SLICES_INTEL: {}", ClError(e))
+            Err(e) => println!("OpenCL error, CL_DEVICE_NUM_SLICES_INTEL: {}", ClError(e)),
         };
 
-        match get_device_info(device_id, DeviceInfo::CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL) {
+        match get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL,
+        ) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL: {}",
+                ClError(e)
+            ),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL: {}",
+                ClError(e)
+            ),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_NUM_THREADS_PER_EU_INTEL) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_DEVICE_NUM_THREADS_PER_EU_INTEL: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_NUM_THREADS_PER_EU_INTEL: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_NUM_THREADS_PER_EU_INTEL: {}",
+                ClError(e)
+            ),
         };
 
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_FEATURE_CAPABILITIES_INTEL) {
             Ok(value) => {
-                let value = value.to_ulong();
+                let value = u64::from(value);
                 println!("CL_DEVICE_FEATURE_CAPABILITIES_INTEL: {}", value)
             }
-            Err(e) => println!("OpenCL error, CL_DEVICE_FEATURE_CAPABILITIES_INTEL: {}", ClError(e))
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_FEATURE_CAPABILITIES_INTEL: {}",
+                ClError(e)
+            ),
         };
 
         // CL_VERSION_2_0
         if is_opencl_2 {
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE_PITCH_ALIGNMENT).unwrap();
-            let value = value.to_uint();
+            let value =
+                get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE_PITCH_ALIGNMENT).unwrap();
+            let value = u32::from(value);
             println!("CL_DEVICE_IMAGE_PITCH_ALIGNMENT: {}", value);
             assert!(0 < value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT).unwrap();
-            let value = value.to_uint();
+            let value = get_device_info(
+                device_id,
+                DeviceInfo::CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT,
+            )
+            .unwrap();
+            let value = u32::from(value);
             println!("CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT: {}", value);
             assert!(0 < value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_READ_WRITE_IMAGE_ARGS).unwrap();
-            let value = value.to_uint();
+            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_READ_WRITE_IMAGE_ARGS)
+                .unwrap();
+            let value = u32::from(value);
             println!("CL_DEVICE_MAX_READ_WRITE_IMAGE_ARGS: {}", value);
             assert!(0 < value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_GLOBAL_VARIABLE_SIZE).unwrap();
-            let value = value.to_size();
+            let value =
+                get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_GLOBAL_VARIABLE_SIZE).unwrap();
+            let value = usize::from(value);
             println!("CL_DEVICE_MAX_GLOBAL_VARIABLE_SIZE: {}", value);
             assert!(0 < value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES).unwrap();
-            let value = value.to_vec_intptr();
+            let value =
+                get_device_info(device_id, DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES)
+                    .unwrap();
+            let value = Vec::<isize>::from(value);
             println!("CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES: {}", value.len());
             println!("CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES: {:?}", value);
             assert!(0 < value.len());
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE).unwrap();
-            let value = value.to_size();
+            let value = get_device_info(
+                device_id,
+                DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE,
+            )
+            .unwrap();
+            let value = usize::from(value);
             println!("CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE: {}", value);
             assert!(0 < value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE).unwrap();
-            let value = value.to_size();
+            let value =
+                get_device_info(device_id, DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE).unwrap();
+            let value = usize::from(value);
             println!("CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE: {}", value);
             assert!(0 < value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_ON_DEVICE_QUEUES).unwrap();
-            let value = value.to_uint();
+            let value =
+                get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_ON_DEVICE_QUEUES).unwrap();
+            let value = u32::from(value);
             println!("CL_DEVICE_MAX_ON_DEVICE_QUEUES: {}", value);
             assert!(0 < value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_ON_DEVICE_EVENTS).unwrap();
-            let value = value.to_uint();
+            let value =
+                get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_ON_DEVICE_EVENTS).unwrap();
+            let value = u32::from(value);
             println!("CL_DEVICE_MAX_ON_DEVICE_EVENTS: {}", value);
             assert!(0 < value);
 
             let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_SVM_CAPABILITIES).unwrap();
-            let value = value.to_ulong();
+            let value = u64::from(value);
             println!("CL_DEVICE_SVM_CAPABILITIES: {}", value);
             assert!(0 < value);
 
-            let value =
-                get_device_info(device_id, DeviceInfo::CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE).unwrap();
-            let value = value.to_size();
+            let value = get_device_info(
+                device_id,
+                DeviceInfo::CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE,
+            )
+            .unwrap();
+            let value = usize::from(value);
             println!("CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE: {}", value);
             assert!(0 < value);
 
             let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_PIPE_ARGS).unwrap();
-            let value = value.to_uint();
+            let value = u32::from(value);
             println!("CL_DEVICE_MAX_PIPE_ARGS: {}", value);
             assert!(0 < value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS).unwrap();
-            let value = value.to_uint();
+            let value = get_device_info(
+                device_id,
+                DeviceInfo::CL_DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS,
+            )
+            .unwrap();
+            let value = u32::from(value);
             println!("CL_DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS: {}", value);
             assert!(0 < value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PIPE_MAX_PACKET_SIZE).unwrap();
-            let value = value.to_uint();
+            let value =
+                get_device_info(device_id, DeviceInfo::CL_DEVICE_PIPE_MAX_PACKET_SIZE).unwrap();
+            let value = u32::from(value);
             println!("CL_DEVICE_PIPE_MAX_PACKET_SIZE: {}", value);
             assert!(0 < value);
 
-            let value =
-                get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT).unwrap();
-            let value = value.to_uint();
+            let value = get_device_info(
+                device_id,
+                DeviceInfo::CL_DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT,
+            )
+            .unwrap();
+            let value = u32::from(value);
             println!("CL_DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT: {}", value);
             // assert!(0 < value);
 
-            let value =
-                get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT).unwrap();
-            let value = value.to_uint();
+            let value = get_device_info(
+                device_id,
+                DeviceInfo::CL_DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT,
+            )
+            .unwrap();
+            let value = u32::from(value);
             println!("CL_DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT: {}", value);
             // assert!(0 < value);
 
-            let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT).unwrap();
-            let value = value.to_uint();
+            let value = get_device_info(
+                device_id,
+                DeviceInfo::CL_DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT,
+            )
+            .unwrap();
+            let value = u32::from(value);
             println!("CL_DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT: {}", value);
             // assert!(0 < value);
-
 
             // CL_VERSION_2_1
             if is_opencl_2_1 {
@@ -1729,14 +1919,18 @@ mod tests {
                 println!("CL_DEVICE_IL_VERSION: {}", value);
                 assert!(!value.is_empty());
 
-                let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_NUM_SUB_GROUPS).unwrap();
-                let value = value.to_uint();
+                let value =
+                    get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_NUM_SUB_GROUPS).unwrap();
+                let value = u32::from(value);
                 println!("CL_DEVICE_MAX_NUM_SUB_GROUPS: {}", value);
                 assert!(0 < value);
 
-                let value =
-                    get_device_info(device_id, DeviceInfo::CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS).unwrap();
-                let value = value.to_uint();
+                let value = get_device_info(
+                    device_id,
+                    DeviceInfo::CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS,
+                )
+                .unwrap();
+                let value = u32::from(value);
                 println!(
                     "CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS: {}",
                     value
@@ -1762,87 +1956,113 @@ mod tests {
 
         // CL_VERSION_3_0
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NUMERIC_VERSION).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_NUMERIC_VERSION: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_EXTENSIONS_WITH_VERSION).unwrap();
-        let value = value.to_vec_name_version();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_EXTENSIONS_WITH_VERSION).unwrap();
+        let value = Vec::<cl_name_version>::from(value);
         println!("CL_DEVICE_EXTENSIONS_WITH_VERSION: {}", value.len());
         println!("CL_DEVICE_EXTENSIONS_WITH_VERSION: {:?}", value);
         assert!(0 < value.len());
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_ILS_WITH_VERSION).unwrap();
-        let value = value.to_vec_name_version();
+        let value = Vec::<cl_name_version>::from(value);
         println!("CL_DEVICE_ILS_WITH_VERSION: {}", value.len());
         println!("CL_DEVICE_ILS_WITH_VERSION: {:?}", value);
         assert!(0 < value.len());
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION).unwrap();
-        let value = value.to_vec_name_version();
+        let value = get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION,
+        )
+        .unwrap();
+        let value = Vec::<cl_name_version>::from(value);
         println!("CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION: {}", value.len());
         println!("CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION: {:?}", value);
         assert!(0 < value.len());
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES).unwrap();
-        let value = value.to_ulong();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES).unwrap();
+        let value = u64::from(value);
         println!("CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES).unwrap();
-        let value = value.to_ulong();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES).unwrap();
+        let value = u64::from(value);
         println!("CL_DEVICE_ATOMIC_FENCE_CAPABILITIES: {}", value);
         assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT).unwrap();
-        let value = value.to_uint();
+        let value = get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT,
+        )
+        .unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT: {}", value);
         // assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_OPENCL_C_ALL_VERSIONS).unwrap();
-        let value = value.to_vec_name_version();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_OPENCL_C_ALL_VERSIONS).unwrap();
+        let value = Vec::<cl_name_version>::from(value);
         println!("CL_DEVICE_OPENCL_C_ALL_VERSIONS: {}", value.len());
         println!("CL_DEVICE_OPENCL_C_ALL_VERSIONS: {:?}", value);
         assert!(0 < value.len());
 
-        let value =
-            get_device_info(device_id, DeviceInfo::CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE).unwrap();
-        let value = value.to_size();
+        let value = get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE,
+        )
+        .unwrap();
+        let value = usize::from(value);
         println!("CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE: {}", value);
         assert!(0 < value);
 
-        let value =
-            get_device_info(device_id, DeviceInfo::CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT).unwrap();
-        let value = value.to_uint();
+        let value = get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT,
+        )
+        .unwrap();
+        let value = u32::from(value);
         println!(
             "CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT: {}",
             value
         );
         // assert!(0 < value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT).unwrap();
-        let value = value.to_uint();
+        let value = get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT,
+        )
+        .unwrap();
+        let value = u32::from(value);
         println!("CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT: {}", value);
         // assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_OPENCL_C_FEATURES).unwrap();
-        let value = value.to_vec_name_version();
+        let value = Vec::<cl_name_version>::from(value);
         println!("CL_DEVICE_OPENCL_C_FEATURES: {}", value.len());
         println!("CL_DEVICE_OPENCL_C_FEATURES: {:?}", value);
         assert!(0 < value.len());
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES).unwrap();
-        let value = value.to_ulong();
+        let value =
+            get_device_info(device_id, DeviceInfo::CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES).unwrap();
+        let value = u64::from(value);
         println!("CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES: {}", value);
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PIPE_SUPPORT).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_DEVICE_PIPE_SUPPORT: {}", value);
         // assert!(0 < value);
 
-        let value =
-            get_device_info(device_id, DeviceInfo::CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED).unwrap();
+        let value = get_device_info(
+            device_id,
+            DeviceInfo::CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED,
+        )
+        .unwrap();
         let value = value.to_string();
         println!("CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED: {}", value);
         assert!(!value.is_empty());
@@ -1863,8 +2083,10 @@ mod tests {
             let device_ids = get_device_ids(p, CL_DEVICE_TYPE_CPU).unwrap();
 
             for dev_id in device_ids {
-                let value = get_device_info(dev_id, DeviceInfo::CL_DEVICE_PARTITION_MAX_SUB_DEVICES).unwrap();
-                let max_sub_devices = value.to_uint();
+                let value =
+                    get_device_info(dev_id, DeviceInfo::CL_DEVICE_PARTITION_MAX_SUB_DEVICES)
+                        .unwrap();
+                let max_sub_devices = u32::from(value);
 
                 has_sub_devices = 1 < max_sub_devices;
                 if has_sub_devices {
@@ -1875,8 +2097,7 @@ mod tests {
         }
 
         if has_sub_devices {
-            let properties: [cl_device_partition_property; 3] =
-                [CL_DEVICE_PARTITION_EQUALLY, 2, 0];
+            let properties: [cl_device_partition_property; 3] = [CL_DEVICE_PARTITION_EQUALLY, 2, 0];
             let sub_devices = create_sub_devices(device_id, &properties).unwrap();
 
             println!("CL_DEVICE_TYPE_CPU count: {}", sub_devices.len());

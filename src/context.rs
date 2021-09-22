@@ -237,24 +237,24 @@ mod tests {
         let context = context.unwrap();
 
         let value = get_context_info(context, ContextInfo::CL_CONTEXT_REFERENCE_COUNT).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_CONTEXT_REFERENCE_COUNT: {}", value);
         assert!(0 < value);
 
         let value = get_context_info(context, ContextInfo::CL_CONTEXT_DEVICES).unwrap();
-        let value = value.to_vec_intptr();
+        let value = Vec::<isize>::from(value);
         println!("CL_CONTEXT_DEVICES: {}", value.len());
         println!("CL_CONTEXT_DEVICES: {:?}", value);
         assert!(0 < value.len());
 
         let value = get_context_info(context, ContextInfo::CL_CONTEXT_PROPERTIES).unwrap();
-        let value = value.to_vec_intptr();
+        let value = Vec::<isize>::from(value);
         println!("CL_CONTEXT_PROPERTIES: {}", value.len());
         println!("CL_CONTEXT_PROPERTIES: {:?}", value);
         // assert!(0 < value.len());
 
         let value = get_context_info(context, ContextInfo::CL_CONTEXT_NUM_DEVICES).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_CONTEXT_NUM_DEVICES: {}", value);
         assert!(0 < value);
 

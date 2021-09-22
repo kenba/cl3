@@ -21,18 +21,145 @@ use std::fmt;
 /// The functions will panic if they are called for the incorrect type.
 #[derive(Debug)]
 pub enum InfoType {
-    Int(cl_int),
-    Uint(cl_uint),
-    Ulong(cl_ulong),
-    Size(size_t),
-    Ptr(intptr_t),
-    VecUchar(Vec<cl_uchar>),
-    VecUlong(Vec<cl_ulong>),
-    VecSize(Vec<size_t>),
-    VecIntPtr(Vec<intptr_t>),
+    Int(i32),
+    Uint(u32),
+    Ulong(u64),
+    Size(usize),
+    Ptr(isize),
+    VecUchar(Vec<u8>),
+    VecUlong(Vec<u64>),
+    VecSize(Vec<usize>),
+    VecIntPtr(Vec<isize>),
     VecNameVersion(Vec<cl_name_version>),
     VecImageFormat(Vec<cl_image_format>),
-    VecVecUchar(Vec<Vec<cl_uchar>>),
+    VecVecUchar(Vec<Vec<u8>>),
+}
+
+impl From<InfoType> for i32 {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::Int(a) => a,
+            _ => panic!("not an Int"),
+        }
+    }
+}
+
+impl From<InfoType> for u32 {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::Uint(a) => a,
+            _ => panic!("not a Uint"),
+        }
+    }
+}
+
+impl From<InfoType> for u64 {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::Ulong(a) => a,
+            _ => panic!("not a Ulong"),
+        }
+    }
+}
+
+impl From<InfoType> for usize {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::Size(a) => a,
+            _ => panic!("not a Size"),
+        }
+    }
+}
+
+impl From<InfoType> for isize {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::Ptr(a) => a,
+            _ => panic!("not a Ptr"),
+        }
+    }
+}
+
+impl From<InfoType> for Vec<u8> {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::VecUchar(a) => a,
+            _ => panic!("not a VecUchar"),
+        }
+    }
+}
+
+impl From<InfoType> for Vec<u64> {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::VecUlong(a) => a,
+            _ => panic!("not a VecUlong"),
+        }
+    }
+}
+
+impl From<InfoType> for Vec<usize> {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::VecSize(a) => a,
+            _ => panic!("not a VecSize"),
+        }
+    }
+}
+
+impl From<InfoType> for Vec<isize> {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::VecIntPtr(a) => a,
+            _ => panic!("not a VecIntPtr"),
+        }
+    }
+}
+
+impl From<InfoType> for Vec<cl_name_version> {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::VecNameVersion(a) => a,
+            _ => panic!("not a VecNameVersion"),
+        }
+    }
+}
+
+impl From<InfoType> for Vec<cl_image_format> {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::VecImageFormat(a) => a,
+            _ => panic!("not a VecImageFormat"),
+        }
+    }
+}
+
+impl From<InfoType> for Vec<Vec<u8>> {
+    fn from(info_type: InfoType) -> Self {
+        match info_type {
+            InfoType::VecVecUchar(a) => a,
+            _ => panic!("not a VecVecUchar"),
+        }
+    }
+}
+
+impl From<InfoType> for String {
+    /// Get a `Vec<cl_uchar>` aka `Vec<u8>` as a String.
+    /// Note: it uses from_utf8_lossy to convert any invalid characters to
+    /// std::char::REPLACEMENT_CHARACTER.
+    ///
+    /// returns a utf8 String.
+    fn from(info_type: InfoType) -> Self {
+        let mut a = Vec::<u8>::from(info_type);
+
+        // remove all trailing nulls, if any
+        while let Some(0) = a.last() {
+            a.pop();
+        }
+
+        // convert invalid characters to std::char::REPLACEMENT_CHARACTER
+        String::from_utf8_lossy(&a).into_owned()
+    }
 }
 
 impl fmt::Display for InfoType {
@@ -89,130 +216,51 @@ impl fmt::Display for InfoType {
 
 impl InfoType {
     pub fn to_int(self) -> cl_int {
-        match self {
-            InfoType::Int(a) => a,
-            _ => panic!("not a cl_int"),
-        }
+        i32::from(self)
     }
 
     pub fn to_uint(self) -> cl_uint {
-        match self {
-            InfoType::Uint(a) => a,
-            _ => panic!("not a cl_uint"),
-        }
+        u32::from(self)
     }
 
     pub fn to_ulong(self) -> cl_ulong {
-        match self {
-            InfoType::Ulong(a) => a,
-            _ => panic!("not a cl_ulong"),
-        }
+        u64::from(self)
     }
 
     pub fn to_size(self) -> size_t {
-        match self {
-            InfoType::Size(a) => a,
-            _ => panic!("not a size_t"),
-        }
+        usize::from(self)
     }
 
     pub fn to_ptr(self) -> intptr_t {
-        match self {
-            InfoType::Ptr(a) => a,
-            _ => panic!("not a intptr_t"),
-        }
+        isize::from(self)
     }
 
     pub fn to_vec_uchar(self) -> Vec<cl_uchar> {
-        match self {
-            InfoType::VecUchar(a) => a,
-            _ => panic!("not a Vec<cl_uchar>"),
-        }
+        Vec::<u8>::from(self)
     }
 
     pub fn to_vec_ulong(self) -> Vec<cl_ulong> {
-        match self {
-            InfoType::VecUlong(a) => a,
-            _ => panic!("not a Vec<cl_ulong>"),
-        }
+        Vec::<u64>::from(self)
     }
 
     pub fn to_vec_size(self) -> Vec<size_t> {
-        match self {
-            InfoType::VecSize(a) => a,
-            _ => panic!("not a Vec<size_t>"),
-        }
+        Vec::<usize>::from(self)
     }
 
     pub fn to_vec_intptr(self) -> Vec<intptr_t> {
-        match self {
-            InfoType::VecIntPtr(a) => a,
-            _ => panic!("not a Vec<intptr_t>"),
-        }
+        Vec::<isize>::from(self)
     }
 
     pub fn to_vec_name_version(self) -> Vec<cl_name_version> {
-        match self {
-            InfoType::VecNameVersion(a) => a,
-            _ => panic!("not a Vec<cl_name_version>"),
-        }
+        Vec::<cl_name_version>::from(self)
     }
 
     pub fn to_vec_image_format(self) -> Vec<cl_image_format> {
-        match self {
-            InfoType::VecImageFormat(a) => a,
-            _ => panic!("not a Vec<cl_image_format>"),
-        }
+        Vec::<cl_image_format>::from(self)
     }
 
     pub fn to_vec_vec_uchar(self) -> Vec<Vec<cl_uchar>> {
-        match self {
-            InfoType::VecVecUchar(a) => a,
-            _ => panic!("not a Vec<Vec<cl_uchar>"),
-        }
-    }
-}
-
-impl From<InfoType> for String {
-    /// Get a `Vec<cl_uchar>` aka `Vec<u8>` as a String.
-    /// Note: it uses from_utf8_lossy to convert any invalid characters to
-    /// std::char::REPLACEMENT_CHARACTER.
-    ///
-    /// returns a utf8 String.
-    fn from(info_type: InfoType) -> Self {
-        let mut a = info_type.to_vec_uchar();
-
-        // remove all trailing nulls, if any
-        while let Some(0) = a.last() {
-            a.pop();
-        }
-
-        // convert invalid characters to std::char::REPLACEMENT_CHARACTER
-        String::from_utf8_lossy(&a).into_owned()
-    }
-}
-
-impl From<InfoType> for cl_int {
-    fn from(info_type: InfoType) -> Self {
-        info_type.to_int()
-    }
-}
-
-impl From<InfoType> for cl_uint {
-    fn from(info_type: InfoType) -> Self {
-        info_type.to_uint()
-    }
-}
-
-impl From<InfoType> for cl_ulong {
-    fn from(info_type: InfoType) -> Self {
-        info_type.to_ulong()
-    }
-}
-
-impl From<InfoType> for size_t {
-    fn from(info_type: InfoType) -> Self {
-        info_type.to_size()
+        Vec::<Vec<u8>>::from(self)
     }
 }
 

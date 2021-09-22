@@ -199,7 +199,7 @@ mod tests {
         // CL_VERSION_2_1 value, may not be supported
         match get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_HOST_TIMER_RESOLUTION) {
             Ok(value) => {
-                let value = value.to_ulong();
+                let value = u64::from(value);
                 println!("CL_PLATFORM_HOST_TIMER_RESOLUTION: {}", value)
             }
             Err(e) => println!(
@@ -227,7 +227,7 @@ mod tests {
         if is_opencl_3 {
             let value =
                 get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NUMERIC_VERSION).unwrap();
-            let value = value.to_uint();
+            let value = u32::from(value);
             println!("CL_PLATFORM_NUMERIC_VERSION: {}", value);
             assert!(0 < value);
 
@@ -236,7 +236,7 @@ mod tests {
                 PlatformInfo::CL_PLATFORM_EXTENSIONS_WITH_VERSION,
             )
             .unwrap();
-            let value = value.to_vec_name_version();
+            let value = Vec::<cl_name_version>::from(value);
             println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {}", value.len());
             println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {:?}", value);
             assert!(0 < value.len());

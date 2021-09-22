@@ -38,15 +38,15 @@ use super::{
     api2_info_size, api2_info_value, api2_info_vector, api_info_size, api_info_value,
     api_info_vector,
 };
+#[cfg(feature = "CL_VERSION_2_1")]
+use cl_sys::{clCloneKernel, clGetKernelSubGroupInfo};
 #[allow(unused_imports)]
 use cl_sys::{
     clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
-    clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel, clSetKernelArg
+    clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel, clSetKernelArg,
 };
 #[cfg(feature = "CL_VERSION_2_0")]
 use cl_sys::{clSetKernelArgSVMPointer, clSetKernelExecInfo};
-#[cfg(feature = "CL_VERSION_2_1")]
-use cl_sys::{clCloneKernel, clGetKernelSubGroupInfo};
 
 use libc::{c_void, intptr_t, size_t};
 use std::ffi::CStr;
@@ -236,10 +236,7 @@ pub fn set_kernel_exec_info(
 
 /// Get data about an OpenCL kernel.
 /// Calls clGetKernelInfo to get the desired data about the kernel.
-pub fn get_kernel_data(
-    kernel: cl_kernel,
-    param_name: cl_kernel_info,
-) -> Result<Vec<u8>, cl_int> {
+pub fn get_kernel_data(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetKernelInfo);
     let size = get_size(kernel, param_name)?;
     api_info_vector!(get_vector, u8, clGetKernelInfo);
@@ -342,9 +339,9 @@ pub fn get_kernel_arg_info(
             )?))
         }
 
-        KernelArgInfo::CL_KERNEL_ARG_TYPE_NAME | KernelArgInfo::CL_KERNEL_ARG_NAME => {
-            Ok(InfoType::VecUchar(get_kernel_arg_data(kernel, arg_indx, param_id)?))
-        }
+        KernelArgInfo::CL_KERNEL_ARG_TYPE_NAME | KernelArgInfo::CL_KERNEL_ARG_NAME => Ok(
+            InfoType::VecUchar(get_kernel_arg_data(kernel, arg_indx, param_id)?),
+        ),
     }
 }
 
@@ -586,22 +583,22 @@ mod tests {
         assert!(0 < value.len());
 
         let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_NUM_ARGS).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_KERNEL_NUM_ARGS: {}", value);
         assert!(0 < value);
 
         let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_REFERENCE_COUNT).unwrap();
-        let value = value.to_uint();
+        let value = u32::from(value);
         println!("CL_KERNEL_REFERENCE_COUNT: {}", value);
         assert!(0 < value);
 
         let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_CONTEXT).unwrap();
-        let value = value.to_ptr();
+        let value = intptr_t::from(value);
         println!("CL_KERNEL_CONTEXT: {}", value);
         assert!(0 < value);
 
         let value = get_kernel_info(kernel, KernelInfo::CL_KERNEL_PROGRAM).unwrap();
-        let value = value.to_ptr();
+        let value = intptr_t::from(value);
         println!("CL_KERNEL_PROGRAM: {}", value);
         assert!(0 < value);
 
@@ -612,7 +609,7 @@ mod tests {
         #[cfg(feature = "CL_VERSION_1_2")]
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ADDRESS_QUALIFIER) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_KERNEL_ARG_ADDRESS_QUALIFIER: {:X}", value)
             }
             Err(e) => println!(
@@ -624,7 +621,7 @@ mod tests {
         #[cfg(feature = "CL_VERSION_1_2")]
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_ACCESS_QUALIFIER) {
             Ok(value) => {
-                let value = value.to_uint();
+                let value = u32::from(value);
                 println!("CL_KERNEL_ARG_ACCESS_QUALIFIER: {:X}", value)
             }
             Err(e) => println!(
@@ -646,7 +643,7 @@ mod tests {
         #[cfg(feature = "CL_VERSION_1_2")]
         match get_kernel_arg_info(kernel, 0, KernelArgInfo::CL_KERNEL_ARG_TYPE_QUALIFIER) {
             Ok(value) => {
-                let value = value.to_ulong();
+                let value = u64::from(value);
                 println!("CL_KERNEL_ARG_TYPE_QUALIFIER: {:X}", value)
             }
             Err(e) => println!(
@@ -671,7 +668,7 @@ mod tests {
             KernelWorkGroupInfo::CL_KERNEL_WORK_GROUP_SIZE,
         )
         .unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_KERNEL_WORK_GROUP_SIZE: {}", value);
 
         let value = get_kernel_work_group_info(
@@ -680,7 +677,7 @@ mod tests {
             KernelWorkGroupInfo::CL_KERNEL_COMPILE_WORK_GROUP_SIZE,
         )
         .unwrap();
-        let value = value.to_vec_size();
+        let value = Vec::<usize>::from(value);
         println!("CL_KERNEL_COMPILE_WORK_GROUP_SIZE: {}", value.len());
 
         let value = get_kernel_work_group_info(
@@ -689,7 +686,7 @@ mod tests {
             KernelWorkGroupInfo::CL_KERNEL_LOCAL_MEM_SIZE,
         )
         .unwrap();
-        let value = value.to_ulong();
+        let value = u64::from(value);
         println!("CL_KERNEL_LOCAL_MEM_SIZE: {}", value);
 
         let value = get_kernel_work_group_info(
@@ -698,7 +695,7 @@ mod tests {
             KernelWorkGroupInfo::CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE,
         )
         .unwrap();
-        let value = value.to_size();
+        let value = usize::from(value);
         println!("CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE: {}", value);
 
         let value = get_kernel_work_group_info(
@@ -707,7 +704,7 @@ mod tests {
             KernelWorkGroupInfo::CL_KERNEL_PRIVATE_MEM_SIZE,
         )
         .unwrap();
-        let value = value.to_ulong();
+        let value = u64::from(value);
         println!("CL_KERNEL_PRIVATE_MEM_SIZE: {}", value);
 
         match get_kernel_work_group_info(
@@ -716,7 +713,7 @@ mod tests {
             KernelWorkGroupInfo::CL_KERNEL_GLOBAL_WORK_SIZE,
         ) {
             Ok(value) => {
-                let value = value.to_vec_size();
+                let value = Vec::<usize>::from(value);
                 println!("CL_KERNEL_GLOBAL_WORK_SIZE: {}", value.len())
             }
             Err(e) => println!(

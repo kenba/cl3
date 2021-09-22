@@ -25,7 +25,7 @@ use cl3::kernel::{create_kernel, release_kernel, set_kernel_arg};
 use cl3::memory::{create_buffer, release_mem_object, CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY};
 use cl3::platform::{get_platform_ids, get_platform_info, PlatformInfo};
 use cl3::program::{build_program, create_program_with_source, release_program};
-use cl3::types::{cl_event, cl_float, cl_mem, CL_NON_BLOCKING, CL_BLOCKING};
+use cl3::types::{cl_event, cl_float, cl_mem, CL_BLOCKING, CL_NON_BLOCKING};
 use libc::{c_void, size_t};
 use std::ffi::CString;
 use std::mem;
@@ -62,7 +62,7 @@ fn test_opencl_1_2_example() {
     let vendor_name = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR).unwrap();
     println!("OpenCL device vendor name: {}", vendor_name);
     let vendor_id = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR_ID).unwrap();
-    println!("OpenCL device vendor id: {:X}", vendor_id.to_uint());
+    println!("OpenCL device vendor id: {:X}", u32::from(vendor_id));
 
     /////////////////////////////////////////////////////////////////////
     // Set up OpenCL compute environment
@@ -231,7 +231,7 @@ fn test_opencl_1_2_example() {
         get_event_profiling_info(kernel_event, ProfilingInfo::CL_PROFILING_COMMAND_START).unwrap();
     let end_time =
         get_event_profiling_info(kernel_event, ProfilingInfo::CL_PROFILING_COMMAND_END).unwrap();
-    let duration = end_time.to_ulong() - start_time.to_ulong();
+    let duration = u64::from(end_time) - u64::from(start_time);
     println!("kernel execution duration (ns): {}", duration);
 
     /////////////////////////////////////////////////////////////////////
