@@ -4,13 +4,13 @@
 
 ### New Features
 
-* Return `uints` and `ulongs` for `cl_intel_device_attribute_query` after testing on Intel hardware, for Issue [#10](issues/10).
+* Return `uints` and `ulongs` for `cl_intel_device_attribute_query` after testing on Intel hardware, for Issue [#10](https://github.com/kenba/cl3/issues/10).
 
 ## Version 0.4.3 (2021-09-18)
 
 ### New Features
 
-* Issue [#10](issues/10) Update for latest OpenCL-Headers: `cl_khr_integer_dot_product` and `cl_intel_device_attribute_query`.
+* Issue [#10](https://github.com/kenba/cl3/issues/10) Update for latest OpenCL-Headers: `cl_khr_integer_dot_product` and `cl_intel_device_attribute_query`.
 * Fix more `clippy` warnings.
 * Add CONTRIBUTING and CODE_OF_CONDUCT documents.
 
@@ -18,7 +18,7 @@
 
 ### Changes
 
-* PR [93](pull/9) Implement CL_VERSION_* features.
+* PR [93](https://github.com/kenba/cl3/pull/9) Implement CL_VERSION_* features.
 * Remove deprecated attribute for `create_command_queue`
 * Fix `clippy` warnings and format with `fmt`.
 
@@ -33,13 +33,13 @@
 
 ### New Features
 
-* Add functions for Issue [#8](issues/8) Add generic functions to call `clGet*Info` functions.
+* Add functions for Issue [#8](https://github.com/kenba/cl3/issues/8) Add generic functions to call `clGet*Info` functions.
 
 ## Version 0.3.1 (2021-05-22)
 
 ### New Features
 
-* Add `cl_apple_setmemobjectdestructor` feature for Issue [#7](issues/7) Building on Debian Stretch fails.
+* Add `cl_apple_setmemobjectdestructor` feature for Issue [#7](https://github.com/kenba/cl3/issues/7) Building on Debian Stretch fails.
 
 ## Version 0.3.0 (2021-05-16)
 
@@ -58,7 +58,7 @@
 
 ### New Features
 
-* Issue [#6](issues/6) Make custom clGetDeviceInfo requests easier.
+* Issue [#6](https://github.com/kenba/cl3/issues/6) Make custom clGetDeviceInfo requests easier.
 * Add undocumented `cl_nv_device_attribute_query` extension values.
 * Add FFI interfaces for OpenCL extensions.
 * Add OpenGL interoperability functions.
@@ -88,17 +88,17 @@
 
 ### Breaking Changes
 
-* Issue [#4](issues/4) Change the API to use String instead of ffi::CString.
+* Issue [#4](https://github.com/kenba/cl3/issues/4) Change the API to use String instead of ffi::CString.
 
 ### New Features
 
-* PR [#3](pull/3) Add InfoType::to_string method.
+* PR [#3](https://github.com/kenba/cl3/pull/3) Add InfoType::to_string method.
 
 ## Version 0.1.7 (2021-03-19)
 
 ### Bug fixes
 
-* Issue [#2](issues/2) Change InfoType to handle nulls in strings returned from OpenCL devices.
+* Issue [#2](https://github.com/kenba/cl3/issues/2) Change InfoType to handle nulls in strings returned from OpenCL devices.
 
 ## Version 0.1.6 (2021-03-12)
 
@@ -110,7 +110,7 @@
 
 ### Bug fixes
 
-* PR [#1](pull/1) Remove all trailing nulls from OpenCL API info strings.
+* PR [#1](https://github.com/kenba/cl3/pull/1) Remove all trailing nulls from OpenCL API info strings.
 
 ## Version 0.1.4 (2021-01-10)
 
