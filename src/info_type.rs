@@ -35,111 +35,84 @@ pub enum InfoType {
     VecVecUchar(Vec<Vec<u8>>),
 }
 
-impl From<InfoType> for i32 {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::Int(a) => a,
-            _ => panic!("not an Int"),
+macro_rules! match_info_type {
+    ($value:expr, $variant:path) => {
+        match $value {
+            $variant(x) => x,
+            _ => panic!("value is not an {}", stringify!($variant)),
         }
+    }
+}
+
+impl From<InfoType> for i32 {
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::Int)
     }
 }
 
 impl From<InfoType> for u32 {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::Uint(a) => a,
-            _ => panic!("not a Uint"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::Uint)
     }
 }
 
 impl From<InfoType> for u64 {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::Ulong(a) => a,
-            _ => panic!("not a Ulong"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::Ulong)
     }
 }
 
 impl From<InfoType> for usize {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::Size(a) => a,
-            _ => panic!("not a Size"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::Size)
     }
 }
 
 impl From<InfoType> for isize {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::Ptr(a) => a,
-            _ => panic!("not a Ptr"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::Ptr)
     }
 }
 
 impl From<InfoType> for Vec<u8> {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::VecUchar(a) => a,
-            _ => panic!("not a VecUchar"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::VecUchar)
     }
 }
 
 impl From<InfoType> for Vec<u64> {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::VecUlong(a) => a,
-            _ => panic!("not a VecUlong"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::VecUlong)
     }
 }
 
 impl From<InfoType> for Vec<usize> {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::VecSize(a) => a,
-            _ => panic!("not a VecSize"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::VecSize)
     }
 }
 
 impl From<InfoType> for Vec<isize> {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::VecIntPtr(a) => a,
-            _ => panic!("not a VecIntPtr"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::VecIntPtr)
     }
 }
 
 impl From<InfoType> for Vec<cl_name_version> {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::VecNameVersion(a) => a,
-            _ => panic!("not a VecNameVersion"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::VecNameVersion)
     }
 }
 
 impl From<InfoType> for Vec<cl_image_format> {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::VecImageFormat(a) => a,
-            _ => panic!("not a VecImageFormat"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::VecImageFormat)
     }
 }
 
 impl From<InfoType> for Vec<Vec<u8>> {
-    fn from(info_type: InfoType) -> Self {
-        match info_type {
-            InfoType::VecVecUchar(a) => a,
-            _ => panic!("not a VecVecUchar"),
-        }
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::VecVecUchar)
     }
 }
 
