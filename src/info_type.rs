@@ -17,8 +17,13 @@ use libc::{intptr_t, size_t};
 use std::fmt;
 
 /// A Rust enum to handle OpenCL API "Info" function return types.  
-/// It provides functions to extract each data type from the enum.  
-/// The functions will panic if they are called for the incorrect type.
+/// Each of the data types may be extracted from the enum using its associated
+/// From trait or `to_*` function.  
+///
+/// # Panics
+/// 
+/// The From traits and `to_*` functions will panic if they are called for the
+/// incorrect data type.
 #[derive(Debug)]
 pub enum InfoType {
     Int(i32),
@@ -35,6 +40,7 @@ pub enum InfoType {
     VecVecUchar(Vec<Vec<u8>>),
 }
 
+/// A macro to help create the InfoType From traits.
 macro_rules! match_info_type {
     ($value:expr, $variant:path) => {
         match $value {

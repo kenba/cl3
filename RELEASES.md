@@ -1,5 +1,15 @@
 # Releases
 
+## Version 0.5.0 (2021-10-02)
+
+### Breaking Changes
+
+* Issue [#11](https://github.com/kenba/cl3/issues/11) InfoType::to_string shadows the implementation of Display. Note: the Display::to_string implementation does not remove trailing nulls, see PR [#1](Remove all trailing nulls from OpenCL API info strings).
+
+### New Features
+
+* Issue [#12](https://github.com/kenba/cl3/issues/12) Use From trait for `conversions.
+
 ## Version 0.4.4 (2021-09-19)
 
 ### New Features
@@ -18,7 +28,7 @@
 
 ### Changes
 
-* PR [93](https://github.com/kenba/cl3/pull/9) Implement CL_VERSION_* features.
+* PR [#9](https://github.com/kenba/cl3/pull/9) Implement CL_VERSION_* features.
 * Remove deprecated attribute for `create_command_queue`
 * Fix `clippy` warnings and format with `fmt`.
 
