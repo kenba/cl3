@@ -690,7 +690,7 @@ mod tests {
         let program = create_program_with_source(context, &sources).unwrap();
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_REFERENCE_COUNT).unwrap();
-        let value = u32::from(value);
+        let value = cl_uint::from(value);
         println!("CL_PROGRAM_REFERENCE_COUNT: {}", value);
         assert!(0 < value);
 
@@ -700,17 +700,17 @@ mod tests {
         assert!(0 < value);
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_NUM_DEVICES).unwrap();
-        let value = u32::from(value);
+        let value = cl_uint::from(value);
         println!("CL_PROGRAM_NUM_DEVICES: {}", value);
         assert!(0 < value);
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_DEVICES).unwrap();
-        let value = Vec::<isize>::from(value);
+        let value = Vec::<intptr_t>::from(value);
         println!("CL_PROGRAM_DEVICES: {}", value.len());
         assert!(0 < value.len());
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_SOURCE).unwrap();
-        let value = value.to_string();
+        let value = String::from(value);
         println!("CL_PROGRAM_SOURCE: {}", value);
         assert!(0 < value.len());
 
@@ -733,21 +733,21 @@ mod tests {
             ProgramBuildInfo::CL_PROGRAM_BUILD_OPTIONS,
         )
         .unwrap();
-        let value = value.to_string();
+        let value = String::from(value);
         println!("CL_PROGRAM_BUILD_OPTIONS: {}", value);
 
         let value =
             get_program_build_info(program, device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_LOG)
                 .unwrap();
-        let value = value.to_string();
+        let value = String::from(value);
         println!("CL_PROGRAM_BUILD_LOG: {}", value);
 
         let value =
             get_program_build_info(program, device_id, ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE)
                 .unwrap();
-        let value = u32::from(value);
+        let value = cl_uint::from(value);
         println!("CL_PROGRAM_BINARY_TYPE: {:?}", value);
-        assert_eq!(CL_PROGRAM_BINARY_TYPE_EXECUTABLE as u32, value);
+        assert_eq!(CL_PROGRAM_BINARY_TYPE_EXECUTABLE as cl_uint, value);
 
         #[cfg(feature = "CL_VERSION_2_0")]
         match get_program_build_info(
@@ -756,7 +756,7 @@ mod tests {
             ProgramBuildInfo::CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE,
         ) {
             Ok(value) => {
-                let value = usize::from(value);
+                let value = size_t::from(value);
                 println!("CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE: {:?}", value)
             }
             Err(e) => println!(
@@ -766,7 +766,7 @@ mod tests {
         }
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES).unwrap();
-        let value = Vec::<usize>::from(value);
+        let value = Vec::<size_t>::from(value);
         println!("CL_PROGRAM_BINARY_SIZES: {}", value.len());
         println!("CL_PROGRAM_BINARY_SIZES: {:?}", value);
         assert!(0 < value.len());
@@ -779,19 +779,19 @@ mod tests {
         assert!(0 < value.len());
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_NUM_KERNELS).unwrap();
-        let value = usize::from(value);
+        let value = size_t::from(value);
         println!("CL_PROGRAM_NUM_KERNELS: {}", value);
         assert!(0 < value);
 
         let value = get_program_info(program, ProgramInfo::CL_PROGRAM_KERNEL_NAMES).unwrap();
-        let value = value.to_string();
+        let value = String::from(value);
         println!("CL_PROGRAM_KERNEL_NAMES: {}", value);
         assert!(0 < value.len());
 
         #[cfg(feature = "CL_VERSION_2_1")]
         match get_program_info(program, ProgramInfo::CL_PROGRAM_IL) {
             Ok(value) => {
-                let value = value.to_string();
+                let value = String::from(value);
                 println!("CL_PROGRAM_IL: {}", value)
             }
             Err(e) => println!("OpenCL error, CL_PROGRAM_IL: {}", error_text(e)),
@@ -800,7 +800,7 @@ mod tests {
         #[cfg(feature = "CL_VERSION_2_2")]
         match get_program_info(program, ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
             Ok(value) => {
-                let value = u32::from(value);
+                let value = cl_uint::from(value);
                 println!("CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: {}", value)
             }
             Err(e) => println!(
@@ -812,7 +812,7 @@ mod tests {
         #[cfg(feature = "CL_VERSION_2_2")]
         match get_program_info(program, ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
             Ok(value) => {
-                let value = u32::from(value);
+                let value = cl_uint::from(value);
                 println!("CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: {}", value)
             }
             Err(e) => println!(

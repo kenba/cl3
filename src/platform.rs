@@ -105,13 +105,12 @@ pub enum PlatformInfo {
 /// let platform_id = platform_ids[0];
 ///
 /// let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
-/// let value = value.to_string();
+/// let value: String = value.into();
 /// println!("CL_PLATFORM_NAME: {}", value);
-///
 /// assert!(!value.is_empty());
 ///
 /// let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
-/// let value = value.to_string();
+/// let value = String::from(value);
 /// println!("CL_PLATFORM_VERSION: {}", value);
 /// assert!(!value.is_empty());
 /// ```
@@ -172,34 +171,34 @@ mod tests {
         let platform_id = platform_ids[0];
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_PROFILE).unwrap();
-        let value = value.to_string();
+        let value: String = value.into();
         println!("CL_PLATFORM_PROFILE: {}", value);
         assert!(!value.is_empty());
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
-        let value = value.to_string();
+        let value: String = value.into();
         println!("CL_PLATFORM_VERSION: {}", value);
         assert!(!value.is_empty());
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
-        let value = value.to_string();
+        let value: String = value.into();
         println!("CL_PLATFORM_NAME: {}", value);
         assert!(!value.is_empty());
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VENDOR).unwrap();
-        let value = value.to_string();
+        let value: String = value.into();
         println!("CL_PLATFORM_VENDOR: {}", value);
         assert!(!value.is_empty());
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_EXTENSIONS).unwrap();
-        let value = value.to_string();
+        let value: String = value.into();
         println!("CL_PLATFORM_EXTENSIONS: {}", value);
         assert!(!value.is_empty());
 
         // CL_VERSION_2_1 value, may not be supported
         match get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_HOST_TIMER_RESOLUTION) {
             Ok(value) => {
-                let value = u64::from(value);
+                let value = cl_ulong::from(value);
                 println!("CL_PLATFORM_HOST_TIMER_RESOLUTION: {}", value)
             }
             Err(e) => println!(
@@ -217,17 +216,17 @@ mod tests {
         let platform_id = platform_ids[0];
 
         let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
-        let value = value.to_string();
+        let value: String = value.into();
         println!("CL_PLATFORM_VERSION: {}", value);
         assert!(!value.is_empty());
 
-        let opencl_3: String = "OpenCL 3".to_string();
-        let is_opencl_3: bool = value.contains(&opencl_3);
+        let opencl_3: &str = "OpenCL 3";
+        let is_opencl_3: bool = value.contains(opencl_3);
 
         if is_opencl_3 {
             let value =
                 get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NUMERIC_VERSION).unwrap();
-            let value = u32::from(value);
+            let value = cl_uint::from(value);
             println!("CL_PLATFORM_NUMERIC_VERSION: {}", value);
             assert!(0 < value);
 

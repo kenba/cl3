@@ -1206,18 +1206,18 @@ mod tests {
 
         let value =
             get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_REFERENCE_COUNT).unwrap();
-        let value = u32::from(value);
+        let value = cl_uint::from(value);
         println!("CL_QUEUE_REFERENCE_COUNT: {}", value);
         assert_eq!(1, value);
 
         let value = get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_PROPERTIES).unwrap();
-        let value = u64::from(value);
+        let value = cl_ulong::from(value);
         println!("CL_QUEUE_PROPERTIES: {}", value);
 
         // CL_VERSION_2_0 value
         match get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_SIZE) {
             Ok(value) => {
-                let value = u32::from(value);
+                let value = cl_uint::from(value);
                 println!("CL_QUEUE_SIZE: {}", value);
             }
             Err(e) => println!("OpenCL error, CL_QUEUE_SIZE: {}", error_text(e)),
