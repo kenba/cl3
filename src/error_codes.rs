@@ -172,6 +172,20 @@ impl From<cl_int> for ClError {
     }
 }
 
+/// Implement the From trait for &str
+impl From<ClError> for &str {
+    fn from(error: ClError) -> Self {
+        error_text(error.0)
+    }
+}
+
+/// Implement the From trait for String
+impl From<ClError> for String {
+    fn from(error: ClError) -> Self {
+        String::from(error_text(error.0))
+    }
+}
+
 /// Implement the Display trait
 impl fmt::Display for ClError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -212,17 +226,25 @@ mod tests {
         let error_01: ClError = From::from(CL_DEVICE_NOT_FOUND);
         println!("CL_DEVICE_NOT_FOUND: {:?}", error_01);
         println!("CL_DEVICE_NOT_FOUND: {}", error_01);
+        println!("CL_DEVICE_NOT_FOUND: {}", String::from(error_01));
 
         let error_30: ClError = From::from(CL_INVALID_VALUE);
         println!("CL_INVALID_VALUE: {:?}", error_30);
         println!("CL_INVALID_VALUE: {}", error_30);
+        let error_30_str: &str = error_30.into();
+        println!("CL_INVALID_VALUE: {}", error_30_str);
 
         let error_72: ClError = From::from(CL_MAX_SIZE_RESTRICTION_EXCEEDED);
         println!("CL_MAX_SIZE_RESTRICTION_EXCEEDED: {:?}", error_72);
         println!("CL_MAX_SIZE_RESTRICTION_EXCEEDED: {}", error_72);
+        println!(
+            "CL_MAX_SIZE_RESTRICTION_EXCEEDED: {}",
+            String::from(error_72)
+        );
 
         let error_unknown: ClError = From::from(CL_MAX_SIZE_RESTRICTION_EXCEEDED - 1);
         println!("UNKNOWN_ERROR: {:?}", error_unknown);
         println!("UNKNOWN_ERROR: {}", error_unknown);
+        println!("UNKNOWN_ERROR: {}", String::from(error_unknown));
     }
 }
