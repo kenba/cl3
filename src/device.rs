@@ -1830,13 +1830,13 @@ mod tests {
                 DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE,
             )
             .unwrap();
-            let value = intptr_t::from(value);
+            let value = size_t::from(value);
             println!("CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE: {}", value);
             assert!(0 < value);
 
             let value =
                 get_device_info(device_id, DeviceInfo::CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE).unwrap();
-            let value = intptr_t::from(value);
+            let value = size_t::from(value);
             println!("CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE: {}", value);
             assert!(0 < value);
 
