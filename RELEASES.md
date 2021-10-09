@@ -1,5 +1,17 @@
 # Releases
 
+## Version 0.5.1 (2021-10-09)
+
+### New Features
+
+* Add Device Vendor Ids, vendor_id_text and device_type_text functions.
+* Add device Uuid and Luid types for UUID and LUIDs.
+* Add clinfo example program.
+
+### Bug fixes
+
+* Fix bugs in device tests.
+
 ## Version 0.5.0 (2021-10-02)
 
 ### Breaking Changes
