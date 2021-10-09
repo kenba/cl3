@@ -62,3 +62,7 @@ default-features = false
 # https://github.com/cogciprocate/ocl/blob/03086863e95e43033ae67f1530801cb57032e1a3/cl-sys/src/cl_h.rs#L1051
 # accidentally not being commented out.
 features = ["opencl_version_1_2"]
+
+[[example]]
+name = "clinfo"
+path = "examples/clinfo.rs"
