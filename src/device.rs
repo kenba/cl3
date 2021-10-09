@@ -54,6 +54,7 @@ use super::ffi::cl_ext::{
     CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD, CL_DEVICE_SIMD_WIDTH_AMD,
     CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD, CL_DEVICE_TOPOLOGY_AMD, CL_DEVICE_UUID_KHR,
     CL_DEVICE_WARP_SIZE_NV, CL_DEVICE_WAVEFRONT_WIDTH_AMD, CL_DRIVER_UUID_KHR,
+    CL_UUID_SIZE_KHR, CL_LUID_SIZE_KHR,
 };
 use super::info_type::InfoType;
 #[allow(unused_imports)]
@@ -70,6 +71,7 @@ use cl_sys::clSetDefaultDeviceCommandQueue;
 #[cfg(feature = "CL_VERSION_1_2")]
 use cl_sys::{clCreateSubDevices, clReleaseDevice, clRetainDevice};
 use cl_sys::{clGetDeviceIDs, clGetDeviceInfo};
+use std::fmt;
 
 // clGetDeviceAndHostTimer, clGetHostTimer, are incorrect in cl_sys
 #[cfg(feature = "CL_VERSION_2_1")]
@@ -866,6 +868,127 @@ pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
 }
 // #endif
 
+/// Device Vendor Ids.
+/// The PCie IDs of some OpenCL device vendors as returned by get_device_info,
+/// i.e.: clGetDeviceInfo - CL_DEVICE_VENDOR_ID
+/// They were obtained from the PCIe ID Repository: https://pci-ids.ucw.cz/
+pub const AMD_DEVICE_VENDOR_ID: cl_uint = 0x1002;
+pub const IBM_DEVICE_VENDOR_ID: cl_uint = 0x1014;
+pub const APPLE_DEVICE_VENDOR_ID: cl_uint = 0x106b;
+pub const NVIDIA_DEVICE_VENDOR_ID: cl_uint = 0x10de;
+pub const XILINX_DEVICE_VENDOR_ID: cl_uint = 0x10ee;
+pub const BROADCOM_DEVICE_VENDOR_ID: cl_uint = 0x1166;
+pub const ALTERA_DEVICE_VENDOR_ID: cl_uint = 0x1172;
+pub const ARM_DEVICE_VENDOR_ID: cl_uint = 0x13b5;
+pub const VIA_TECHNOLOGIES_DEVICE_VENDOR_ID: cl_uint = 0x1412;
+pub const TEXAS_INSTRUMENTS_DEVICE_VENDOR_ID: cl_uint = 0x104c;
+pub const QUALCOMM_DEVICE_VENDOR_ID: cl_uint = 0x168c;
+pub const INTEL_DEVICE_VENDOR_ID: cl_uint = 0x8086;
+// Integrated AMD cards on Apple don't have the usual AMD ID
+pub const AMD_ON_APPLE_DEVICE_VENDOR_ID: cl_uint = 0x1021d00;
+
+/// A text representation of an OpenCL vendor id.
+pub fn vendor_id_text(vendor_id: cl_uint) -> &'static str {
+    match vendor_id {
+        AMD_DEVICE_VENDOR_ID => "AMD",
+        IBM_DEVICE_VENDOR_ID => "IBM",
+        NVIDIA_DEVICE_VENDOR_ID => "NVIDIA",
+        XILINX_DEVICE_VENDOR_ID => "XILINX",
+        BROADCOM_DEVICE_VENDOR_ID => "BROADCOM",
+        ALTERA_DEVICE_VENDOR_ID => "ALTERA",
+        ARM_DEVICE_VENDOR_ID => "ARM",
+        VIA_TECHNOLOGIES_DEVICE_VENDOR_ID => "VIA_TECHNOLOGIES",
+        TEXAS_INSTRUMENTS_DEVICE_VENDOR_ID => "TEXAS_INSTRUMENTS",
+        QUALCOMM_DEVICE_VENDOR_ID => "QUALCOMM",
+        INTEL_DEVICE_VENDOR_ID => "INTEL",
+        AMD_ON_APPLE_DEVICE_VENDOR_ID => "AMD_ON_APPLE",
+
+        _ => "UNKNOWN_VENDOR",
+    }
+}
+
+/// A text representation of an OpenCL device type, see:
+/// [Device Types](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-types-table).
+pub fn device_type_text(dev_type: cl_device_type) -> &'static str {
+    match dev_type {
+        CL_DEVICE_TYPE_DEFAULT => "CL_DEVICE_TYPE_DEFAULT",
+        CL_DEVICE_TYPE_CPU => "CL_DEVICE_TYPE_CPU",
+        CL_DEVICE_TYPE_GPU => "CL_DEVICE_TYPE_GPU",
+        CL_DEVICE_TYPE_ACCELERATOR => "CL_DEVICE_TYPE_ACCELERATOR",
+        CL_DEVICE_TYPE_CUSTOM => "CL_DEVICE_TYPE_CUSTOM",
+        CL_DEVICE_TYPE_ALL => "CL_DEVICE_TYPE_ALL",
+
+        _ => "COMBINED_DEVICE_TYPE",
+    }
+}
+
+#[derive(Copy, Clone, Default, Eq, PartialEq)]
+/// A UUID as a newtype of a u8 array.
+pub struct Uuid([u8; CL_UUID_SIZE_KHR]);
+
+impl From<&[u8]> for Uuid {
+    fn from(value: &[u8]) -> Self {
+        assert!(value.len() == CL_UUID_SIZE_KHR, "value is not a UUID");
+        let mut data: [u8; CL_UUID_SIZE_KHR] = [0; CL_UUID_SIZE_KHR];
+        data.copy_from_slice(value);
+        Self(data)
+    }
+}
+
+impl From<Vec<u8>> for Uuid {
+    fn from(value: Vec<u8>) -> Self {
+        value.as_slice().into()
+    }
+}
+
+/// Formats a UUID according to RFC4122.
+impl fmt::Display for Uuid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{:x}{:x}{:x}{:x}-{:x}{:x}-{:x}{:x}-{:x}{:x}-{:x}{:x}{:x}{:x}{:x}{:x}",
+            &self.0[0], &self.0[1], &self.0[2], &self.0[3],
+            &self.0[4], &self.0[5], 
+            &self.0[6], &self.0[7],
+            &self.0[8], &self.0[9], 
+            &self.0[10], &self.0[11], &self.0[12], &self.0[15], &self.0[14], &self.0[15],
+        )
+    }
+}
+
+#[derive(Copy, Clone, Default, Eq, PartialEq)]
+/// A LUID as a newtype of a u8 array.
+pub struct Luid([u8; CL_LUID_SIZE_KHR]);
+
+impl From<&[u8]> for Luid {
+    fn from(value: &[u8]) -> Self {
+        assert!(value.len() == CL_LUID_SIZE_KHR, "value is not a LUID");
+        let mut data: [u8; CL_LUID_SIZE_KHR] = [0; CL_LUID_SIZE_KHR];
+        data.copy_from_slice(value);
+        Self(data)
+    }
+}
+
+impl From<Vec<u8>> for Luid {
+    fn from(value: Vec<u8>) -> Self {
+        value.as_slice().into()
+    }
+}
+
+/// Formats a LUID the same way as `clinfo`.
+/// See: https://github.com/Oblomov/clinfo/blob/master/src/clinfo.c
+impl fmt::Display for Luid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{:x}{:x}-{:x}{:x}{:x}{:x}{:x}{:x}",
+            &self.0[0], &self.0[1],
+            &self.0[2], &self.0[3], &self.0[4], &self.0[5], &self.0[6], &self.0[7]
+        )
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -898,20 +1021,14 @@ mod tests {
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_TYPE).unwrap();
         let value: cl_ulong = value.into();
         println!("CL_DEVICE_TYPE: {}", value);
+        println!("Device type is: {}", device_type_text(value));
         assert!(0 < value);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR_ID).unwrap();
         let value: cl_uint = value.into();
         println!("CL_DEVICE_VENDOR_ID: {:X}", value);
+        println!("Device vendor is: {}", vendor_id_text(value));
         assert!(0 < value);
-
-        let vendor_text = match value {
-            0x1002 => "AMD",
-            0x10DE => "Nvidia",
-            0x8086 => "Intel",
-            _ => "unknown",
-        };
-        println!("Device vendor is: {}", vendor_text);
 
         let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VERSION).unwrap();
         let value: String = value.into();
@@ -1321,7 +1438,7 @@ mod tests {
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_UUID_KHR) {
             Ok(value) => {
                 let value = Vec::<u8>::from(value);
-                println!("CL_DEVICE_UUID_KHR: {:?}", value);
+                println!("CL_DEVICE_UUID_KHR: {}", Uuid::from(value));
             }
             Err(e) => println!("OpenCL error, CL_DEVICE_UUID_KHR: {}", ClError(e)),
         };
@@ -1330,7 +1447,7 @@ mod tests {
         match get_device_info(device_id, DeviceInfo::CL_DRIVER_UUID_KHR) {
             Ok(value) => {
                 let value = Vec::<u8>::from(value);
-                println!("CL_DRIVER_UUID_KHR: {:?}", value);
+                println!("CL_DRIVER_UUID_KHR: {}", Uuid::from(value));
             }
             Err(e) => println!("OpenCL error, CL_DRIVER_UUID_KHR: {}", ClError(e)),
         };
@@ -1348,7 +1465,7 @@ mod tests {
         match get_device_info(device_id, DeviceInfo::CL_DEVICE_LUID_KHR) {
             Ok(value) => {
                 let value = Vec::<u8>::from(value);
-                println!("CL_DEVICE_LUID_KHR: {:?}", value);
+                println!("CL_DEVICE_LUID_KHR: {}", Luid::from(value));
             }
             Err(e) => println!("OpenCL error, CL_DEVICE_LUID_KHR: {}", ClError(e)),
         };
