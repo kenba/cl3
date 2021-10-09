@@ -922,7 +922,7 @@ pub fn device_type_text(dev_type: cl_device_type) -> &'static str {
     }
 }
 
-#[derive(Copy, Clone, Default, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 /// A UUID as a newtype of a u8 array.
 pub struct Uuid([u8; CL_UUID_SIZE_KHR]);
 
@@ -956,7 +956,7 @@ impl fmt::Display for Uuid {
     }
 }
 
-#[derive(Copy, Clone, Default, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
 /// A LUID as a newtype of a u8 array.
 pub struct Luid([u8; CL_LUID_SIZE_KHR]);
 
