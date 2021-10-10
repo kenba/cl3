@@ -21,7 +21,7 @@ use std::fmt;
 /// From trait or `to_*` function.  
 ///
 /// # Panics
-/// 
+///
 /// The From traits and `to_*` functions will panic if they are called for the
 /// incorrect data type.
 #[derive(Debug)]
@@ -47,7 +47,7 @@ macro_rules! match_info_type {
             $variant(x) => x,
             _ => panic!("value is not an {}", stringify!($variant)),
         }
-    }
+    };
 }
 
 impl From<InfoType> for i32 {
@@ -242,11 +242,16 @@ impl InfoType {
         Vec::<Vec<u8>>::from(self)
     }
 }
-
 #[cfg(test)]
 mod tests {
-    use crate::device::*;
-    use crate::platform::*;
+    use crate::device::{
+        get_device_ids, get_device_info, CL_DEVICE_MAX_WORK_ITEM_SIZES, CL_DEVICE_NAME,
+        CL_DEVICE_PARTITION_PROPERTIES, CL_DEVICE_TYPE, CL_DEVICE_TYPE_ALL, CL_DEVICE_VENDOR_ID,
+        CL_DRIVER_VERSION,
+    };
+    use crate::platform::{
+        get_platform_ids, get_platform_info, CL_PLATFORM_NAME, CL_PLATFORM_VERSION,
+    };
 
     #[test]
     fn test_debug_display_info() {
@@ -258,10 +263,10 @@ mod tests {
         let platform_id = platform_ids[0];
 
         // Test Display trait
-        let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
+        let value = get_platform_info(platform_id, CL_PLATFORM_NAME).unwrap();
         println!("CL_PLATFORM_NAME: {}", value);
 
-        let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
+        let value = get_platform_info(platform_id, CL_PLATFORM_VERSION).unwrap();
         println!("CL_PLATFORM_VERSION: {}", value);
 
         let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_ALL).unwrap();
@@ -271,23 +276,23 @@ mod tests {
         // Choose the first device
         let device_id = device_ids[0];
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_NAME).unwrap();
+        let value = get_device_info(device_id, CL_DEVICE_NAME).unwrap();
         println!("CL_DEVICE_NAME: {}", value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DRIVER_VERSION).unwrap();
+        let value = get_device_info(device_id, CL_DRIVER_VERSION).unwrap();
         println!("CL_DRIVER_VERSION: {}", value);
 
         // Test Debug trait
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_TYPE).unwrap();
+        let value = get_device_info(device_id, CL_DEVICE_TYPE).unwrap();
         println!("CL_DEVICE_TYPE: {:?}", value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR_ID).unwrap();
+        let value = get_device_info(device_id, CL_DEVICE_VENDOR_ID).unwrap();
         println!("CL_DEVICE_VENDOR_ID: {:?}", value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_MAX_WORK_ITEM_SIZES).unwrap();
+        let value = get_device_info(device_id, CL_DEVICE_MAX_WORK_ITEM_SIZES).unwrap();
         println!("CL_DEVICE_MAX_WORK_ITEM_SIZES len: {:?}", value);
 
-        let value = get_device_info(device_id, DeviceInfo::CL_DEVICE_PARTITION_PROPERTIES).unwrap();
+        let value = get_device_info(device_id, CL_DEVICE_PARTITION_PROPERTIES).unwrap();
         println!("CL_DEVICE_PARTITION_PROPERTIES: {:?}", value);
     }
 }

@@ -16,6 +16,11 @@
 
 #![allow(non_camel_case_types)]
 
+pub use cl_sys::{
+    CL_PLATFORM_EXTENSIONS, CL_PLATFORM_HOST_TIMER_RESOLUTION, CL_PLATFORM_NAME,
+    CL_PLATFORM_PROFILE, CL_PLATFORM_VENDOR, CL_PLATFORM_VERSION,
+};
+
 use super::error_codes::CL_SUCCESS;
 use super::info_type::InfoType;
 use super::types::{cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong};
@@ -25,6 +30,10 @@ use cl_sys::{clGetPlatformIDs, clGetPlatformInfo};
 use libc::{c_void, size_t};
 use std::mem;
 use std::ptr;
+
+// cl_platform_info constants missing in cl_sys
+pub const CL_PLATFORM_NUMERIC_VERSION: cl_platform_info = 0x0906;
+pub const CL_PLATFORM_EXTENSIONS_WITH_VERSION: cl_platform_info = 0x0907;
 
 /// Get the available platforms.  
 /// Calls clGetPlatformIDs to get the available platform ids.
@@ -76,27 +85,11 @@ pub fn get_platform_data(
     get_vector(platform, param_name, size)
 }
 
-// cl_platform_info
-#[derive(Clone, Copy, Debug)]
-pub enum PlatformInfo {
-    CL_PLATFORM_PROFILE = 0x0900,
-    CL_PLATFORM_VERSION = 0x0901,
-    CL_PLATFORM_NAME = 0x0902,
-    CL_PLATFORM_VENDOR = 0x0903,
-    CL_PLATFORM_EXTENSIONS = 0x0904,
-    // CL_VERSION_2_1
-    CL_PLATFORM_HOST_TIMER_RESOLUTION = 0x0905,
-    // CL_VERSION_3_0
-    CL_PLATFORM_NUMERIC_VERSION = 0x0906,
-    // CL_VERSION_3_0
-    CL_PLATFORM_EXTENSIONS_WITH_VERSION = 0x0907,
-}
-
 /// Get specific information about an OpenCL platform.
 /// Calls clGetPlatformInfo to get the desired information about the platform.
 ///  # Examples
 /// ```
-/// use cl3::platform::{get_platform_ids, get_platform_info, PlatformInfo};
+/// use cl3::platform::{get_platform_ids, get_platform_info, CL_PLATFORM_NAME, CL_PLATFORM_VERSION};
 ///
 /// let platform_ids = get_platform_ids().unwrap();
 /// assert!(0 < platform_ids.len());
@@ -104,12 +97,12 @@ pub enum PlatformInfo {
 /// // Choose a the first platform
 /// let platform_id = platform_ids[0];
 ///
-/// let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
+/// let value = get_platform_info(platform_id, CL_PLATFORM_NAME).unwrap();
 /// let value: String = value.into();
 /// println!("CL_PLATFORM_NAME: {}", value);
 /// assert!(!value.is_empty());
 ///
-/// let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
+/// let value = get_platform_info(platform_id, CL_PLATFORM_VERSION).unwrap();
 /// let value = String::from(value);
 /// println!("CL_PLATFORM_VERSION: {}", value);
 /// assert!(!value.is_empty());
@@ -122,37 +115,37 @@ pub enum PlatformInfo {
 /// or the error code from the OpenCL C API function.
 pub fn get_platform_info(
     platform: cl_platform_id,
-    param_name: PlatformInfo,
+    param_name: cl_platform_info,
 ) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_platform_info;
     match param_name {
-        PlatformInfo::CL_PLATFORM_PROFILE
-        | PlatformInfo::CL_PLATFORM_VERSION
-        | PlatformInfo::CL_PLATFORM_NAME
-        | PlatformInfo::CL_PLATFORM_VENDOR
-        | PlatformInfo::CL_PLATFORM_EXTENSIONS => {
-            Ok(InfoType::VecUchar(get_platform_data(platform, param_id)?))
-        }
-
         // CL_VERSION_3_0
-        PlatformInfo::CL_PLATFORM_NUMERIC_VERSION => {
+        CL_PLATFORM_NUMERIC_VERSION => {
             api_info_value!(get_value, cl_uint, clGetPlatformInfo);
-            Ok(InfoType::Uint(get_value(platform, param_id)?))
+            Ok(InfoType::Uint(get_value(platform, param_name)?))
         }
 
         // CL_VERSION_2_1
-        PlatformInfo::CL_PLATFORM_HOST_TIMER_RESOLUTION => {
+        CL_PLATFORM_HOST_TIMER_RESOLUTION => {
             api_info_value!(get_value, cl_ulong, clGetPlatformInfo);
-            Ok(InfoType::Ulong(get_value(platform, param_id)?))
+            Ok(InfoType::Ulong(get_value(platform, param_name)?))
         }
 
         // CL_VERSION_3_0
-        PlatformInfo::CL_PLATFORM_EXTENSIONS_WITH_VERSION => {
+        CL_PLATFORM_EXTENSIONS_WITH_VERSION => {
             api_info_size!(get_size, clGetPlatformInfo);
-            let size = get_size(platform, param_id)?;
+            let size = get_size(platform, param_name)?;
             api_info_vector!(get_vec, cl_name_version, clGetPlatformInfo);
-            Ok(InfoType::VecNameVersion(get_vec(platform, param_id, size)?))
+            Ok(InfoType::VecNameVersion(get_vec(
+                platform, param_name, size,
+            )?))
         }
+
+        CL_PLATFORM_PROFILE
+        | CL_PLATFORM_VERSION
+        | CL_PLATFORM_NAME
+        | CL_PLATFORM_VENDOR
+        | CL_PLATFORM_EXTENSIONS
+        | _ => Ok(InfoType::VecUchar(get_platform_data(platform, param_name)?)),
     }
 }
 
@@ -170,33 +163,33 @@ mod tests {
         // Choose the first platform
         let platform_id = platform_ids[0];
 
-        let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_PROFILE).unwrap();
+        let value = get_platform_info(platform_id, CL_PLATFORM_PROFILE).unwrap();
         let value: String = value.into();
         println!("CL_PLATFORM_PROFILE: {}", value);
         assert!(!value.is_empty());
 
-        let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
+        let value = get_platform_info(platform_id, CL_PLATFORM_VERSION).unwrap();
         let value: String = value.into();
         println!("CL_PLATFORM_VERSION: {}", value);
         assert!(!value.is_empty());
 
-        let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
+        let value = get_platform_info(platform_id, CL_PLATFORM_NAME).unwrap();
         let value: String = value.into();
         println!("CL_PLATFORM_NAME: {}", value);
         assert!(!value.is_empty());
 
-        let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VENDOR).unwrap();
+        let value = get_platform_info(platform_id, CL_PLATFORM_VENDOR).unwrap();
         let value: String = value.into();
         println!("CL_PLATFORM_VENDOR: {}", value);
         assert!(!value.is_empty());
 
-        let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_EXTENSIONS).unwrap();
+        let value = get_platform_info(platform_id, CL_PLATFORM_EXTENSIONS).unwrap();
         let value: String = value.into();
         println!("CL_PLATFORM_EXTENSIONS: {}", value);
         assert!(!value.is_empty());
 
         // CL_VERSION_2_1 value, may not be supported
-        match get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_HOST_TIMER_RESOLUTION) {
+        match get_platform_info(platform_id, CL_PLATFORM_HOST_TIMER_RESOLUTION) {
             Ok(value) => {
                 let value = cl_ulong::from(value);
                 println!("CL_PLATFORM_HOST_TIMER_RESOLUTION: {}", value)
@@ -215,7 +208,7 @@ mod tests {
         // Choose the first platform
         let platform_id = platform_ids[0];
 
-        let value = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_VERSION).unwrap();
+        let value = get_platform_info(platform_id, CL_PLATFORM_VERSION).unwrap();
         let value: String = value.into();
         println!("CL_PLATFORM_VERSION: {}", value);
         assert!(!value.is_empty());
@@ -224,17 +217,13 @@ mod tests {
         let is_opencl_3: bool = value.contains(opencl_3);
 
         if is_opencl_3 {
-            let value =
-                get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NUMERIC_VERSION).unwrap();
+            let value = get_platform_info(platform_id, CL_PLATFORM_NUMERIC_VERSION).unwrap();
             let value = cl_uint::from(value);
             println!("CL_PLATFORM_NUMERIC_VERSION: {}", value);
             assert!(0 < value);
 
-            let value = get_platform_info(
-                platform_id,
-                PlatformInfo::CL_PLATFORM_EXTENSIONS_WITH_VERSION,
-            )
-            .unwrap();
+            let value =
+                get_platform_info(platform_id, CL_PLATFORM_EXTENSIONS_WITH_VERSION).unwrap();
             let value = Vec::<cl_name_version>::from(value);
             println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {}", value.len());
             println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {:?}", value);

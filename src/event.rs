@@ -35,7 +35,10 @@ pub use cl_sys::{
     CL_COMMAND_SVM_FREE, CL_COMMAND_SVM_MAP, CL_COMMAND_SVM_MEMCPY, CL_COMMAND_SVM_MEMFILL,
     CL_COMMAND_SVM_UNMAP, CL_COMMAND_TASK, CL_COMMAND_UNMAP_MEM_OBJECT, CL_COMMAND_USER,
     CL_COMMAND_WRITE_BUFFER, CL_COMMAND_WRITE_BUFFER_RECT, CL_COMMAND_WRITE_IMAGE, CL_COMPLETE,
-    CL_QUEUED, CL_RUNNING, CL_SUBMITTED,
+    CL_EVENT_COMMAND_EXECUTION_STATUS, CL_EVENT_COMMAND_QUEUE, CL_EVENT_COMMAND_TYPE,
+    CL_EVENT_CONTEXT, CL_EVENT_REFERENCE_COUNT, CL_PROFILING_COMMAND_COMPLETE,
+    CL_PROFILING_COMMAND_END, CL_PROFILING_COMMAND_QUEUED, CL_PROFILING_COMMAND_START,
+    CL_PROFILING_COMMAND_SUBMIT, CL_QUEUED, CL_RUNNING, CL_SUBMITTED,
 };
 
 // #ifdef CL_VERSION_3_0
@@ -77,24 +80,11 @@ pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
 
 /// Get data about an OpenCL event.
 /// Calls clGetEventInfo to get the desired data about the event.
-pub fn get_event_data(
-    event: cl_event,
-    param_name: cl_event_info,
-) -> Result<Vec<u8>, cl_int> {
+pub fn get_event_data(event: cl_event, param_name: cl_event_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetEventInfo);
     let size = get_size(event, param_name)?;
     api_info_vector!(get_vector, u8, clGetEventInfo);
     get_vector(event, param_name, size)
-}
-
-// cl_event_info
-#[derive(Clone, Copy, Debug)]
-pub enum EventInfo {
-    CL_EVENT_COMMAND_QUEUE = 0x11D0,
-    CL_EVENT_COMMAND_TYPE = 0x11D1,
-    CL_EVENT_REFERENCE_COUNT = 0x11D2,
-    CL_EVENT_COMMAND_EXECUTION_STATUS = 0x11D3,
-    CL_EVENT_CONTEXT = 0x11D4,
 }
 
 /// Get specific information about an OpenCL event.  
@@ -106,23 +96,24 @@ pub enum EventInfo {
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
-pub fn get_event_info(event: cl_event, param_name: EventInfo) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_event_info;
+pub fn get_event_info(event: cl_event, param_name: cl_event_info) -> Result<InfoType, cl_int> {
     match param_name {
-        EventInfo::CL_EVENT_COMMAND_EXECUTION_STATUS => {
+        CL_EVENT_COMMAND_EXECUTION_STATUS => {
             api_info_value!(get_value, cl_int, clGetEventInfo);
-            Ok(InfoType::Int(get_value(event, param_id)?))
+            Ok(InfoType::Int(get_value(event, param_name)?))
         }
 
-        EventInfo::CL_EVENT_COMMAND_TYPE | EventInfo::CL_EVENT_REFERENCE_COUNT => {
+        CL_EVENT_COMMAND_TYPE | CL_EVENT_REFERENCE_COUNT => {
             api_info_value!(get_value, cl_uint, clGetEventInfo);
-            Ok(InfoType::Uint(get_value(event, param_id)?))
+            Ok(InfoType::Uint(get_value(event, param_name)?))
         }
 
-        EventInfo::CL_EVENT_COMMAND_QUEUE | EventInfo::CL_EVENT_CONTEXT => {
+        CL_EVENT_COMMAND_QUEUE | CL_EVENT_CONTEXT => {
             api_info_value!(get_value, intptr_t, clGetEventInfo);
-            Ok(InfoType::Ptr(get_value(event, param_id)?))
+            Ok(InfoType::Ptr(get_value(event, param_name)?))
         }
+
+        _ => Ok(InfoType::VecUchar(get_event_data(event, param_name)?)),
     }
 }
 
@@ -235,17 +226,6 @@ pub fn get_event_profiling_data(
     get_vector(event, param_name, size)
 }
 
-// cl_profiling_info
-#[derive(Clone, Copy, Debug)]
-pub enum ProfilingInfo {
-    CL_PROFILING_COMMAND_QUEUED = 0x1280,
-    CL_PROFILING_COMMAND_SUBMIT = 0x1281,
-    CL_PROFILING_COMMAND_START = 0x1282,
-    CL_PROFILING_COMMAND_END = 0x1283,
-    // CL_VERSION_2_0
-    CL_PROFILING_COMMAND_COMPLETE = 0x1284,
-}
-
 /// Get profiling information for a command associated with an event when
 /// profiling is enabled.  
 /// Calls clGetEventProfilingInfo to get the desired information.
@@ -258,19 +238,20 @@ pub enum ProfilingInfo {
 /// or the error code from the OpenCL C API function.
 pub fn get_event_profiling_info(
     event: cl_event,
-    param_name: ProfilingInfo,
+    param_name: cl_profiling_info,
 ) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_profiling_info;
     match param_name {
-        ProfilingInfo::CL_PROFILING_COMMAND_QUEUED
-        | ProfilingInfo::CL_PROFILING_COMMAND_SUBMIT
-        | ProfilingInfo::CL_PROFILING_COMMAND_START
-        | ProfilingInfo::CL_PROFILING_COMMAND_END
-        | ProfilingInfo::CL_PROFILING_COMMAND_COMPLETE // CL_VERSION_2_0
+        CL_PROFILING_COMMAND_QUEUED
+        | CL_PROFILING_COMMAND_SUBMIT
+        | CL_PROFILING_COMMAND_START
+        | CL_PROFILING_COMMAND_END
+        | CL_PROFILING_COMMAND_COMPLETE // CL_VERSION_2_0
          => {
             api_info_value!(get_value, cl_ulong, clGetEventProfilingInfo);
-            Ok(InfoType::Ulong(get_value(event, param_id)?))
+            Ok(InfoType::Ulong(get_value(event, param_name)?))
         }
+
+        _ => Ok(InfoType::VecUchar(get_event_profiling_data(event, param_name)?))
     }
 }
 

@@ -21,16 +21,21 @@ pub use cl_sys::{
     CL_RGBx, CL_RGx, CL_Rx, CL_sRGB, CL_sRGBA, CL_sRGBx, CL_A, CL_ABGR, CL_ADDRESS_CLAMP,
     CL_ADDRESS_CLAMP_TO_EDGE, CL_ADDRESS_MIRRORED_REPEAT, CL_ADDRESS_NONE, CL_ADDRESS_REPEAT,
     CL_ARGB, CL_BGRA, CL_BUFFER_CREATE_TYPE_REGION, CL_DEPTH, CL_DEPTH_STENCIL, CL_FILTER_LINEAR,
-    CL_FILTER_NEAREST, CL_FLOAT, CL_HALF_FLOAT, CL_INTENSITY, CL_LUMINANCE, CL_MAP_READ,
-    CL_MAP_WRITE, CL_MAP_WRITE_INVALIDATE_REGION, CL_MEM_ALLOC_HOST_PTR, CL_MEM_COPY_HOST_PTR,
-    CL_MEM_HOST_NO_ACCESS, CL_MEM_HOST_READ_ONLY, CL_MEM_HOST_WRITE_ONLY,
-    CL_MEM_KERNEL_READ_AND_WRITE, CL_MEM_OBJECT_BUFFER, CL_MEM_OBJECT_IMAGE1D,
-    CL_MEM_OBJECT_IMAGE1D_ARRAY, CL_MEM_OBJECT_IMAGE1D_BUFFER, CL_MEM_OBJECT_IMAGE2D,
-    CL_MEM_OBJECT_IMAGE2D_ARRAY, CL_MEM_OBJECT_IMAGE3D, CL_MEM_OBJECT_PIPE, CL_MEM_READ_ONLY,
-    CL_MEM_READ_WRITE, CL_MEM_SVM_ATOMICS, CL_MEM_SVM_FINE_GRAIN_BUFFER, CL_MEM_USE_HOST_PTR,
-    CL_MEM_WRITE_ONLY, CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED, CL_MIGRATE_MEM_OBJECT_HOST, CL_R,
-    CL_RA, CL_RG, CL_RGB, CL_RGBA, CL_SIGNED_INT16, CL_SIGNED_INT32, CL_SIGNED_INT8,
-    CL_SNORM_INT16, CL_SNORM_INT8, CL_UNORM_INT16, CL_UNORM_INT24, CL_UNORM_INT8,
+    CL_FILTER_NEAREST, CL_FLOAT, CL_HALF_FLOAT, CL_IMAGE_ARRAY_SIZE, CL_IMAGE_BUFFER,
+    CL_IMAGE_DEPTH, CL_IMAGE_ELEMENT_SIZE, CL_IMAGE_FORMAT, CL_IMAGE_HEIGHT,
+    CL_IMAGE_NUM_MIP_LEVELS, CL_IMAGE_NUM_SAMPLES, CL_IMAGE_ROW_PITCH, CL_IMAGE_SLICE_PITCH,
+    CL_IMAGE_WIDTH, CL_INTENSITY, CL_LUMINANCE, CL_MAP_READ, CL_MAP_WRITE,
+    CL_MAP_WRITE_INVALIDATE_REGION, CL_MEM_ALLOC_HOST_PTR, CL_MEM_ASSOCIATED_MEMOBJECT,
+    CL_MEM_CONTEXT, CL_MEM_COPY_HOST_PTR, CL_MEM_FLAGS, CL_MEM_HOST_NO_ACCESS, CL_MEM_HOST_PTR,
+    CL_MEM_HOST_READ_ONLY, CL_MEM_HOST_WRITE_ONLY, CL_MEM_KERNEL_READ_AND_WRITE, CL_MEM_MAP_COUNT,
+    CL_MEM_OBJECT_BUFFER, CL_MEM_OBJECT_IMAGE1D, CL_MEM_OBJECT_IMAGE1D_ARRAY,
+    CL_MEM_OBJECT_IMAGE1D_BUFFER, CL_MEM_OBJECT_IMAGE2D, CL_MEM_OBJECT_IMAGE2D_ARRAY,
+    CL_MEM_OBJECT_IMAGE3D, CL_MEM_OBJECT_PIPE, CL_MEM_OFFSET, CL_MEM_READ_ONLY, CL_MEM_READ_WRITE,
+    CL_MEM_REFERENCE_COUNT, CL_MEM_SIZE, CL_MEM_SVM_ATOMICS, CL_MEM_SVM_FINE_GRAIN_BUFFER,
+    CL_MEM_TYPE, CL_MEM_USES_SVM_POINTER, CL_MEM_USE_HOST_PTR, CL_MEM_WRITE_ONLY,
+    CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED, CL_MIGRATE_MEM_OBJECT_HOST, CL_PIPE_MAX_PACKETS,
+    CL_PIPE_PACKET_SIZE, CL_R, CL_RA, CL_RG, CL_RGB, CL_RGBA, CL_SIGNED_INT16, CL_SIGNED_INT32,
+    CL_SIGNED_INT8, CL_SNORM_INT16, CL_SNORM_INT8, CL_UNORM_INT16, CL_UNORM_INT24, CL_UNORM_INT8,
     CL_UNORM_INT_101010, CL_UNORM_INT_101010_2, CL_UNORM_SHORT_555, CL_UNORM_SHORT_565,
     CL_UNSIGNED_INT16, CL_UNSIGNED_INT32, CL_UNSIGNED_INT8,
 };
@@ -104,6 +109,10 @@ extern "system" {
     ) -> cl_mem;
     // #endif
 }
+
+// Missing from cl_sys
+pub const CL_MEM_PROPERTIES: cl_mem_info = 0x110A;
+pub const CL_PIPE_PROPERTIES: cl_pipe_info = 0x1122;
 
 /// Create an OpenCL buffer object for a context.  
 /// Calls clCreateBuffer to create an OpenCL buffer object.  
@@ -425,33 +434,11 @@ pub fn get_supported_image_formats(
 
 /// Get data about an OpenCL memory object.
 /// Calls clGetMemObjectInfo to get the desired data about the memory object.
-pub fn get_mem_object_data(
-    memobj: cl_mem,
-    param_name: cl_mem_info,
-) -> Result<Vec<u8>, cl_int> {
+pub fn get_mem_object_data(memobj: cl_mem, param_name: cl_mem_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetMemObjectInfo);
     let size = get_size(memobj, param_name)?;
     api_info_vector!(get_vector, u8, clGetMemObjectInfo);
     get_vector(memobj, param_name, size)
-}
-
-// cl_mem_info
-#[derive(Clone, Copy, Debug)]
-pub enum MemInfo {
-    CL_MEM_TYPE = 0x1100,
-    CL_MEM_FLAGS = 0x1101,
-    CL_MEM_SIZE = 0x1102,
-    CL_MEM_HOST_PTR = 0x1103,
-    CL_MEM_MAP_COUNT = 0x1104,
-    CL_MEM_REFERENCE_COUNT = 0x1105,
-    CL_MEM_CONTEXT = 0x1106,
-    // CL_VERSION_1_1
-    CL_MEM_ASSOCIATED_MEMOBJECT = 0x1107,
-    CL_MEM_OFFSET = 0x1108,
-    // CL_VERSION_2_0
-    CL_MEM_USES_SVM_POINTER = 0x1109,
-    // CL_VERSION_3_0
-    CL_MEM_PROPERTIES = 0x110A,
 }
 
 /// Get information common to all OpenCL memory objects (buffer and image objects).  
@@ -463,70 +450,51 @@ pub enum MemInfo {
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
-pub fn get_mem_object_info(memobj: cl_mem, param_name: MemInfo) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_mem_info;
+pub fn get_mem_object_info(memobj: cl_mem, param_name: cl_mem_info) -> Result<InfoType, cl_int> {
     match param_name {
-        MemInfo::CL_MEM_TYPE
-        | MemInfo::CL_MEM_MAP_COUNT
-        | MemInfo::CL_MEM_REFERENCE_COUNT
-        | MemInfo::CL_MEM_USES_SVM_POINTER // CL_VERSION_2_0
+        CL_MEM_TYPE
+        | CL_MEM_MAP_COUNT
+        | CL_MEM_REFERENCE_COUNT
+        | CL_MEM_USES_SVM_POINTER // CL_VERSION_2_0
         => {
             api_info_value!(get_value, cl_uint, clGetMemObjectInfo);
-            Ok(InfoType::Uint(get_value(memobj, param_id)?))
+            Ok(InfoType::Uint(get_value(memobj, param_name)?))
         }
 
-        MemInfo::CL_MEM_FLAGS => {
+        CL_MEM_FLAGS => {
             api_info_value!(get_value, cl_ulong, clGetMemObjectInfo);
-            Ok(InfoType::Ulong(get_value(memobj, param_id)?))
+            Ok(InfoType::Ulong(get_value(memobj, param_name)?))
         }
 
-        MemInfo::CL_MEM_SIZE | MemInfo::CL_MEM_OFFSET => {
+        CL_MEM_SIZE | CL_MEM_OFFSET => {
             api_info_value!(get_value, size_t, clGetMemObjectInfo);
-            Ok(InfoType::Size(get_value(memobj, param_id)?))
+            Ok(InfoType::Size(get_value(memobj, param_name)?))
         }
 
-        MemInfo::CL_MEM_HOST_PTR | MemInfo::CL_MEM_CONTEXT | MemInfo::CL_MEM_ASSOCIATED_MEMOBJECT => {
+        CL_MEM_HOST_PTR | CL_MEM_CONTEXT | CL_MEM_ASSOCIATED_MEMOBJECT => {
             api_info_value!(get_value, intptr_t, clGetMemObjectInfo);
-            Ok(InfoType::Ptr(get_value(memobj, param_id)?))
+            Ok(InfoType::Ptr(get_value(memobj, param_name)?))
         }
 
-        MemInfo::CL_MEM_PROPERTIES // CL_VERSION_3_0
+        CL_MEM_PROPERTIES // CL_VERSION_3_0
         => {
             api_info_size!(get_size, clGetMemObjectInfo);
             api_info_vector!(get_vec, cl_ulong, clGetMemObjectInfo);
-            let size = get_size(memobj, param_id)?;
-            Ok(InfoType::VecUlong(get_vec(memobj, param_id, size,)?))
+            let size = get_size(memobj, param_name)?;
+            Ok(InfoType::VecUlong(get_vec(memobj, param_name, size)?))
         }
+
+        _ => Ok(InfoType::VecUchar(get_mem_object_data(memobj, param_name)?))
     }
 }
 
 /// Get data about an OpenCL image object.
 /// Calls clGetImageInfo to get the desired data about the image object.
-pub fn get_image_data(
-    image: cl_mem,
-    param_name: cl_image_info,
-) -> Result<Vec<u8>, cl_int> {
+pub fn get_image_data(image: cl_mem, param_name: cl_image_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetImageInfo);
     let size = get_size(image, param_name)?;
     api_info_vector!(get_vector, u8, clGetImageInfo);
     get_vector(image, param_name, size)
-}
-
-// cl_image_info
-#[derive(Clone, Copy, Debug)]
-pub enum ImageInfo {
-    CL_IMAGE_FORMAT = 0x1110,
-    CL_IMAGE_ELEMENT_SIZE = 0x1111,
-    CL_IMAGE_ROW_PITCH = 0x1112,
-    CL_IMAGE_SLICE_PITCH = 0x1113,
-    CL_IMAGE_WIDTH = 0x1114,
-    CL_IMAGE_HEIGHT = 0x1115,
-    CL_IMAGE_DEPTH = 0x1116,
-    // CL_VERSION_1_2
-    CL_IMAGE_ARRAY_SIZE = 0x1117,
-    CL_IMAGE_BUFFER = 0x1118,
-    CL_IMAGE_NUM_MIP_LEVELS = 0x1119,
-    CL_IMAGE_NUM_SAMPLES = 0x111A,
 }
 
 /// Get information specific to an OpenCL image object.  
@@ -538,61 +506,48 @@ pub enum ImageInfo {
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
-pub fn get_image_info(image: cl_mem, param_name: ImageInfo) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_image_info;
+pub fn get_image_info(image: cl_mem, param_name: cl_image_info) -> Result<InfoType, cl_int> {
     match param_name {
-        ImageInfo::CL_IMAGE_FORMAT => {
+        CL_IMAGE_FORMAT => {
             api_info_size!(get_size, clGetImageInfo);
             api_info_vector!(get_vec, cl_image_format, clGetImageInfo);
-            let size = get_size(image, param_id)?;
-            Ok(InfoType::VecImageFormat(get_vec(image, param_id, size)?))
+            let size = get_size(image, param_name)?;
+            Ok(InfoType::VecImageFormat(get_vec(image, param_name, size)?))
         }
 
-        ImageInfo::CL_IMAGE_ELEMENT_SIZE
-        | ImageInfo::CL_IMAGE_ROW_PITCH
-        | ImageInfo::CL_IMAGE_SLICE_PITCH
-        | ImageInfo::CL_IMAGE_WIDTH
-        | ImageInfo::CL_IMAGE_HEIGHT
-        | ImageInfo::CL_IMAGE_DEPTH
-        | ImageInfo::CL_IMAGE_ARRAY_SIZE => {
+        CL_IMAGE_ELEMENT_SIZE
+        | CL_IMAGE_ROW_PITCH
+        | CL_IMAGE_SLICE_PITCH
+        | CL_IMAGE_WIDTH
+        | CL_IMAGE_HEIGHT
+        | CL_IMAGE_DEPTH
+        | CL_IMAGE_ARRAY_SIZE => {
             api_info_value!(get_value, size_t, clGetImageInfo);
-            Ok(InfoType::Size(get_value(image, param_id)?))
+            Ok(InfoType::Size(get_value(image, param_name)?))
         }
 
-        ImageInfo::CL_IMAGE_BUFFER => {
+        CL_IMAGE_BUFFER => {
             api_info_value!(get_value, intptr_t, clGetImageInfo);
-            Ok(InfoType::Ptr(get_value(image, param_id)?))
+            Ok(InfoType::Ptr(get_value(image, param_name)?))
         }
 
-        ImageInfo::CL_IMAGE_NUM_MIP_LEVELS | ImageInfo::CL_IMAGE_NUM_SAMPLES => {
+        CL_IMAGE_NUM_MIP_LEVELS | CL_IMAGE_NUM_SAMPLES => {
             api_info_value!(get_value, cl_uint, clGetImageInfo);
-            Ok(InfoType::Uint(get_value(image, param_id)?))
+            Ok(InfoType::Uint(get_value(image, param_name)?))
         }
+
+        _ => Ok(InfoType::VecUchar(get_image_data(image, param_name)?)),
     }
 }
 
 /// Get data about an OpenCL pipe object.
 /// Calls clGetPipeInfo to get the desired data about the pipe object.
 #[cfg(feature = "CL_VERSION_2_0")]
-pub fn get_pipe_data(
-    pipe: cl_mem,
-    param_name: cl_pipe_info,
-) -> Result<Vec<u8>, cl_int> {
+pub fn get_pipe_data(pipe: cl_mem, param_name: cl_pipe_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetPipeInfo);
     let size = get_size(pipe, param_name)?;
     api_info_vector!(get_vector, u8, clGetPipeInfo);
     get_vector(pipe, param_name, size)
-}
-
-// cl_pipe_info
-#[cfg(feature = "CL_VERSION_2_0")]
-#[derive(Clone, Copy, Debug)]
-pub enum PipeInfo {
-    // CL_VERSION_2_0
-    CL_PIPE_PACKET_SIZE = 0x1120,
-    CL_PIPE_MAX_PACKETS = 0x1121,
-    // CL_VERSION_3_0
-    CL_PIPE_PROPERTIES = 0x1122,
 }
 
 /// Get information specific to an OpenCL pipe object.  
@@ -606,20 +561,21 @@ pub enum PipeInfo {
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_0")]
-pub fn get_pipe_info(pipe: cl_mem, param_name: PipeInfo) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_pipe_info;
+pub fn get_pipe_info(pipe: cl_mem, param_name: cl_pipe_info) -> Result<InfoType, cl_int> {
     match param_name {
-        PipeInfo::CL_PIPE_PACKET_SIZE | PipeInfo::CL_PIPE_MAX_PACKETS => {
+        CL_PIPE_PACKET_SIZE | CL_PIPE_MAX_PACKETS => {
             api_info_value!(get_value, cl_uint, clGetPipeInfo);
-            Ok(InfoType::Uint(get_value(pipe, param_id)?))
+            Ok(InfoType::Uint(get_value(pipe, param_name)?))
         }
         // CL_VERSION_3_0
-        PipeInfo::CL_PIPE_PROPERTIES => {
+        CL_PIPE_PROPERTIES => {
             api_info_size!(get_size, clGetPipeInfo);
             api_info_vector!(get_vec, intptr_t, clGetPipeInfo);
-            let size = get_size(pipe, param_id)?;
-            Ok(InfoType::VecIntPtr(get_vec(pipe, param_id, size)?))
+            let size = get_size(pipe, param_name)?;
+            Ok(InfoType::VecIntPtr(get_vec(pipe, param_name, size)?))
         }
+
+        _ => Ok(InfoType::VecUchar(get_pipe_data(pipe, param_name)?)),
     }
 }
 

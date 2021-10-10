@@ -18,9 +18,13 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use cl_sys::{
-    CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE, CL_BUILD_SUCCESS,
-    CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT, CL_PROGRAM_BINARY_TYPE_EXECUTABLE,
-    CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_NONE,
+    CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE, CL_BUILD_SUCCESS, CL_PROGRAM_BINARIES,
+    CL_PROGRAM_BINARY_SIZES, CL_PROGRAM_BINARY_TYPE, CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT,
+    CL_PROGRAM_BINARY_TYPE_EXECUTABLE, CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_NONE,
+    CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE, CL_PROGRAM_BUILD_LOG, CL_PROGRAM_BUILD_OPTIONS,
+    CL_PROGRAM_BUILD_STATUS, CL_PROGRAM_CONTEXT, CL_PROGRAM_DEVICES, CL_PROGRAM_IL,
+    CL_PROGRAM_KERNEL_NAMES, CL_PROGRAM_NUM_DEVICES, CL_PROGRAM_NUM_KERNELS,
+    CL_PROGRAM_REFERENCE_COUNT, CL_PROGRAM_SOURCE,
 };
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
@@ -83,6 +87,10 @@ extern "system" {
         spec_value: *const c_void,
     ) -> cl_int;
 }
+
+// Missing from cl_sys
+pub const CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: cl_program_info = 0x116A;
+pub const CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: cl_program_info = 0x116B;
 
 /// Create an OpenCL program object for a context and load source code into that object.  
 /// Calls clCreateProgramWithSource to create an OpenCL program object.  
@@ -456,26 +464,6 @@ pub fn get_program_data(
     get_vector(program, param_name, size)
 }
 
-// cl_program_info
-#[derive(Clone, Copy, Debug)]
-pub enum ProgramInfo {
-    CL_PROGRAM_REFERENCE_COUNT = 0x1160,
-    CL_PROGRAM_CONTEXT = 0x1161,
-    CL_PROGRAM_NUM_DEVICES = 0x1162,
-    CL_PROGRAM_DEVICES = 0x1163,
-    CL_PROGRAM_SOURCE = 0x1164,
-    CL_PROGRAM_BINARY_SIZES = 0x1165,
-    CL_PROGRAM_BINARIES = 0x1166,
-    // CL_VERSION_1_2
-    CL_PROGRAM_NUM_KERNELS = 0x1167,
-    CL_PROGRAM_KERNEL_NAMES = 0x1168,
-    // CL_VERSION_2_1
-    CL_PROGRAM_IL = 0x1169,
-    // CL_VERSION_2_2 deprecated by version 3.0.
-    CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT = 0x116A,
-    CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT = 0x116B,
-}
-
 /// Get specific information about an OpenCL program.  
 /// Calls clGetProgramInfo to get the desired information about the program.
 ///
@@ -485,48 +473,46 @@ pub enum ProgramInfo {
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
-pub fn get_program_info(program: cl_program, param_name: ProgramInfo) -> Result<InfoType, cl_int> {
+pub fn get_program_info(
+    program: cl_program,
+    param_name: cl_program_info,
+) -> Result<InfoType, cl_int> {
     api_info_size!(get_size, clGetProgramInfo);
 
-    let param_id = param_name as cl_program_info;
     match param_name {
-        ProgramInfo::CL_PROGRAM_REFERENCE_COUNT
-        | ProgramInfo::CL_PROGRAM_NUM_DEVICES
-        | ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT // CL_VERSION_2_2 only
-        | ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT // CL_VERSION_2_2 only
+        CL_PROGRAM_REFERENCE_COUNT
+        | CL_PROGRAM_NUM_DEVICES
+        | CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT // CL_VERSION_2_2 only
+        | CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT // CL_VERSION_2_2 only
         => {
             api_info_value!(get_value, cl_uint, clGetProgramInfo);
-            Ok(InfoType::Uint(get_value(program, param_id)?))
+            Ok(InfoType::Uint(get_value(program, param_name)?))
         }
 
-        ProgramInfo::CL_PROGRAM_CONTEXT => {
+        CL_PROGRAM_CONTEXT => {
             api_info_value!(get_value, intptr_t, clGetProgramInfo);
-            Ok(InfoType::Ptr(get_value(program, param_id)?))
+            Ok(InfoType::Ptr(get_value(program, param_name)?))
         }
 
-        ProgramInfo::CL_PROGRAM_DEVICES => {
+        CL_PROGRAM_DEVICES => {
             api_info_vector!(get_vec, intptr_t, clGetProgramInfo);
-            let size = get_size(program, param_id)?;
-            Ok(InfoType::VecIntPtr(get_vec(program, param_id, size)?))
+            let size = get_size(program, param_name)?;
+            Ok(InfoType::VecIntPtr(get_vec(program, param_name, size)?))
         }
 
-        ProgramInfo::CL_PROGRAM_SOURCE | ProgramInfo::CL_PROGRAM_KERNEL_NAMES | ProgramInfo::CL_PROGRAM_IL => {
-            Ok(InfoType::VecUchar(get_program_data(program, param_id)?))
-        }
-
-        ProgramInfo::CL_PROGRAM_BINARY_SIZES => {
+        CL_PROGRAM_BINARY_SIZES => {
             api_info_vector!(get_vec, size_t, clGetProgramInfo);
-            let size = get_size(program, param_id)?;
-            Ok(InfoType::VecSize(get_vec(program, param_id, size)?))
+            let size = get_size(program, param_name)?;
+            Ok(InfoType::VecSize(get_vec(program, param_name, size)?))
         }
 
-        ProgramInfo::CL_PROGRAM_BINARIES => {
+        CL_PROGRAM_BINARIES => {
             // Gets the binaries for all the devices in the context
 
             // get the binary sizes, as the case above
             api_info_vector!(get_size_vec, size_t, clGetProgramInfo);
-            let size = get_size(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES as cl_program_info)?;
-            let binary_sizes = get_size_vec(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES as cl_program_info, size)?;
+            let size = get_size(program, CL_PROGRAM_BINARY_SIZES as cl_program_info)?;
+            let binary_sizes = get_size_vec(program, CL_PROGRAM_BINARY_SIZES as cl_program_info, size)?;
 
             // A vector of vectors to hold the binaries of each device
             let binaries = binary_sizes.into_iter().map(|size| {
@@ -541,7 +527,7 @@ pub fn get_program_info(program: cl_program, param_name: ProgramInfo) -> Result<
             let status = unsafe {
                 clGetProgramInfo(
                     program,
-                    param_id,
+                    param_name,
                     binary_ptrs.len() * mem::size_of::<*mut c_void>(),
                     binary_ptrs.as_mut_ptr() as *mut _ as *mut c_void,
                     ptr::null_mut(),
@@ -554,9 +540,16 @@ pub fn get_program_info(program: cl_program, param_name: ProgramInfo) -> Result<
             }
         }
 
-        ProgramInfo::CL_PROGRAM_NUM_KERNELS => {
+        CL_PROGRAM_NUM_KERNELS => {
             api_info_value!(get_value, size_t, clGetProgramInfo);
-            Ok(InfoType::Size(get_value(program, param_id)?))
+            Ok(InfoType::Size(get_value(program, param_name)?))
+        }
+
+        CL_PROGRAM_SOURCE
+        | CL_PROGRAM_KERNEL_NAMES
+        | CL_PROGRAM_IL
+        | _ => {
+            Ok(InfoType::VecUchar(get_program_data(program, param_name)?))
         }
     }
 }
@@ -574,17 +567,6 @@ pub fn get_program_build_data(
     get_vector(program, device, param_name, size)
 }
 
-// cl_program_build_info
-#[derive(Clone, Copy, Debug)]
-pub enum ProgramBuildInfo {
-    CL_PROGRAM_BUILD_STATUS = 0x1181,
-    CL_PROGRAM_BUILD_OPTIONS = 0x1182,
-    CL_PROGRAM_BUILD_LOG = 0x1183,
-    CL_PROGRAM_BINARY_TYPE = 0x1184,
-    // CL_VERSION_2_0
-    CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE = 0x1185,
-}
-
 /// Get specific information about an OpenCL program build.  
 /// Calls clGetProgramBuildInfo to get the desired information about the program build.
 ///
@@ -598,44 +580,49 @@ pub enum ProgramBuildInfo {
 pub fn get_program_build_info(
     program: cl_program,
     device: cl_device_id,
-    param_name: ProgramBuildInfo,
+    param_name: cl_program_build_info,
 ) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_program_build_info;
     match param_name {
-        ProgramBuildInfo::CL_PROGRAM_BUILD_STATUS => {
+        CL_PROGRAM_BUILD_STATUS => {
             api2_info_value!(
                 get_device_value,
                 cl_device_id,
                 cl_int,
                 clGetProgramBuildInfo
             );
-            Ok(InfoType::Int(get_device_value(program, device, param_id)?))
+            Ok(InfoType::Int(get_device_value(
+                program, device, param_name,
+            )?))
         }
 
-        ProgramBuildInfo::CL_PROGRAM_BUILD_OPTIONS | ProgramBuildInfo::CL_PROGRAM_BUILD_LOG => Ok(
-            InfoType::VecUchar(get_program_build_data(program, device, param_id)?),
-        ),
-
-        ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE => {
+        CL_PROGRAM_BINARY_TYPE => {
             api2_info_value!(
                 get_device_value,
                 cl_device_id,
                 cl_uint,
                 clGetProgramBuildInfo
             );
-            Ok(InfoType::Uint(get_device_value(program, device, param_id)?))
+            Ok(InfoType::Uint(get_device_value(
+                program, device, param_name,
+            )?))
         }
 
         // CL_VERSION_2_0
-        ProgramBuildInfo::CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE => {
+        CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE => {
             api2_info_value!(
                 get_device_value,
                 cl_device_id,
                 size_t,
                 clGetProgramBuildInfo
             );
-            Ok(InfoType::Size(get_device_value(program, device, param_id)?))
+            Ok(InfoType::Size(get_device_value(
+                program, device, param_name,
+            )?))
         }
+
+        CL_PROGRAM_BUILD_OPTIONS | CL_PROGRAM_BUILD_LOG | _ => Ok(InfoType::VecUchar(
+            get_program_build_data(program, device, param_name)?,
+        )),
     }
 }
 
@@ -689,27 +676,27 @@ mod tests {
         let sources = [source];
         let program = create_program_with_source(context, &sources).unwrap();
 
-        let value = get_program_info(program, ProgramInfo::CL_PROGRAM_REFERENCE_COUNT).unwrap();
+        let value = get_program_info(program, CL_PROGRAM_REFERENCE_COUNT).unwrap();
         let value = cl_uint::from(value);
         println!("CL_PROGRAM_REFERENCE_COUNT: {}", value);
         assert!(0 < value);
 
-        let value = get_program_info(program, ProgramInfo::CL_PROGRAM_CONTEXT).unwrap();
+        let value = get_program_info(program, CL_PROGRAM_CONTEXT).unwrap();
         let value = intptr_t::from(value);
         println!("CL_PROGRAM_CONTEXT: {}", value);
         assert!(0 < value);
 
-        let value = get_program_info(program, ProgramInfo::CL_PROGRAM_NUM_DEVICES).unwrap();
+        let value = get_program_info(program, CL_PROGRAM_NUM_DEVICES).unwrap();
         let value = cl_uint::from(value);
         println!("CL_PROGRAM_NUM_DEVICES: {}", value);
         assert!(0 < value);
 
-        let value = get_program_info(program, ProgramInfo::CL_PROGRAM_DEVICES).unwrap();
+        let value = get_program_info(program, CL_PROGRAM_DEVICES).unwrap();
         let value = Vec::<intptr_t>::from(value);
         println!("CL_PROGRAM_DEVICES: {}", value.len());
         assert!(0 < value.len());
 
-        let value = get_program_info(program, ProgramInfo::CL_PROGRAM_SOURCE).unwrap();
+        let value = get_program_info(program, CL_PROGRAM_SOURCE).unwrap();
         let value = String::from(value);
         println!("CL_PROGRAM_SOURCE: {}", value);
         assert!(0 < value.len());
@@ -717,34 +704,20 @@ mod tests {
         let options = CString::default();
         build_program(program, &device_ids, &options, None, ptr::null_mut()).unwrap();
 
-        let value = get_program_build_info(
-            program,
-            device_id,
-            ProgramBuildInfo::CL_PROGRAM_BUILD_STATUS,
-        )
-        .unwrap();
+        let value = get_program_build_info(program, device_id, CL_PROGRAM_BUILD_STATUS).unwrap();
         let value: cl_int = From::from(value);
         println!("CL_PROGRAM_BUILD_STATUS: {}", value);
         assert_eq!(CL_BUILD_SUCCESS, value);
 
-        let value = get_program_build_info(
-            program,
-            device_id,
-            ProgramBuildInfo::CL_PROGRAM_BUILD_OPTIONS,
-        )
-        .unwrap();
+        let value = get_program_build_info(program, device_id, CL_PROGRAM_BUILD_OPTIONS).unwrap();
         let value = String::from(value);
         println!("CL_PROGRAM_BUILD_OPTIONS: {}", value);
 
-        let value =
-            get_program_build_info(program, device_id, ProgramBuildInfo::CL_PROGRAM_BUILD_LOG)
-                .unwrap();
+        let value = get_program_build_info(program, device_id, CL_PROGRAM_BUILD_LOG).unwrap();
         let value = String::from(value);
         println!("CL_PROGRAM_BUILD_LOG: {}", value);
 
-        let value =
-            get_program_build_info(program, device_id, ProgramBuildInfo::CL_PROGRAM_BINARY_TYPE)
-                .unwrap();
+        let value = get_program_build_info(program, device_id, CL_PROGRAM_BINARY_TYPE).unwrap();
         let value = cl_uint::from(value);
         println!("CL_PROGRAM_BINARY_TYPE: {:?}", value);
         assert_eq!(CL_PROGRAM_BINARY_TYPE_EXECUTABLE as cl_uint, value);
@@ -753,7 +726,7 @@ mod tests {
         match get_program_build_info(
             program,
             device_id,
-            ProgramBuildInfo::CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE,
+            CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE,
         ) {
             Ok(value) => {
                 let value = size_t::from(value);
@@ -765,31 +738,31 @@ mod tests {
             ),
         }
 
-        let value = get_program_info(program, ProgramInfo::CL_PROGRAM_BINARY_SIZES).unwrap();
+        let value = get_program_info(program, CL_PROGRAM_BINARY_SIZES).unwrap();
         let value = Vec::<size_t>::from(value);
         println!("CL_PROGRAM_BINARY_SIZES: {}", value.len());
         println!("CL_PROGRAM_BINARY_SIZES: {:?}", value);
         assert!(0 < value.len());
 
-        let value = get_program_info(program, ProgramInfo::CL_PROGRAM_BINARIES).unwrap();
+        let value = get_program_info(program, CL_PROGRAM_BINARIES).unwrap();
         // println!("CL_PROGRAM_BINARIES: {:?}", value);
         let value = Vec::<Vec<u8>>::from(value);
         println!("CL_PROGRAM_BINARIES count: {}", value.len());
         println!("CL_PROGRAM_BINARIES length[0]: {}", value[0].len());
         assert!(0 < value.len());
 
-        let value = get_program_info(program, ProgramInfo::CL_PROGRAM_NUM_KERNELS).unwrap();
+        let value = get_program_info(program, CL_PROGRAM_NUM_KERNELS).unwrap();
         let value = size_t::from(value);
         println!("CL_PROGRAM_NUM_KERNELS: {}", value);
         assert!(0 < value);
 
-        let value = get_program_info(program, ProgramInfo::CL_PROGRAM_KERNEL_NAMES).unwrap();
+        let value = get_program_info(program, CL_PROGRAM_KERNEL_NAMES).unwrap();
         let value = String::from(value);
         println!("CL_PROGRAM_KERNEL_NAMES: {}", value);
         assert!(0 < value.len());
 
         #[cfg(feature = "CL_VERSION_2_1")]
-        match get_program_info(program, ProgramInfo::CL_PROGRAM_IL) {
+        match get_program_info(program, CL_PROGRAM_IL) {
             Ok(value) => {
                 let value = String::from(value);
                 println!("CL_PROGRAM_IL: {}", value)
@@ -798,7 +771,7 @@ mod tests {
         };
 
         #[cfg(feature = "CL_VERSION_2_2")]
-        match get_program_info(program, ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
+        match get_program_info(program, CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
             Ok(value) => {
                 let value = cl_uint::from(value);
                 println!("CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: {}", value)
@@ -810,7 +783,7 @@ mod tests {
         };
 
         #[cfg(feature = "CL_VERSION_2_2")]
-        match get_program_info(program, ProgramInfo::CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
+        match get_program_info(program, CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
             Ok(value) => {
                 let value = cl_uint::from(value);
                 println!("CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: {}", value)

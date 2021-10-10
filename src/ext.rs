@@ -672,7 +672,10 @@ pub fn get_accelerator_info_intel(
         AcceleratorInfoIntel::CL_ACCELERATOR_DESCRIPTOR_INTEL => {
             // Return the complete descriptor structure supplied when the
             // accelerator was created as a vector of cl_uchars.
-            Ok(InfoType::VecUchar(get_accelerator_data_intel(accelerator, param_id)?))
+            Ok(InfoType::VecUchar(get_accelerator_data_intel(
+                accelerator,
+                param_id,
+            )?))
         }
         AcceleratorInfoIntel::CL_ACCELERATOR_REFERENCE_COUNT_INTEL
         | AcceleratorInfoIntel::CL_ACCELERATOR_TYPE_INTEL => {

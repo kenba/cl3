@@ -19,8 +19,9 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use cl_sys::{
-    CL_QUEUE_ON_DEVICE, CL_QUEUE_ON_DEVICE_DEFAULT, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE,
-    CL_QUEUE_PROFILING_ENABLE,
+    CL_QUEUE_CONTEXT, CL_QUEUE_DEVICE, CL_QUEUE_DEVICE_DEFAULT, CL_QUEUE_ON_DEVICE,
+    CL_QUEUE_ON_DEVICE_DEFAULT, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, CL_QUEUE_PROFILING_ENABLE,
+    CL_QUEUE_PROPERTIES, CL_QUEUE_REFERENCE_COUNT, CL_QUEUE_SIZE,
 };
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
@@ -56,6 +57,9 @@ use cl_sys::{
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
+
+// Missing from cl_sys
+pub const CL_QUEUE_PROPERTIES_ARRAY: cl_command_queue_info = 0x1098;
 
 /// Create an OpenCL host or device command-queue on a specific device.  
 /// Calls clCreateCommandQueue to create an OpenCL context.  
@@ -156,21 +160,6 @@ pub fn get_command_queue_data(
     get_vector(command_queue, param_name, size)
 }
 
-// cl_command_queue_info
-#[derive(Clone, Copy, Debug)]
-pub enum CommandQueueInfo {
-    CL_QUEUE_CONTEXT = 0x1090,
-    CL_QUEUE_DEVICE = 0x1091,
-    CL_QUEUE_REFERENCE_COUNT = 0x1092,
-    CL_QUEUE_PROPERTIES = 0x1093,
-    // CL_VERSION_2_0
-    CL_QUEUE_SIZE = 0x1094,
-    // CL_VERSION_2_1
-    CL_QUEUE_DEVICE_DEFAULT = 0x1095,
-    // CL_VERSION_3_0
-    CL_QUEUE_PROPERTIES_ARRAY = 0x1098,
-}
-
 /// Get specific information about an OpenCL command-queue.  
 /// Calls clGetCommandQueueInfo to get the desired information about the command-queue.
 ///
@@ -182,40 +171,43 @@ pub enum CommandQueueInfo {
 /// or the error code from the OpenCL C API function.
 pub fn get_command_queue_info(
     command_queue: cl_command_queue,
-    param_name: CommandQueueInfo,
+    param_name: cl_command_queue_info,
 ) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_command_queue_info;
     match param_name {
-        CommandQueueInfo::CL_QUEUE_REFERENCE_COUNT
-        | CommandQueueInfo::CL_QUEUE_SIZE // CL_VERSION_2_0
+        CL_QUEUE_REFERENCE_COUNT
+        | CL_QUEUE_SIZE // CL_VERSION_2_0
          => {
             api_info_value!(get_value, cl_uint, clGetCommandQueueInfo);
-            Ok(InfoType::Uint(get_value(command_queue, param_id)?))
+            Ok(InfoType::Uint(get_value(command_queue, param_name)?))
         }
 
-        CommandQueueInfo::CL_QUEUE_PROPERTIES => {
+        CL_QUEUE_PROPERTIES => {
             api_info_value!(get_value, cl_ulong, clGetCommandQueueInfo);
-            Ok(InfoType::Ulong(get_value(command_queue, param_id)?))
+            Ok(InfoType::Ulong(get_value(command_queue, param_name)?))
         }
 
-        CommandQueueInfo::CL_QUEUE_CONTEXT
-        | CommandQueueInfo::CL_QUEUE_DEVICE
-        | CommandQueueInfo::CL_QUEUE_DEVICE_DEFAULT // CL_VERSION_2_1
+        CL_QUEUE_CONTEXT
+        | CL_QUEUE_DEVICE
+        | CL_QUEUE_DEVICE_DEFAULT // CL_VERSION_2_1
         => {
             api_info_value!(get_value, intptr_t, clGetCommandQueueInfo);
-            Ok(InfoType::Ptr(get_value(command_queue, param_id)?))
+            Ok(InfoType::Ptr(get_value(command_queue, param_name)?))
         }
 
-        CommandQueueInfo::CL_QUEUE_PROPERTIES_ARRAY // CL_VERSION_3_0
+        CL_QUEUE_PROPERTIES_ARRAY // CL_VERSION_3_0
         => {
             api_info_size!(get_size, clGetCommandQueueInfo);
             api_info_vector!(get_vec, cl_ulong, clGetCommandQueueInfo);
-            let size = get_size(command_queue, param_id)?;
+            let size = get_size(command_queue, param_name)?;
             Ok(InfoType::VecUlong(get_vec(
                 command_queue,
-                param_id,
+                param_name,
                 size,
             )?))
+        }
+
+        | _ => {
+            Ok(InfoType::VecUchar(get_command_queue_data(command_queue, param_name)?))
         }
     }
 }
@@ -1194,28 +1186,27 @@ mod tests {
         )
         .unwrap();
 
-        let value = get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_CONTEXT).unwrap();
+        let value = get_command_queue_info(queue, CL_QUEUE_CONTEXT).unwrap();
         let value = intptr_t::from(value);
         println!("CL_QUEUE_CONTEXT: {:X}", value);
         assert_eq!(context, value as cl_context);
 
-        let value = get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_DEVICE).unwrap();
+        let value = get_command_queue_info(queue, CL_QUEUE_DEVICE).unwrap();
         let value = intptr_t::from(value);
         println!("CL_QUEUE_DEVICE: {:X}", value);
         assert_eq!(device_id, value as cl_device_id);
 
-        let value =
-            get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_REFERENCE_COUNT).unwrap();
+        let value = get_command_queue_info(queue, CL_QUEUE_REFERENCE_COUNT).unwrap();
         let value = cl_uint::from(value);
         println!("CL_QUEUE_REFERENCE_COUNT: {}", value);
         assert_eq!(1, value);
 
-        let value = get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_PROPERTIES).unwrap();
+        let value = get_command_queue_info(queue, CL_QUEUE_PROPERTIES).unwrap();
         let value = cl_ulong::from(value);
         println!("CL_QUEUE_PROPERTIES: {}", value);
 
         // CL_VERSION_2_0 value
-        match get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_SIZE) {
+        match get_command_queue_info(queue, CL_QUEUE_SIZE) {
             Ok(value) => {
                 let value = cl_uint::from(value);
                 println!("CL_QUEUE_SIZE: {}", value);
@@ -1224,7 +1215,7 @@ mod tests {
         };
 
         // CL_VERSION_2_1 value
-        match get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_DEVICE_DEFAULT) {
+        match get_command_queue_info(queue, CL_QUEUE_DEVICE_DEFAULT) {
             Ok(value) => {
                 let value = intptr_t::from(value);
                 println!("CL_QUEUE_DEVICE_DEFAULT: {:X}", value);
@@ -1233,7 +1224,7 @@ mod tests {
         };
 
         // CL_VERSION_3_0 value
-        match get_command_queue_info(queue, CommandQueueInfo::CL_QUEUE_PROPERTIES_ARRAY) {
+        match get_command_queue_info(queue, CL_QUEUE_PROPERTIES_ARRAY) {
             Ok(value) => {
                 let value = Vec::<cl_ulong>::from(value);
                 println!("CL_QUEUE_PROPERTIES_ARRAY: {}", value.len());

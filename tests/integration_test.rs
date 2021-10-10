@@ -19,11 +19,16 @@ use cl3::command_queue::{
     finish, release_command_queue, CL_QUEUE_PROFILING_ENABLE,
 };
 use cl3::context::{create_context, release_context};
-use cl3::device::{get_device_ids, get_device_info, DeviceInfo, CL_DEVICE_TYPE_GPU};
-use cl3::event::{get_event_profiling_info, release_event, wait_for_events, ProfilingInfo};
+use cl3::device::{
+    get_device_ids, get_device_info, CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR, CL_DEVICE_VENDOR_ID,
+};
+use cl3::event::{
+    get_event_profiling_info, release_event, wait_for_events, CL_PROFILING_COMMAND_END,
+    CL_PROFILING_COMMAND_START,
+};
 use cl3::kernel::{create_kernel, release_kernel, set_kernel_arg};
 use cl3::memory::{create_buffer, release_mem_object, CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY};
-use cl3::platform::{get_platform_ids, get_platform_info, PlatformInfo};
+use cl3::platform::{get_platform_ids, get_platform_info, CL_PLATFORM_NAME};
 use cl3::program::{build_program, create_program_with_source, release_program};
 use cl3::types::{cl_event, cl_float, cl_mem, CL_BLOCKING, CL_NON_BLOCKING};
 use libc::{c_void, size_t};
@@ -51,7 +56,7 @@ fn test_opencl_1_2_example() {
 
     // Choose the first platform
     let platform_id = platform_ids[0];
-    let platform_name = get_platform_info(platform_id, PlatformInfo::CL_PLATFORM_NAME).unwrap();
+    let platform_name = get_platform_info(platform_id, CL_PLATFORM_NAME).unwrap();
     println!("Platform Name: {}", platform_name);
 
     let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
@@ -59,9 +64,9 @@ fn test_opencl_1_2_example() {
 
     // Choose the first GPU device
     let device_id = device_ids[0];
-    let vendor_name = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR).unwrap();
+    let vendor_name = get_device_info(device_id, CL_DEVICE_VENDOR).unwrap();
     println!("OpenCL device vendor name: {}", vendor_name);
-    let vendor_id = get_device_info(device_id, DeviceInfo::CL_DEVICE_VENDOR_ID).unwrap();
+    let vendor_id = get_device_info(device_id, CL_DEVICE_VENDOR_ID).unwrap();
     println!("OpenCL device vendor id: {:X}", u32::from(vendor_id));
 
     /////////////////////////////////////////////////////////////////////
@@ -227,10 +232,8 @@ fn test_opencl_1_2_example() {
     assert_eq!(1300.0, results[ARRAY_SIZE - 1]);
     println!("results back: {}", results[ARRAY_SIZE - 1]);
 
-    let start_time =
-        get_event_profiling_info(kernel_event, ProfilingInfo::CL_PROFILING_COMMAND_START).unwrap();
-    let end_time =
-        get_event_profiling_info(kernel_event, ProfilingInfo::CL_PROFILING_COMMAND_END).unwrap();
+    let start_time = get_event_profiling_info(kernel_event, CL_PROFILING_COMMAND_START).unwrap();
+    let end_time = get_event_profiling_info(kernel_event, CL_PROFILING_COMMAND_END).unwrap();
     let duration = u64::from(end_time) - u64::from(start_time);
     println!("kernel execution duration (ns): {}", duration);
 

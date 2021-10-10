@@ -29,8 +29,8 @@ pub use cl_sys::{
 
 use libc::{c_void, intptr_t, size_t};
 
-pub const CL_DEVICE_DOUBLE_FP_CONFIG: cl_device_info = 0x1032;
-pub const CL_DEVICE_HALF_FP_CONFIG: cl_device_info = 0x1033;
+// pub const CL_DEVICE_DOUBLE_FP_CONFIG: cl_device_info = 0x1032;
+// pub const CL_DEVICE_HALF_FP_CONFIG: cl_device_info = 0x1033;
 
 pub const CL_PLATFORM_ICD_SUFFIX_KHR: cl_platform_info = 0x0920;
 
@@ -347,7 +347,8 @@ pub struct cl_device_integer_dot_product_acceleration_properties_khr {
 
 pub const CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR: cl_device_info = 0x1073;
 pub const CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR: cl_device_info = 0x1074;
-pub const CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR: cl_device_info = 0x1075;
+pub const CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR: cl_device_info =
+    0x1075;
 
 // cl_arm_import_memory extension
 
@@ -461,10 +462,8 @@ pub const CL_QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: cl_bitfield = 1 << 31;
 
 // cl_intel_device_attribute_query
 pub type cl_device_feature_capabilities_intel = cl_bitfield;
-pub const CL_DEVICE_FEATURE_FLAG_DP4A_INTEL:
-    cl_device_feature_capabilities_intel = 1 << 0;
-pub const CL_DEVICE_FEATURE_FLAG_DPAS_INTEL:
-    cl_device_feature_capabilities_intel = 1 << 1;
+pub const CL_DEVICE_FEATURE_FLAG_DP4A_INTEL: cl_device_feature_capabilities_intel = 1 << 0;
+pub const CL_DEVICE_FEATURE_FLAG_DPAS_INTEL: cl_device_feature_capabilities_intel = 1 << 1;
 
 pub const CL_DEVICE_IP_VERSION_INTEL: cl_device_info = 0x4250;
 pub const CL_DEVICE_ID_INTEL: cl_device_info = 0x4251;

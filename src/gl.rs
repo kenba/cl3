@@ -176,7 +176,6 @@ pub fn get_gl_object_info(memobj: cl_mem) -> Result<(gl_uint, gl_uint), cl_int> 
     }
 }
 
-
 /// Get data about an OpenGL texture object.
 /// Calls clGetGLTextureInfo to get the desired data about the texture object.
 pub fn get_gl_texture_data(
