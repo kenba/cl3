@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use crate::ffi::cl_ext::{CL_LUID_SIZE_KHR, CL_UUID_SIZE_KHR};
 use crate::types::{cl_image_format, cl_int, cl_name_version, cl_uchar, cl_uint, cl_ulong};
 use libc::{intptr_t, size_t};
 use std::fmt;
@@ -31,6 +32,8 @@ pub enum InfoType {
     Ulong(u64),
     Size(usize),
     Ptr(isize),
+    Luid([u8; CL_LUID_SIZE_KHR]),
+    Uuid([u8; CL_UUID_SIZE_KHR]),
     VecUchar(Vec<u8>),
     VecUlong(Vec<u64>),
     VecSize(Vec<usize>),
@@ -77,6 +80,18 @@ impl From<InfoType> for usize {
 impl From<InfoType> for isize {
     fn from(value: InfoType) -> Self {
         match_info_type!(value, InfoType::Ptr)
+    }
+}
+
+impl From<InfoType> for [u8; CL_LUID_SIZE_KHR] {
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::Luid)
+    }
+}
+
+impl From<InfoType> for [u8; CL_UUID_SIZE_KHR] {
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::Uuid)
     }
 }
 
@@ -149,6 +164,40 @@ impl fmt::Display for InfoType {
                 write!(f, "{}", b)
             }
 
+            // Formats a LUID the same way as `clinfo`.
+            // See: https://github.com/Oblomov/clinfo/blob/master/src/clinfo.c
+            InfoType::Luid(a) => {
+                write!(
+                    f,
+                    "{:x}{:x}-{:x}{:x}{:x}{:x}{:x}{:x}",
+                    a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]
+                )
+            }
+
+            // Formats a UUID according to RFC4122.
+            InfoType::Uuid(a) => {
+                write!(
+                    f,
+                    "{:x}{:x}{:x}{:x}-{:x}{:x}-{:x}{:x}-{:x}{:x}-{:x}{:x}{:x}{:x}{:x}{:x}",
+                    a[0],
+                    a[1],
+                    a[2],
+                    a[3],
+                    a[4],
+                    a[5],
+                    a[6],
+                    a[7],
+                    a[8],
+                    a[9],
+                    a[10],
+                    a[11],
+                    a[12],
+                    a[13],
+                    a[14],
+                    a[15],
+                )
+            }
+
             InfoType::VecNameVersion(a) => {
                 let mut s = String::default();
                 for b in a.iter() {
@@ -212,6 +261,14 @@ impl InfoType {
 
     pub fn to_ptr(self) -> intptr_t {
         isize::from(self)
+    }
+
+    pub fn to_luid(self) -> [u8; CL_LUID_SIZE_KHR] {
+        self.into()
+    }
+
+    pub fn to_uuid(self) -> [u8; CL_UUID_SIZE_KHR] {
+        self.into()
     }
 
     pub fn to_vec_uchar(self) -> Vec<cl_uchar> {

@@ -110,7 +110,6 @@ use cl_sys::clSetDefaultDeviceCommandQueue;
 use cl_sys::{clCreateSubDevices, clReleaseDevice, clRetainDevice};
 use cl_sys::{clGetDeviceIDs, clGetDeviceInfo};
 use libc::{c_void, intptr_t, size_t};
-use std::fmt;
 use std::mem;
 use std::ptr;
 
@@ -487,6 +486,25 @@ pub fn get_device_info(
             Ok(InfoType::VecNameVersion(get_vec(device, param_name, size)?))
         }
 
+        CL_DEVICE_UUID_KHR // cl_khr_device_uuid
+        | CL_DRIVER_UUID_KHR // cl_khr_device_uuid
+        => {
+            let value = get_device_data(device, param_name)?;
+            assert!(value.len() == CL_UUID_SIZE_KHR, "value is not a UUID");
+            let mut uuid: [u8; CL_UUID_SIZE_KHR] = [0; CL_UUID_SIZE_KHR];
+            uuid.copy_from_slice(value.as_slice());
+            Ok(InfoType::Uuid(uuid))
+        }
+
+        CL_DEVICE_LUID_KHR // cl_khr_device_uuid
+        => {
+            let value = get_device_data(device, param_name)?;
+            assert!(value.len() == CL_LUID_SIZE_KHR, "value is not a LUID");
+            let mut luid: [u8; CL_LUID_SIZE_KHR] = [0; CL_LUID_SIZE_KHR];
+            luid.copy_from_slice(value.as_slice());
+            Ok(InfoType::Luid(luid))
+        }
+
         CL_DEVICE_NAME
         | CL_DEVICE_VENDOR
         | CL_DRIVER_VERSION
@@ -496,9 +514,6 @@ pub fn get_device_info(
         | CL_DEVICE_OPENCL_C_VERSION
         | CL_DEVICE_BUILT_IN_KERNELS
         | CL_DEVICE_IL_VERSION
-        | CL_DEVICE_UUID_KHR // cl_khr_device_uuid
-        | CL_DRIVER_UUID_KHR // cl_khr_device_uuid
-        | CL_DEVICE_LUID_KHR // cl_khr_device_uuid
         | CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED // CL_VERSION_3_0
         | CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR // cl_device_integer_dot_product_acceleration_properties_khr
         | CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR // cl_device_integer_dot_product_acceleration_properties_khr
@@ -786,89 +801,6 @@ pub fn device_type_text(dev_type: cl_device_type) -> &'static str {
         CL_DEVICE_TYPE_ALL => "CL_DEVICE_TYPE_ALL",
 
         _ => "COMBINED_DEVICE_TYPE",
-    }
-}
-
-#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
-/// A UUID as a newtype of a u8 array.
-pub struct Uuid([u8; CL_UUID_SIZE_KHR]);
-
-impl From<&[u8]> for Uuid {
-    fn from(value: &[u8]) -> Self {
-        assert!(value.len() == CL_UUID_SIZE_KHR, "value is not a UUID");
-        let mut data: [u8; CL_UUID_SIZE_KHR] = [0; CL_UUID_SIZE_KHR];
-        data.copy_from_slice(value);
-        Self(data)
-    }
-}
-
-impl From<Vec<u8>> for Uuid {
-    fn from(value: Vec<u8>) -> Self {
-        value.as_slice().into()
-    }
-}
-
-/// Formats a UUID according to RFC4122.
-impl fmt::Display for Uuid {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{:x}{:x}{:x}{:x}-{:x}{:x}-{:x}{:x}-{:x}{:x}-{:x}{:x}{:x}{:x}{:x}{:x}",
-            &self.0[0],
-            &self.0[1],
-            &self.0[2],
-            &self.0[3],
-            &self.0[4],
-            &self.0[5],
-            &self.0[6],
-            &self.0[7],
-            &self.0[8],
-            &self.0[9],
-            &self.0[10],
-            &self.0[11],
-            &self.0[12],
-            &self.0[15],
-            &self.0[14],
-            &self.0[15],
-        )
-    }
-}
-
-#[derive(Copy, Clone, Debug, Default, Eq, PartialEq)]
-/// A LUID as a newtype of a u8 array.
-pub struct Luid([u8; CL_LUID_SIZE_KHR]);
-
-impl From<&[u8]> for Luid {
-    fn from(value: &[u8]) -> Self {
-        assert!(value.len() == CL_LUID_SIZE_KHR, "value is not a LUID");
-        let mut data: [u8; CL_LUID_SIZE_KHR] = [0; CL_LUID_SIZE_KHR];
-        data.copy_from_slice(value);
-        Self(data)
-    }
-}
-
-impl From<Vec<u8>> for Luid {
-    fn from(value: Vec<u8>) -> Self {
-        value.as_slice().into()
-    }
-}
-
-/// Formats a LUID the same way as `clinfo`.
-/// See: https://github.com/Oblomov/clinfo/blob/master/src/clinfo.c
-impl fmt::Display for Luid {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{:x}{:x}-{:x}{:x}{:x}{:x}{:x}{:x}",
-            &self.0[0],
-            &self.0[1],
-            &self.0[2],
-            &self.0[3],
-            &self.0[4],
-            &self.0[5],
-            &self.0[6],
-            &self.0[7]
-        )
     }
 }
 
@@ -1282,8 +1214,7 @@ mod tests {
         // cl_khr_device_uuid extension
         match get_device_info(device_id, CL_DEVICE_UUID_KHR) {
             Ok(value) => {
-                let value = Vec::<u8>::from(value);
-                println!("CL_DEVICE_UUID_KHR: {}", Uuid::from(value));
+                println!("CL_DEVICE_UUID_KHR: {}", value);
             }
             Err(e) => println!("OpenCL error, CL_DEVICE_UUID_KHR: {}", ClError(e)),
         };
@@ -1291,8 +1222,7 @@ mod tests {
         // cl_khr_device_uuid extension
         match get_device_info(device_id, CL_DRIVER_UUID_KHR) {
             Ok(value) => {
-                let value = Vec::<u8>::from(value);
-                println!("CL_DRIVER_UUID_KHR: {}", Uuid::from(value));
+                println!("CL_DRIVER_UUID_KHR: {}", value);
             }
             Err(e) => println!("OpenCL error, CL_DRIVER_UUID_KHR: {}", ClError(e)),
         };
@@ -1309,8 +1239,7 @@ mod tests {
         // cl_khr_device_uuid extension
         match get_device_info(device_id, CL_DEVICE_LUID_KHR) {
             Ok(value) => {
-                let value = Vec::<u8>::from(value);
-                println!("CL_DEVICE_LUID_KHR: {}", Luid::from(value));
+                println!("CL_DEVICE_LUID_KHR: {}", value);
             }
             Err(e) => println!("OpenCL error, CL_DEVICE_LUID_KHR: {}", ClError(e)),
         };
