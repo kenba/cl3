@@ -283,7 +283,7 @@ pub fn get_kernel_info(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<
 pub fn get_kernel_arg_data(
     kernel: cl_kernel,
     arg_indx: cl_uint,
-    param_name: cl_kernel_info,
+    param_name: cl_kernel_arg_access_qualifier,
 ) -> Result<Vec<u8>, cl_int> {
     api2_info_size!(get_size, cl_uint, clGetKernelArgInfo);
     let size = get_size(kernel, arg_indx, param_name)?;
@@ -305,7 +305,7 @@ pub fn get_kernel_arg_data(
 pub fn get_kernel_arg_info(
     kernel: cl_kernel,
     arg_indx: cl_uint,
-    param_name: cl_kernel_arg_info,
+    param_name: cl_kernel_arg_access_qualifier,
 ) -> Result<InfoType, cl_int> {
     match param_name {
         CL_KERNEL_ARG_ADDRESS_QUALIFIER | CL_KERNEL_ARG_ACCESS_QUALIFIER => {
