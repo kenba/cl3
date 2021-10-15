@@ -16,6 +16,7 @@
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
+#![allow(clippy::wildcard_in_or_patterns)]
 
 pub use cl_sys::{
     CL_KERNEL_ARG_ACCESS_NONE, CL_KERNEL_ARG_ACCESS_QUALIFIER, CL_KERNEL_ARG_ACCESS_READ_ONLY,

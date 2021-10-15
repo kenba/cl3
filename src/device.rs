@@ -16,6 +16,7 @@
 
 #![allow(non_camel_case_types)]
 #![allow(non_upper_case_globals)]
+#![allow(clippy::wildcard_in_or_patterns)]
 
 use super::error_codes::{CL_DEVICE_NOT_FOUND, CL_SUCCESS};
 

@@ -16,6 +16,7 @@
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
+#![allow(clippy::wildcard_in_or_patterns)]
 
 pub use cl_sys::{
     CL_SAMPLER_ADDRESSING_MODE, CL_SAMPLER_CONTEXT, CL_SAMPLER_FILTER_MODE, CL_SAMPLER_LOD_MAX,

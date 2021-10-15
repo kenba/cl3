@@ -16,6 +16,7 @@
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
+#![allow(clippy::wildcard_in_or_patterns)]
 
 pub use cl_sys::{
     CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE, CL_BUILD_SUCCESS, CL_PROGRAM_BINARIES,

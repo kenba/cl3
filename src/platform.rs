@@ -15,6 +15,7 @@
 //! OpenCL Platform API.
 
 #![allow(non_camel_case_types)]
+#![allow(clippy::wildcard_in_or_patterns)]
 
 pub use cl_sys::{
     CL_PLATFORM_EXTENSIONS, CL_PLATFORM_HOST_TIMER_RESOLUTION, CL_PLATFORM_NAME,
