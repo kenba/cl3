@@ -225,9 +225,10 @@ mod tests {
 
             let value =
                 get_platform_info(platform_id, CL_PLATFORM_EXTENSIONS_WITH_VERSION).unwrap();
+            println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {}", value);
+
             let value = Vec::<cl_name_version>::from(value);
-            println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {}", value.len());
-            println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION: {:?}", value);
+            println!("CL_PLATFORM_EXTENSIONS_WITH_VERSION count: {}", value.len());
             assert!(0 < value.len());
         }
     }
