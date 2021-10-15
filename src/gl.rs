@@ -19,11 +19,13 @@
 
 pub use cl_sys::{
     cl_command_queue, cl_context_properties, cl_event, cl_gl_context_info, cl_gl_object_type,
-    cl_gl_platform_info, cl_gl_texture_info, CL_CGL_SHAREGROUP_KHR, CL_EGL_DISPLAY_KHR,
-    CL_GLX_DISPLAY_KHR, CL_GL_CONTEXT_KHR, CL_GL_OBJECT_BUFFER, CL_GL_OBJECT_RENDERBUFFER,
-    CL_GL_OBJECT_TEXTURE1D, CL_GL_OBJECT_TEXTURE1D_ARRAY, CL_GL_OBJECT_TEXTURE2D,
-    CL_GL_OBJECT_TEXTURE2D_ARRAY, CL_GL_OBJECT_TEXTURE3D, CL_GL_OBJECT_TEXTURE_BUFFER,
-    CL_KHR_GL_SHARING, CL_WGL_HDC_KHR,
+    cl_gl_platform_info, cl_gl_texture_info, CL_CGL_SHAREGROUP_KHR,
+    CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, CL_DEVICES_FOR_GL_CONTEXT_KHR, CL_EGL_DISPLAY_KHR,
+    CL_GLX_DISPLAY_KHR, CL_GL_CONTEXT_KHR, CL_GL_MIPMAP_LEVEL, CL_GL_NUM_SAMPLES,
+    CL_GL_OBJECT_BUFFER, CL_GL_OBJECT_RENDERBUFFER, CL_GL_OBJECT_TEXTURE1D,
+    CL_GL_OBJECT_TEXTURE1D_ARRAY, CL_GL_OBJECT_TEXTURE2D, CL_GL_OBJECT_TEXTURE2D_ARRAY,
+    CL_GL_OBJECT_TEXTURE3D, CL_GL_OBJECT_TEXTURE_BUFFER, CL_GL_TEXTURE_TARGET, CL_KHR_GL_SHARING,
+    CL_WGL_HDC_KHR,
 };
 
 use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
@@ -188,14 +190,6 @@ pub fn get_gl_texture_data(
     get_vector(memobj, param_name, size)
 }
 
-// cl_gl_texture_info
-#[derive(Clone, Copy, Debug)]
-pub enum TextureInfo {
-    CL_GL_TEXTURE_TARGET = 0x2004,
-    CL_GL_MIPMAP_LEVEL = 0x2005,
-    CL_GL_NUM_SAMPLES = 0x2012,
-}
-
 /// Get information about the GL texture object associated with a memory object.
 /// Calls clGetGLTextureInfo to get the desired information.
 ///
@@ -205,18 +199,22 @@ pub enum TextureInfo {
 ///
 /// returns a Result containing the desired information in an InfoType enum
 /// or the error code from the OpenCL C API function.
-pub fn get_gl_texture_info(memobj: cl_mem, param_name: TextureInfo) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_gl_texture_info;
-
+pub fn get_gl_texture_info(
+    memobj: cl_mem,
+    param_name: cl_gl_texture_info,
+) -> Result<InfoType, cl_int> {
     match param_name {
-        TextureInfo::CL_GL_TEXTURE_TARGET => {
+        CL_GL_TEXTURE_TARGET => {
             api_info_value!(get_value, gl_enum, clGetGLTextureInfo);
-            Ok(InfoType::Uint(get_value(memobj, param_id)?))
+            Ok(InfoType::Uint(get_value(memobj, param_name)?))
         }
-        TextureInfo::CL_GL_MIPMAP_LEVEL | TextureInfo::CL_GL_NUM_SAMPLES => {
+
+        CL_GL_MIPMAP_LEVEL | CL_GL_NUM_SAMPLES => {
             api_info_value!(get_value, gl_int, clGetGLTextureInfo);
-            Ok(InfoType::Int(get_value(memobj, param_id)?))
+            Ok(InfoType::Int(get_value(memobj, param_name)?))
         }
+
+        _ => Ok(InfoType::VecUchar(get_gl_texture_data(memobj, param_name)?)),
     }
 }
 
@@ -375,13 +373,6 @@ pub fn create_from_gl_texture_3d(
     }
 }
 
-// cl_gl_context_info
-#[derive(Clone, Copy, Debug)]
-pub enum GlContextInfo {
-    CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR = 0x2006,
-    CL_DEVICES_FOR_GL_CONTEXT_KHR = 0x2007,
-}
-
 /// Get OpenGL context information.
 /// Calls clGetGLContextInfoKHR to get the desired information.
 ///
@@ -394,18 +385,16 @@ pub enum GlContextInfo {
 #[cfg(feature = "cl_khr_gl_sharing")]
 pub fn get_gl_context_info_khr(
     properties: *mut cl_context_properties,
-    param_name: GlContextInfo,
+    param_name: cl_gl_context_info,
 ) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_gl_context_info;
-
     match param_name {
-        GlContextInfo::CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR => {
+        CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR => {
             let mut data: intptr_t = 0;
             let data_ptr: *mut intptr_t = &mut data;
             let status = unsafe {
                 clGetGLContextInfoKHR(
                     properties,
-                    param_id,
+                    param_name,
                     mem::size_of::<intptr_t>(),
                     data_ptr as *mut c_void,
                     ptr::null_mut(),
@@ -418,36 +407,64 @@ pub fn get_gl_context_info_khr(
             }
         }
 
-        GlContextInfo::CL_DEVICES_FOR_GL_CONTEXT_KHR => {
+        CL_DEVICES_FOR_GL_CONTEXT_KHR => {
             // Get the size
             let mut size: size_t = 0;
             let status = unsafe {
-                clGetGLContextInfoKHR(properties, param_id, 0, ptr::null_mut(), &mut size)
+                clGetGLContextInfoKHR(properties, param_name, 0, ptr::null_mut(), &mut size)
             };
             if CL_SUCCESS != status {
                 Err(status)
-            } else {
-                if 0 < size {
-                    // Get the data
-                    let count = size / mem::size_of::<intptr_t>();
-                    let mut data: Vec<intptr_t> = Vec::with_capacity(count);
-                    let status = unsafe {
-                        clGetGLContextInfoKHR(
-                            properties,
-                            param_id,
-                            size,
-                            data.as_mut_ptr() as *mut c_void,
-                            ptr::null_mut(),
-                        )
-                    };
-                    if CL_SUCCESS != status {
-                        Err(status)
-                    } else {
-                        Ok(InfoType::VecIntPtr(data))
-                    }
+            } else if 0 < size {
+                // Get the data
+                let count = size / mem::size_of::<intptr_t>();
+                let mut data: Vec<intptr_t> = Vec::with_capacity(count);
+                let status = unsafe {
+                    clGetGLContextInfoKHR(
+                        properties,
+                        param_name,
+                        size,
+                        data.as_mut_ptr() as *mut c_void,
+                        ptr::null_mut(),
+                    )
+                };
+                if CL_SUCCESS != status {
+                    Err(status)
                 } else {
-                    Ok(InfoType::VecIntPtr(Vec::default()))
+                    Ok(InfoType::VecIntPtr(data))
                 }
+            } else {
+                Ok(InfoType::VecIntPtr(Vec::default()))
+            }
+        }
+
+        _ => {
+            // Get the size
+            let mut size: size_t = 0;
+            let status = unsafe {
+                clGetGLContextInfoKHR(properties, param_name, 0, ptr::null_mut(), &mut size)
+            };
+            if CL_SUCCESS != status {
+                Err(status)
+            } else if 0 < size {
+                // Get the data
+                let mut data: Vec<u8> = Vec::with_capacity(size);
+                let status = unsafe {
+                    clGetGLContextInfoKHR(
+                        properties,
+                        param_name,
+                        size,
+                        data.as_mut_ptr() as *mut c_void,
+                        ptr::null_mut(),
+                    )
+                };
+                if CL_SUCCESS != status {
+                    Err(status)
+                } else {
+                    Ok(InfoType::VecUchar(data))
+                }
+            } else {
+                Ok(InfoType::VecUchar(Vec::default()))
             }
         }
     }

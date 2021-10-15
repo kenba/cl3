@@ -15,6 +15,8 @@
 //! OpenCL extensions that don't have external (OpenGL, D3D) dependencies.
 
 #![allow(non_camel_case_types)]
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
+#![allow(clippy::wildcard_in_or_patterns)]
 
 pub use super::ffi::cl_ext::*;
 
@@ -330,25 +332,19 @@ pub fn enqueue_generate_mipmap_img(
     }
 }
 
-// cl_kernel_sub_group_info
-#[derive(Clone, Copy, Debug)]
-pub enum KernelSubGroupInfoKhr {
-    CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR = 0x2033,
-    CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR = 0x2034,
-}
-
 #[cfg(feature = "cl_khr_subgroups")]
 pub fn get_kernel_sub_group_info_khr(
     kernel: cl_kernel,
     device: cl_device_id,
-    param_name: KernelSubGroupInfoKhr,
+    param_name: cl_kernel_sub_group_info,
     input_value_size: size_t,
     input_value: *const c_void,
 ) -> Result<size_t, cl_int> {
-    let param_id = param_name as cl_kernel_sub_group_info;
     match param_name {
-        KernelSubGroupInfoKhr::CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR
-        | KernelSubGroupInfoKhr::CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR => {
+        CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE_KHR
+        | CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE_KHR
+        | _ => {
+            // Assumes other cl_kernel_sub_group_info values return a size_t
             // get the value
             let mut data: size_t = 0;
             let data_ptr: *mut size_t = &mut data;
@@ -356,7 +352,7 @@ pub fn get_kernel_sub_group_info_khr(
                 clGetKernelSubGroupInfoKHR(
                     kernel,
                     device,
-                    param_id,
+                    param_name,
                     input_value_size,
                     input_value,
                     mem::size_of::<size_t>(),
@@ -653,38 +649,28 @@ pub fn get_accelerator_data_intel(
     get_vector(accelerator, param_name, size)
 }
 
-// cl_accelerator_info_intel
-#[derive(Clone, Copy, Debug)]
-pub enum AcceleratorInfoIntel {
-    CL_ACCELERATOR_DESCRIPTOR_INTEL = 0x4090,
-    CL_ACCELERATOR_REFERENCE_COUNT_INTEL = 0x4091,
-    CL_ACCELERATOR_CONTEXT_INTEL = 0x4092,
-    CL_ACCELERATOR_TYPE_INTEL = 0x4093,
-}
-
 #[cfg(feature = "cl_intel_accelerator")]
 pub fn get_accelerator_info_intel(
     accelerator: cl_accelerator_intel,
-    param_name: AcceleratorInfoIntel,
+    param_name: cl_accelerator_info_intel,
 ) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_accelerator_info_intel;
     match param_name {
-        AcceleratorInfoIntel::CL_ACCELERATOR_DESCRIPTOR_INTEL => {
-            // Return the complete descriptor structure supplied when the
-            // accelerator was created as a vector of cl_uchars.
+        CL_ACCELERATOR_REFERENCE_COUNT_INTEL | CL_ACCELERATOR_TYPE_INTEL => {
+            api_info_value!(get_value, cl_uint, clGetAcceleratorInfoINTEL);
+            Ok(InfoType::Uint(get_value(accelerator, param_name)?))
+        }
+        CL_ACCELERATOR_CONTEXT_INTEL => {
+            api_info_value!(get_value, intptr_t, clGetAcceleratorInfoINTEL);
+            Ok(InfoType::Ptr(get_value(accelerator, param_name)?))
+        }
+        CL_ACCELERATOR_DESCRIPTOR_INTEL
+            // The complete descriptor structure supplied when the
+            // accelerator was created.
+        | _ => {
             Ok(InfoType::VecUchar(get_accelerator_data_intel(
                 accelerator,
-                param_id,
+                param_name,
             )?))
-        }
-        AcceleratorInfoIntel::CL_ACCELERATOR_REFERENCE_COUNT_INTEL
-        | AcceleratorInfoIntel::CL_ACCELERATOR_TYPE_INTEL => {
-            api_info_value!(get_value, cl_uint, clGetAcceleratorInfoINTEL);
-            Ok(InfoType::Uint(get_value(accelerator, param_id)?))
-        }
-        AcceleratorInfoIntel::CL_ACCELERATOR_CONTEXT_INTEL => {
-            api_info_value!(get_value, intptr_t, clGetAcceleratorInfoINTEL);
-            Ok(InfoType::Ptr(get_value(accelerator, param_id)?))
         }
     }
 }
@@ -779,16 +765,6 @@ pub fn mem_blocking_free_intel(context: cl_context, ptr: *mut c_void) -> Result<
     }
 }
 
-// cl_mem_info_intel
-#[derive(Clone, Copy, Debug)]
-pub enum MemAllocInfoIntel {
-    CL_MEM_ALLOC_TYPE_INTEL = 0x419A,
-    CL_MEM_ALLOC_BASE_PTR_INTEL = 0x419B,
-    CL_MEM_ALLOC_SIZE_INTEL = 0x419C,
-    CL_MEM_ALLOC_DEVICE_INTEL = 0x419D,
-    CL_MEM_ALLOC_FLAGS_INTEL = 0x4195,
-}
-
 #[cfg(feature = "cl_intel_unified_shared_memory")]
 fn mem_alloc_info_intel<T: Default>(
     context: cl_context,
@@ -818,28 +794,51 @@ fn mem_alloc_info_intel<T: Default>(
 pub fn get_mem_alloc_info_intel(
     context: cl_context,
     ptr: *const c_void,
-    param_name: MemAllocInfoIntel,
+    param_name: cl_mem_info_intel,
 ) -> Result<InfoType, cl_int> {
-    let param_id = param_name as cl_mem_info_intel;
     match param_name {
-        MemAllocInfoIntel::CL_MEM_ALLOC_TYPE_INTEL => {
-            Ok(InfoType::Uint(mem_alloc_info_intel::<
-                cl_unified_shared_memory_type_intel,
-            >(context, ptr, param_id)?))
-        }
-        MemAllocInfoIntel::CL_MEM_ALLOC_BASE_PTR_INTEL
-        | MemAllocInfoIntel::CL_MEM_ALLOC_DEVICE_INTEL => Ok(InfoType::Ptr(
-            mem_alloc_info_intel::<intptr_t>(context, ptr, param_id)?,
+        CL_MEM_ALLOC_TYPE_INTEL => Ok(InfoType::Uint(mem_alloc_info_intel::<
+            cl_unified_shared_memory_type_intel,
+        >(context, ptr, param_name)?)),
+
+        CL_MEM_ALLOC_BASE_PTR_INTEL | CL_MEM_ALLOC_DEVICE_INTEL => Ok(InfoType::Ptr(
+            mem_alloc_info_intel::<intptr_t>(context, ptr, param_name)?,
         )),
-        MemAllocInfoIntel::CL_MEM_ALLOC_SIZE_INTEL => {
-            Ok(InfoType::Size(mem_alloc_info_intel::<size_t>(
-                context, ptr, param_id,
-            )?))
-        }
-        MemAllocInfoIntel::CL_MEM_ALLOC_FLAGS_INTEL => {
-            Ok(InfoType::Ulong(mem_alloc_info_intel::<
-                cl_mem_alloc_flags_intel,
-            >(context, ptr, param_id)?))
+
+        CL_MEM_ALLOC_SIZE_INTEL => Ok(InfoType::Size(mem_alloc_info_intel::<size_t>(
+            context, ptr, param_name,
+        )?)),
+
+        _ => {
+            // values 0x419E-0x419F are reserved for future queries
+            // get the size
+            let mut size: size_t = 0;
+            let status = unsafe {
+                clGetMemAllocInfoINTEL(context, ptr, param_name, 0, ptr::null_mut(), &mut size)
+            };
+            if CL_SUCCESS != status {
+                Err(status)
+            } else if 0 < size {
+                // Get the data.
+                let mut data: Vec<u8> = Vec::with_capacity(size);
+                let status = unsafe {
+                    clGetMemAllocInfoINTEL(
+                        context,
+                        ptr,
+                        param_name,
+                        size,
+                        data.as_mut_ptr() as *mut c_void,
+                        ptr::null_mut(),
+                    )
+                };
+                if CL_SUCCESS != status {
+                    Err(status)
+                } else {
+                    Ok(InfoType::VecUchar(data))
+                }
+            } else {
+                Ok(InfoType::VecUchar(Vec::default()))
+            }
         }
     }
 }
