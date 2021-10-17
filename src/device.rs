@@ -489,20 +489,38 @@ pub fn get_device_info(
         CL_DEVICE_UUID_KHR // cl_khr_device_uuid
         | CL_DRIVER_UUID_KHR // cl_khr_device_uuid
         => {
-            let value = get_device_data(device, param_name)?;
-            assert!(value.len() == CL_UUID_SIZE_KHR, "value is not a UUID");
-            let mut uuid: [u8; CL_UUID_SIZE_KHR] = [0; CL_UUID_SIZE_KHR];
-            uuid.copy_from_slice(value.as_slice());
-            Ok(InfoType::Uuid(uuid))
+            let mut value: [u8; CL_UUID_SIZE_KHR] = [0; CL_UUID_SIZE_KHR];
+            let status = unsafe {
+                clGetDeviceInfo(
+                    device,
+                    param_name,
+                    CL_UUID_SIZE_KHR,
+                    value.as_mut_ptr() as *mut c_void,
+                     ptr::null_mut(),)
+                    };
+            if CL_SUCCESS != status {
+                Err(status)
+            } else {
+            Ok(InfoType::Uuid(value))
+            }
         }
 
         CL_DEVICE_LUID_KHR // cl_khr_device_uuid
         => {
-            let value = get_device_data(device, param_name)?;
-            assert!(value.len() == CL_LUID_SIZE_KHR, "value is not a LUID");
-            let mut luid: [u8; CL_LUID_SIZE_KHR] = [0; CL_LUID_SIZE_KHR];
-            luid.copy_from_slice(value.as_slice());
-            Ok(InfoType::Luid(luid))
+            let mut value: [u8; CL_LUID_SIZE_KHR] = [0; CL_LUID_SIZE_KHR];
+            let status = unsafe {
+                clGetDeviceInfo(
+                    device,
+                    param_name,
+                    CL_LUID_SIZE_KHR,
+                    value.as_mut_ptr() as *mut c_void,
+                    ptr::null_mut(),)
+                };
+            if CL_SUCCESS != status {
+                Err(status)
+            } else {
+            Ok(InfoType::Luid(value))
+            }
         }
 
         CL_DEVICE_NAME
