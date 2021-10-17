@@ -1,5 +1,11 @@
 # Releases
 
+## Version 0.6.1 (2021-10-17)
+
+### Bug fixes
+
+* Issue [#15](https://github.com/kenba/cl3/issues/15) Don't panic if UUIDs or LUIDs are wrong size.
+
 ## Version 0.6.0 (2021-10-15)
 
 ### Breaking Changes
