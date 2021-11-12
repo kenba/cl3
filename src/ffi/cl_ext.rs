@@ -350,11 +350,95 @@ pub const CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR: cl_dev
 pub const CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR: cl_device_info =
     0x1075;
 
+// cl_khr_external_memory
+
+pub type cl_external_memory_handle_type_khr = cl_uint;
+
+pub const CL_PLATFORM_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR: cl_platform_info = 0x2044;
+
+pub const CL_DEVICE_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR: cl_device_info = 0x204F;
+
+// cl_mem_properties
+pub const CL_DEVICE_HANDLE_LIST_KHR: cl_ulong = 0x2051;
+pub const CL_DEVICE_HANDLE_LIST_END_KHR: cl_ulong = 0;
+
+pub const CL_COMMAND_ACQUIRE_EXTERNAL_MEM_OBJECTS_KHR: cl_command_type = 0x2047;
+pub const CL_COMMAND_RELEASE_EXTERNAL_MEM_OBJECTS_KHR: cl_command_type = 0x2048;
+
+// cl_khr_external_memory_dma_buf
+pub const CL_EXTERNAL_MEMORY_HANDLE_DMA_BUF_KHR: cl_external_memory_handle_type_khr = 0x2067;
+
+// cl_khr_external_memory_dx
+pub const CL_EXTERNAL_MEMORY_HANDLE_D3D11_TEXTURE_KHR: cl_external_memory_handle_type_khr = 0x2063;
+pub const CL_EXTERNAL_MEMORY_HANDLE_D3D11_TEXTURE_KMT_KHR: cl_external_memory_handle_type_khr =
+    0x2064;
+pub const CL_EXTERNAL_MEMORY_HANDLE_D3D12_HEAP_KHR: cl_external_memory_handle_type_khr = 0x2065;
+pub const CL_EXTERNAL_MEMORY_HANDLE_D3D12_RESOURCE_KHR: cl_external_memory_handle_type_khr = 0x2066;
+
+// cl_khr_external_memory_opaque_fd
+pub const CL_EXTERNAL_MEMORY_HANDLE_OPAQUE_FD_KHR: cl_external_memory_handle_type_khr = 0x2060;
+
+// cl_khr_external_memory_win32
+pub const CL_EXTERNAL_MEMORY_HANDLE_OPAQUE_WIN32_KHR: cl_external_memory_handle_type_khr = 0x2061;
+pub const CL_EXTERNAL_MEMORY_HANDLE_OPAQUE_WIN32_KMT_KHR: cl_external_memory_handle_type_khr =
+    0x2062;
+
+// cl_khr_external_semaphore
+pub type cl_semaphore_khr = *mut c_void;
+pub type cl_external_semaphore_handle_type_khr = cl_uint;
+pub type cl_semaphore_properties_khr = cl_properties;
+
+pub const CL_PLATFORM_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR: cl_platform_info = 0x2037;
+pub const CL_PLATFORM_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR: cl_platform_info = 0x2038;
+
+pub const CL_DEVICE_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR: cl_device_info = 0x204D;
+pub const CL_DEVICE_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR: cl_device_info = 0x204E;
+
+pub const CL_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR: cl_semaphore_properties_khr = 0x203F;
+pub const CL_SEMAPHORE_EXPORT_HANDLE_TYPES_LIST_END_KHR: cl_semaphore_properties_khr = 0;
+
+// cl_khr_external_semaphore_dx_fence
+pub const CL_SEMAPHORE_HANDLE_D3D12_FENCE_KHR: cl_external_semaphore_handle_type_khr = 0x2059;
+
+// cl_khr_external_semaphore_opaque_fd
+pub const CL_SEMAPHORE_HANDLE_OPAQUE_FD_KHR: cl_external_semaphore_handle_type_khr = 0x2055;
+
+// cl_khr_external_semaphore_sync_fd
+pub const CL_SEMAPHORE_HANDLE_SYNC_FD_KHR: cl_external_semaphore_handle_type_khr = 0x2058;
+
+// cl_khr_external_semaphore_win32
+pub const CL_SEMAPHORE_HANDLE_OPAQUE_WIN32_KHR: cl_external_semaphore_handle_type_khr = 0x2056;
+pub const CL_SEMAPHORE_HANDLE_OPAQUE_WIN32_KMT_KHR: cl_external_semaphore_handle_type_khr = 0x2057;
+
+// cl_khr_semaphore
+pub type cl_semaphore_info_khr = cl_uint;
+pub type cl_semaphore_type_khr = cl_uint;
+pub type cl_semaphore_payload_khr = cl_ulong;
+
+pub const CL_SEMAPHORE_TYPE_BINARY_KHR: cl_semaphore_type_khr = 1;
+
+pub const CL_PLATFORM_SEMAPHORE_TYPES_KHR: cl_platform_info = 0x2036;
+
+pub const CL_DEVICE_SEMAPHORE_TYPES_KHR: cl_device_info = 0x204C;
+
+pub const CL_SEMAPHORE_CONTEXT_KHR: cl_semaphore_info_khr = 0x2039;
+pub const CL_SEMAPHORE_REFERENCE_COUNT_KHR: cl_semaphore_info_khr = 0x203A;
+pub const CL_SEMAPHORE_PROPERTIES_KHR: cl_semaphore_info_khr = 0x203B;
+pub const CL_SEMAPHORE_PAYLOAD_KHR: cl_semaphore_info_khr = 0x203C;
+
+pub const CL_SEMAPHORE_TYPE_KHR: cl_semaphore_info_khr = 0x203D;
+
+pub const CL_COMMAND_SEMAPHORE_WAIT_KHR: cl_command_type = 0x2042;
+pub const CL_COMMAND_SEMAPHORE_SIGNAL_KHR: cl_command_type = 0x2043;
+
+// Error codes
+pub const CL_INVALID_SEMAPHORE_KHR: cl_int = -1142;
+
 // cl_arm_import_memory extension
 
 pub type cl_import_properties_arm = intptr_t;
 
-/// Default and valid proporties name for cl_arm_import_memory
+/// Default and valid properties name for cl_arm_import_memory
 pub const CL_IMPORT_TYPE_ARM: cl_import_properties_arm = 0x40B2;
 
 /// Host process memory type default value for CL_IMPORT_TYPE_ARM property
@@ -378,8 +462,9 @@ pub const CL_IMPORT_ANDROID_HARDWARE_BUFFER_PLANE_INDEX_ARM: cl_import_propertie
 /// Index of layer in a multilayer hardware buffer
 pub const CL_IMPORT_ANDROID_HARDWARE_BUFFER_LAYER_INDEX_ARM: cl_import_properties_arm = 0x41F0;
 
-// Import memory size value to indicate a size for the whole buffer.
-// pub const CL_IMPORT_ANDROID_HARDWARE_BUFFER_LAYER_INDEX_ARM: usize = SIZE_MAX;
+/// Import memory size value to indicate a size for the whole buffer.
+pub const CL_IMPORT_MEMORY_WHOLE_ALLOCATION_ARM: cl_import_properties_arm =
+    cl_import_properties_arm::MAX;
 
 pub const CL_DEVICE_SVM_CAPABILITIES_ARM: cl_device_info = 0x40B6;
 
@@ -987,6 +1072,71 @@ extern "system" {
         global_work_size: *const size_t,
         suggested_local_work_size: *mut size_t,
     ) -> cl_int;
+
+    pub fn clEnqueueAcquireExternalMemObjectsKHR(
+        command_queue: cl_command_queue,
+        num_mem_objects: cl_uint,
+        mem_objects: *const cl_mem,
+        num_events_in_wait_list: cl_uint,
+        event_wait_list: *const cl_event,
+        event: *mut cl_event,
+    ) -> cl_int;
+
+    pub fn clEnqueueReleaseExternalMemObjectsKHR(
+        command_queue: cl_command_queue,
+        num_mem_objects: cl_uint,
+        mem_objects: *const cl_mem,
+        num_events_in_wait_list: cl_uint,
+        event_wait_list: *const cl_event,
+        event: *mut cl_event,
+    ) -> cl_int;
+
+    pub fn clGetSemaphoreHandleForTypeKHR(
+        sema_object: cl_semaphore_khr,
+        device: cl_device_id,
+        handle_type: cl_external_semaphore_handle_type_khr,
+        handle_size: size_t,
+        handle_ptr: *mut c_void,
+        handle_size_ret: *mut size_t,
+    ) -> cl_int;
+
+    pub fn clCreateSemaphoreWithPropertiesKHR(
+        context: cl_context,
+        sema_props: *const cl_semaphore_properties_khr,
+        errcode_ret: *mut cl_int,
+    ) -> cl_semaphore_khr;
+
+    pub fn clEnqueueWaitSemaphoresKHR(
+        command_queue: cl_command_queue,
+        num_sema_objects: cl_uint,
+        sema_objects: *const cl_semaphore_khr,
+        sema_payload_list: *const cl_semaphore_payload_khr,
+        num_events_in_wait_list: cl_uint,
+        event_wait_list: *const cl_event,
+        event: *mut cl_event,
+    ) -> cl_int;
+
+    pub fn clEnqueueSignalSemaphoresKHR(
+        command_queue: cl_command_queue,
+        num_sema_objects: cl_uint,
+        sema_objects: *const cl_semaphore_khr,
+        sema_payload_list: *const cl_semaphore_payload_khr,
+        num_events_in_wait_list: cl_uint,
+        event_wait_list: *const cl_event,
+        event: *mut cl_event,
+    ) -> cl_int;
+
+    pub fn clGetSemaphoreInfoKHR(
+        sema_object: cl_semaphore_khr,
+        param_name: cl_semaphore_info_khr,
+        param_value_size: size_t,
+        param_value: *mut c_void,
+        param_value_size_ret: *mut size_t,
+    ) -> cl_int;
+
+    pub fn clReleaseSemaphoreKHR(sema_object: cl_semaphore_khr) -> cl_int;
+
+    pub fn clRetainSemaphoreKHR(sema_object: cl_semaphore_khr) -> cl_int;
 
     pub fn clImportMemoryARM(
         context: cl_context,

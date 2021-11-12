@@ -395,6 +395,201 @@ pub fn get_kernel_suggested_local_work_size_khr(
     }
 }
 
+#[cfg(feature = "cl_khr_external_memory")]
+pub fn enqueue_acquire_external_mem_objects_khr(
+    command_queue: cl_command_queue,
+    num_mem_objects: cl_uint,
+    mem_objects: *const cl_mem,
+    num_events_in_wait_list: cl_uint,
+    event_wait_list: *const cl_event,
+) -> Result<cl_event, cl_int> {
+    let mut event: cl_event = ptr::null_mut();
+    let status: cl_int = unsafe {
+        clEnqueueAcquireExternalMemObjectsKHR(
+            command_queue,
+            num_mem_objects,
+            mem_objects,
+            num_events_in_wait_list,
+            event_wait_list,
+            &mut event,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(event)
+    }
+}
+
+#[cfg(feature = "cl_khr_external_memory")]
+pub fn enqueue_release_external_mem_objects_khr(
+    command_queue: cl_command_queue,
+    num_mem_objects: cl_uint,
+    mem_objects: *const cl_mem,
+    num_events_in_wait_list: cl_uint,
+    event_wait_list: *const cl_event,
+) -> Result<cl_event, cl_int> {
+    let mut event: cl_event = ptr::null_mut();
+    let status: cl_int = unsafe {
+        clEnqueueReleaseExternalMemObjectsKHR(
+            command_queue,
+            num_mem_objects,
+            mem_objects,
+            num_events_in_wait_list,
+            event_wait_list,
+            &mut event,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(event)
+    }
+}
+
+#[cfg(feature = "cl_khr_external_semaphore")]
+pub fn get_semaphore_handle_for_type_khr(
+    sema_object: cl_semaphore_khr,
+    device: cl_device_id,
+    handle_type: cl_external_semaphore_handle_type_khr,
+) -> Result<cl_semaphore_khr, cl_int> {
+    // Get the size of the information.
+    let mut size: size_t = 0;
+    let status: cl_int = unsafe {
+        clGetSemaphoreHandleForTypeKHR(
+            sema_object,
+            device,
+            handle_type,
+            0,
+            ptr::null_mut(),
+            &mut size,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        let mut data: cl_semaphore_khr = ptr::null_mut();
+        let data_ptr: *mut cl_semaphore_khr = &mut data;
+        let status: cl_int = unsafe {
+            clGetSemaphoreHandleForTypeKHR(
+                sema_object,
+                device,
+                handle_type,
+                size,
+                data_ptr as *mut c_void,
+                ptr::null_mut(),
+            )
+        };
+        if CL_SUCCESS != status {
+            Err(status)
+        } else {
+            Ok(data)
+        }
+    }
+}
+
+#[cfg(feature = "cl_khr_semaphore")]
+pub fn create_semaphore_with_properties_khr(
+    context: cl_context,
+    sema_props: *const cl_semaphore_properties_khr,
+) -> Result<cl_semaphore_khr, cl_int> {
+    let mut status: cl_int = CL_INVALID_VALUE;
+    let semaphore: cl_semaphore_khr =
+        unsafe { clCreateSemaphoreWithPropertiesKHR(context, sema_props, &mut status) };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(semaphore)
+    }
+}
+
+#[cfg(feature = "cl_khr_semaphore")]
+pub fn enqueue_wait_semaphores_khr(
+    command_queue: cl_command_queue,
+    num_sema_objects: cl_uint,
+    sema_objects: *const cl_semaphore_khr,
+    sema_payload_list: *const cl_semaphore_payload_khr,
+    num_events_in_wait_list: cl_uint,
+    event_wait_list: *const cl_event,
+) -> Result<cl_event, cl_int> {
+    let mut event: cl_event = ptr::null_mut();
+    let status: cl_int = unsafe {
+        clEnqueueWaitSemaphoresKHR(
+            command_queue,
+            num_sema_objects,
+            sema_objects,
+            sema_payload_list,
+            num_events_in_wait_list,
+            event_wait_list,
+            &mut event,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(event)
+    }
+}
+
+#[cfg(feature = "cl_khr_semaphore")]
+pub fn enqueue_signal_semaphores_khr(
+    command_queue: cl_command_queue,
+    num_sema_objects: cl_uint,
+    sema_objects: *const cl_semaphore_khr,
+    sema_payload_list: *const cl_semaphore_payload_khr,
+    num_events_in_wait_list: cl_uint,
+    event_wait_list: *const cl_event,
+) -> Result<cl_event, cl_int> {
+    let mut event: cl_event = ptr::null_mut();
+    let status: cl_int = unsafe {
+        clEnqueueSignalSemaphoresKHR(
+            command_queue,
+            num_sema_objects,
+            sema_objects,
+            sema_payload_list,
+            num_events_in_wait_list,
+            event_wait_list,
+            &mut event,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(event)
+    }
+}
+
+#[cfg(feature = "cl_khr_semaphore")]
+pub fn get_semaphore_info_khr(
+    sema_object: cl_semaphore_khr,
+    param_name: cl_semaphore_info_khr,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetSemaphoreInfoKHR);
+    let size = get_size(sema_object, param_name)?;
+    api_info_vector!(get_vector, u8, clGetSemaphoreInfoKHR);
+    get_vector(sema_object, param_name, size)
+}
+
+#[cfg(feature = "cl_khr_semaphore")]
+pub fn release_semaphore_khr(sema_object: cl_semaphore_khr) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clReleaseSemaphoreKHR(sema_object) };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_semaphore")]
+pub fn retain_semaphore_khr(sema_object: cl_semaphore_khr) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clRetainSemaphoreKHR(sema_object) };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
 #[cfg(feature = "cl_arm_import_memory")]
 pub fn import_memory_arm(
     context: cl_context,
