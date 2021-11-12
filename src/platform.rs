@@ -22,6 +22,12 @@ pub use cl_sys::{
     CL_PLATFORM_PROFILE, CL_PLATFORM_VENDOR, CL_PLATFORM_VERSION,
 };
 
+use super::ffi::cl_ext::{
+    CL_PLATFORM_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR,
+    CL_PLATFORM_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR, CL_PLATFORM_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR,
+    CL_PLATFORM_SEMAPHORE_TYPES_KHR,
+};
+
 use super::error_codes::CL_SUCCESS;
 use super::info_type::InfoType;
 use super::types::{cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong};
@@ -139,6 +145,17 @@ pub fn get_platform_info(
             Ok(InfoType::VecNameVersion(get_vec(
                 platform, param_name, size,
             )?))
+        }
+
+        CL_PLATFORM_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR // cl_khr_external_memory
+        | CL_PLATFORM_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR // cl_khr_external_semaphore
+        | CL_PLATFORM_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR // cl_khr_external_semaphore
+        | CL_PLATFORM_SEMAPHORE_TYPES_KHR // cl_khr_semaphore
+        => {
+            api_info_size!(get_size, clGetPlatformInfo);
+            api_info_vector!(get_vec, cl_uint, clGetPlatformInfo);
+            let size = get_size(platform, param_name)?;
+            Ok(InfoType::VecUshort(get_vec(platform, param_name, size)?))
         }
 
         CL_PLATFORM_PROFILE

@@ -35,6 +35,7 @@ pub enum InfoType {
     Luid([u8; CL_LUID_SIZE_KHR]),
     Uuid([u8; CL_UUID_SIZE_KHR]),
     VecUchar(Vec<u8>),
+    VecUshort(Vec<u32>),
     VecUlong(Vec<u64>),
     VecSize(Vec<usize>),
     VecIntPtr(Vec<isize>),
@@ -98,6 +99,12 @@ impl From<InfoType> for [u8; CL_UUID_SIZE_KHR] {
 impl From<InfoType> for Vec<u8> {
     fn from(value: InfoType) -> Self {
         match_info_type!(value, InfoType::VecUchar)
+    }
+}
+
+impl From<InfoType> for Vec<u32> {
+    fn from(value: InfoType) -> Self {
+        match_info_type!(value, InfoType::VecUshort)
     }
 }
 
