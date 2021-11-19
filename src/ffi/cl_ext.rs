@@ -29,6 +29,54 @@ pub use cl_sys::{
 
 use libc::{c_void, intptr_t, size_t};
 
+// cl_khr_command_buffer
+
+pub type cl_device_command_buffer_capabilities_khr = cl_bitfield;
+pub type cl_command_buffer_khr = *mut c_void;
+pub type cl_sync_point_khr = cl_uint;
+pub type cl_command_buffer_info_khr = cl_uint;
+pub type cl_command_buffer_state_khr = cl_uint;
+pub type cl_command_buffer_properties_khr = cl_properties;
+pub type cl_command_buffer_flags_khr = cl_bitfield;
+pub type cl_ndrange_kernel_command_properties_khr = cl_properties;
+pub type cl_mutable_command_khr = *mut c_void;
+
+pub const CL_DEVICE_COMMAND_BUFFER_CAPABILITIES_KHR: cl_device_info = 0x12A9;
+pub const CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR: cl_device_info = 0x12AA;
+
+pub const CL_COMMAND_BUFFER_CAPABILITY_KERNEL_PRINTF_KHR:
+    cl_device_command_buffer_capabilities_khr = 1 << 0;
+pub const CL_COMMAND_BUFFER_CAPABILITY_DEVICE_SIDE_ENQUEUE_KHR:
+    cl_device_command_buffer_capabilities_khr = 1 << 1;
+pub const CL_COMMAND_BUFFER_CAPABILITY_SIMULTANEOUS_USE_KHR:
+    cl_device_command_buffer_capabilities_khr = 1 << 2;
+pub const CL_COMMAND_BUFFER_CAPABILITY_OUT_OF_ORDER_KHR: cl_device_command_buffer_capabilities_khr =
+    1 << 3;
+
+pub const CL_COMMAND_BUFFER_FLAGS_KHR: cl_command_buffer_properties_khr = 0x1293;
+
+pub const CL_COMMAND_BUFFER_SIMULTANEOUS_USE_KHR: cl_command_buffer_flags_khr = 1 << 0;
+
+// error codes
+pub const CL_INVALID_COMMAND_BUFFER_KHR: cl_int = -1138;
+pub const CL_INVALID_SYNC_POINT_WAIT_LIST_KHR: cl_int = -1139;
+pub const CL_INCOMPATIBLE_COMMAND_QUEUE_KHR: cl_int = -1140;
+
+pub const CL_COMMAND_BUFFER_QUEUES_KHR: cl_command_buffer_info_khr = 0x1294;
+pub const CL_COMMAND_BUFFER_NUM_QUEUES_KHR: cl_command_buffer_info_khr = 0x1295;
+pub const CL_COMMAND_BUFFER_REFERENCE_COUNT_KHR: cl_command_buffer_info_khr = 0x1296;
+pub const CL_COMMAND_BUFFER_STATE_KHR: cl_command_buffer_info_khr = 0x1297;
+pub const CL_COMMAND_BUFFER_PROPERTIES_ARRAY_KHR: cl_command_buffer_info_khr = 0x1298;
+
+pub const CL_COMMAND_BUFFER_STATE_RECORDING_KHR: cl_command_buffer_state_khr = 0;
+pub const CL_COMMAND_BUFFER_STATE_EXECUTABLE_KHR: cl_command_buffer_state_khr = 1;
+pub const CL_COMMAND_BUFFER_STATE_PENDING_KHR: cl_command_buffer_state_khr = 2;
+pub const CL_COMMAND_BUFFER_STATE_INVALID_KHR: cl_command_buffer_state_khr = 3;
+
+pub const CL_COMMAND_COMMAND_BUFFER_KHR: u32 = 4776;
+
+// cl_khr_fp64
+
 // pub const CL_DEVICE_DOUBLE_FP_CONFIG: cl_device_info = 0x1032;
 // pub const CL_DEVICE_HALF_FP_CONFIG: cl_device_info = 0x1033;
 
@@ -542,7 +590,7 @@ pub const CL_COMMAND_TERMINATION_CONTROLLED_SUCCESS_ARM: cl_command_termination_
 pub const CL_COMMAND_TERMINATION_CONTROLLED_FAILURE_ARM: cl_command_termination_reason_arm = 2;
 pub const CL_COMMAND_TERMINATION_ERROR_ARM: cl_command_termination_reason_arm = 3;
 
-// cl_intel_thread_local_exec extension
+// cl_intel_exec_by_local_thread extension
 pub const CL_QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: cl_bitfield = 1 << 31;
 
 // cl_intel_device_attribute_query
@@ -941,6 +989,161 @@ pub const CL_QUEUE_CAPABILITY_KERNEL_INTEL: cl_command_queue_capabilities_intel 
 #[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
 #[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
 extern "system" {
+    pub fn clCreateCommandBufferKHR(
+        num_queues: cl_uint,
+        queues: *const cl_command_queue,
+        properties: *const cl_command_buffer_properties_khr,
+        errcode_ret: *mut cl_int,
+    ) -> cl_command_buffer_khr;
+
+    pub fn clFinalizeCommandBufferKHR(command_buffer: cl_command_buffer_khr) -> cl_int;
+
+    pub fn clRetainCommandBufferKHR(command_buffer: cl_command_buffer_khr) -> cl_int;
+
+    pub fn clReleaseCommandBufferKHR(command_buffer: cl_command_buffer_khr) -> cl_int;
+
+    pub fn clEnqueueCommandBufferKHR(
+        num_queues: cl_uint,
+        queues: *mut cl_command_queue,
+        command_buffer: cl_command_buffer_khr,
+        num_events_in_wait_list: cl_uint,
+        event_wait_list: *const cl_event,
+        event: *mut cl_event,
+    ) -> cl_int;
+
+    pub fn clCommandBarrierWithWaitListKHR(
+        command_buffer: cl_command_buffer_khr,
+        command_queue: cl_command_queue,
+        num_sync_points_in_wait_list: cl_uint,
+        sync_point_wait_list: *const cl_sync_point_khr,
+        sync_point: *mut cl_sync_point_khr,
+        mutable_handle: *mut cl_mutable_command_khr,
+    ) -> cl_int;
+
+    pub fn clCommandCopyBufferKHR(
+        command_buffer: cl_command_buffer_khr,
+        command_queue: cl_command_queue,
+        src_buffer: cl_mem,
+        dst_buffer: cl_mem,
+        src_offset: size_t,
+        dst_offset: size_t,
+        size: size_t,
+        num_sync_points_in_wait_list: cl_uint,
+        sync_point_wait_list: *const cl_sync_point_khr,
+        sync_point: *mut cl_sync_point_khr,
+        mutable_handle: *mut cl_mutable_command_khr,
+    ) -> cl_int;
+
+    pub fn clCommandCopyBufferRectKHR(
+        command_buffer: cl_command_buffer_khr,
+        command_queue: cl_command_queue,
+        src_buffer: cl_mem,
+        dst_buffer: cl_mem,
+        src_origin: *const size_t,
+        dst_origin: *const size_t,
+        region: *const size_t,
+        src_row_pitch: size_t,
+        src_slice_pitch: size_t,
+        dst_row_pitch: size_t,
+        dst_slice_pitch: size_t,
+        num_sync_points_in_wait_list: cl_uint,
+        sync_point_wait_list: *const cl_sync_point_khr,
+        sync_point: *mut cl_sync_point_khr,
+        mutable_handle: *mut cl_mutable_command_khr,
+    ) -> cl_int;
+
+    pub fn clCommandCopyBufferToImageKHR(
+        command_buffer: cl_command_buffer_khr,
+        command_queue: cl_command_queue,
+        src_buffer: cl_mem,
+        dst_image: cl_mem,
+        src_offset: size_t,
+        dst_origin: *const size_t,
+        region: *const size_t,
+        num_sync_points_in_wait_list: cl_uint,
+        sync_point_wait_list: *const cl_sync_point_khr,
+        sync_point: *mut cl_sync_point_khr,
+        mutable_handle: *mut cl_mutable_command_khr,
+    ) -> cl_int;
+
+    pub fn clCommandCopyImageKHR(
+        command_buffer: cl_command_buffer_khr,
+        command_queue: cl_command_queue,
+        src_image: cl_mem,
+        dst_image: cl_mem,
+        src_origin: *const size_t,
+        dst_origin: *const size_t,
+        region: *const size_t,
+        num_sync_points_in_wait_list: cl_uint,
+        sync_point_wait_list: *const cl_sync_point_khr,
+        sync_point: *mut cl_sync_point_khr,
+        mutable_handle: *mut cl_mutable_command_khr,
+    ) -> cl_int;
+
+    pub fn clCommandCopyImageToBufferKHR(
+        command_buffer: cl_command_buffer_khr,
+        command_queue: cl_command_queue,
+        src_image: cl_mem,
+        dst_buffer: cl_mem,
+        src_origin: *const size_t,
+        region: *const size_t,
+        dst_offset: size_t,
+        num_sync_points_in_wait_list: cl_uint,
+        sync_point_wait_list: *const cl_sync_point_khr,
+        sync_point: *mut cl_sync_point_khr,
+        mutable_handle: *mut cl_mutable_command_khr,
+    ) -> cl_int;
+
+    pub fn clCommandFillBufferKHR(
+        command_buffer: cl_command_buffer_khr,
+        command_queue: cl_command_queue,
+        buffer: cl_mem,
+        pattern: *const c_void,
+        pattern_size: size_t,
+        offset: size_t,
+        size: size_t,
+        num_sync_points_in_wait_list: cl_uint,
+        sync_point_wait_list: *const cl_sync_point_khr,
+        sync_point: *mut cl_sync_point_khr,
+        mutable_handle: *mut cl_mutable_command_khr,
+    ) -> cl_int;
+
+    pub fn clCommandFillImageKHR(
+        command_buffer: cl_command_buffer_khr,
+        command_queue: cl_command_queue,
+        image: cl_mem,
+        fill_color: *const c_void,
+        origin: *const size_t,
+        region: *const size_t,
+        num_sync_points_in_wait_list: cl_uint,
+        sync_point_wait_list: *const cl_sync_point_khr,
+        sync_point: *mut cl_sync_point_khr,
+        mutable_handle: *mut cl_mutable_command_khr,
+    ) -> cl_int;
+
+    pub fn clCommandNDRangeKernelKHR(
+        command_buffer: cl_command_buffer_khr,
+        command_queue: cl_command_queue,
+        properties: *const cl_ndrange_kernel_command_properties_khr,
+        kernel: cl_kernel,
+        work_dim: cl_uint,
+        global_work_offset: *const size_t,
+        global_work_size: *const size_t,
+        local_work_size: *const size_t,
+        num_sync_points_in_wait_list: cl_uint,
+        sync_point_wait_list: *const cl_sync_point_khr,
+        sync_point: *mut cl_sync_point_khr,
+        mutable_handle: *mut cl_mutable_command_khr,
+    ) -> cl_int;
+
+    pub fn clGetCommandBufferInfoKHR(
+        command_buffer: cl_command_buffer_khr,
+        param_name: cl_command_buffer_info_khr,
+        param_value_size: size_t,
+        param_value: *mut c_void,
+        param_value_size_ret: *mut size_t,
+    ) -> cl_int;
+
     pub fn clSetMemObjectDestructorAPPLE(
         memobj: cl_mem,
         pfn_notify: extern "C" fn(cl_mem, *const c_void),

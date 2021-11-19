@@ -73,11 +73,13 @@ use super::ffi::cl_ext::{
     cl_device_pci_bus_info_khr,
     CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR,
     CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD, CL_DEVICE_BOARD_NAME_AMD,
-    CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV,
-    CL_DEVICE_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR, CL_DEVICE_FEATURE_CAPABILITIES_INTEL,
-    CL_DEVICE_GFXIP_MAJOR_AMD, CL_DEVICE_GFXIP_MINOR_AMD, CL_DEVICE_GLOBAL_FREE_MEMORY_AMD,
-    CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD,
-    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD, CL_DEVICE_GPU_OVERLAP_NV, CL_DEVICE_ID_INTEL,
+    CL_DEVICE_COMMAND_BUFFER_CAPABILITIES_KHR,
+    CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR, CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV,
+    CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV, CL_DEVICE_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR,
+    CL_DEVICE_FEATURE_CAPABILITIES_INTEL, CL_DEVICE_GFXIP_MAJOR_AMD, CL_DEVICE_GFXIP_MINOR_AMD,
+    CL_DEVICE_GLOBAL_FREE_MEMORY_AMD, CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD,
+    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD,
+    CL_DEVICE_GPU_OVERLAP_NV, CL_DEVICE_ID_INTEL,
     CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR,
     CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR, CL_DEVICE_INTEGRATED_MEMORY_NV,
     CL_DEVICE_IP_VERSION_INTEL, CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV, CL_DEVICE_LOCAL_MEM_BANKS_AMD,
@@ -420,6 +422,8 @@ pub fn get_device_info(
         | CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES // CL_VERSION_3_0
         | CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR
         | CL_DEVICE_FEATURE_CAPABILITIES_INTEL // cl_intel_device_attribute_query
+        | CL_DEVICE_COMMAND_BUFFER_CAPABILITIES_KHR // cl_khr_command_buffer
+        | CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR // cl_khr_command_buffer
         => {
             api_info_value!(get_value, cl_ulong, clGetDeviceInfo);
             Ok(InfoType::Ulong(get_value(device, param_name)?))
@@ -1707,10 +1711,7 @@ mod tests {
         match get_device_info(device_id, CL_DEVICE_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR) {
             Ok(value) => {
                 let value: Vec<u32> = value.into();
-                println!(
-                    "CL_DEVICE_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR: {:?}",
-                    value
-                )
+                println!("CL_DEVICE_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR: {:?}", value)
             }
             Err(e) => println!(
                 "OpenCL error, CL_DEVICE_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR: {}",
@@ -1721,10 +1722,7 @@ mod tests {
         match get_device_info(device_id, CL_DEVICE_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR) {
             Ok(value) => {
                 let value: Vec<u32> = value.into();
-                println!(
-                    "CL_DEVICE_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR: {:?}",
-                    value
-                )
+                println!("CL_DEVICE_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR: {:?}", value)
             }
             Err(e) => println!(
                 "OpenCL error, CL_DEVICE_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR: {}",
@@ -1735,10 +1733,7 @@ mod tests {
         match get_device_info(device_id, CL_DEVICE_SEMAPHORE_TYPES_KHR) {
             Ok(value) => {
                 let value: Vec<u32> = value.into();
-                println!(
-                    "CL_DEVICE_SEMAPHORE_TYPES_KHR: {:?}",
-                    value
-                )
+                println!("CL_DEVICE_SEMAPHORE_TYPES_KHR: {:?}", value)
             }
             Err(e) => println!(
                 "OpenCL error, CL_DEVICE_SEMAPHORE_TYPES_KHR: {}",

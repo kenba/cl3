@@ -33,6 +33,453 @@ use std::mem;
 #[allow(unused_imports)]
 use std::ptr;
 
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn create_command_buffer_khr(
+    queues: &[cl_command_queue],
+    properties: *const cl_command_buffer_properties_khr,
+) -> Result<cl_command_buffer_khr, cl_int> {
+    let mut status: cl_int = CL_INVALID_VALUE;
+    let buffer = unsafe {
+        clCreateCommandBufferKHR(
+            queues.len() as cl_uint,
+            queues.as_ptr(),
+            properties,
+            &mut status,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(buffer)
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn finalize_command_buffer_khr(command_buffer: cl_command_buffer_khr) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clFinalizeCommandBufferKHR(command_buffer) };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn retain_command_buffer_khr(command_buffer: cl_command_buffer_khr) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clRetainCommandBufferKHR(command_buffer) };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn release_command_buffer_khr(command_buffer: cl_command_buffer_khr) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clReleaseCommandBufferKHR(command_buffer) };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn enqueue_command_buffer_khr(
+    num_queues: cl_uint,
+    queues: *mut cl_command_queue,
+    command_buffer: cl_command_buffer_khr,
+    num_events_in_wait_list: cl_uint,
+    event_wait_list: *const cl_event,
+) -> Result<cl_event, cl_int> {
+    let mut event: cl_event = ptr::null_mut();
+    let status: cl_int = unsafe {
+        clEnqueueCommandBufferKHR(
+            num_queues,
+            queues,
+            command_buffer,
+            num_events_in_wait_list,
+            event_wait_list,
+            &mut event,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(event)
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn command_barrier_with_wait_list_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = unsafe {
+        clCommandBarrierWithWaitListKHR(
+            command_buffer,
+            command_queue,
+            sync_point_wait_list.len() as cl_uint,
+            sync_point_wait_list.as_ptr(),
+            sync_point,
+            mutable_handle,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn command_copy_buffer_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    src_buffer: cl_mem,
+    dst_buffer: cl_mem,
+    src_offset: size_t,
+    dst_offset: size_t,
+    size: size_t,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = unsafe {
+        clCommandCopyBufferKHR(
+            command_buffer,
+            command_queue,
+            src_buffer,
+            dst_buffer,
+            src_offset,
+            dst_offset,
+            size,
+            sync_point_wait_list.len() as cl_uint,
+            sync_point_wait_list.as_ptr(),
+            sync_point,
+            mutable_handle,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn command_copy_buffer_rect_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    src_buffer: cl_mem,
+    dst_buffer: cl_mem,
+    src_origin: *const size_t,
+    dst_origin: *const size_t,
+    region: *const size_t,
+    src_row_pitch: size_t,
+    src_slice_pitch: size_t,
+    dst_row_pitch: size_t,
+    dst_slice_pitch: size_t,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = unsafe {
+        clCommandCopyBufferRectKHR(
+            command_buffer,
+            command_queue,
+            src_buffer,
+            dst_buffer,
+            src_origin,
+            dst_origin,
+            region,
+            src_row_pitch,
+            src_slice_pitch,
+            dst_row_pitch,
+            dst_slice_pitch,
+            sync_point_wait_list.len() as cl_uint,
+            sync_point_wait_list.as_ptr(),
+            sync_point,
+            mutable_handle,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn command_copy_buffer_to_image_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    src_buffer: cl_mem,
+    dst_image: cl_mem,
+    src_offset: size_t,
+    dst_origin: *const size_t,
+    region: *const size_t,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = unsafe {
+        clCommandCopyBufferToImageKHR(
+            command_buffer,
+            command_queue,
+            src_buffer,
+            dst_image,
+            src_offset,
+            dst_origin,
+            region,
+            sync_point_wait_list.len() as cl_uint,
+            sync_point_wait_list.as_ptr(),
+            sync_point,
+            mutable_handle,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn command_copy_image_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    src_image: cl_mem,
+    dst_image: cl_mem,
+    src_origin: *const size_t,
+    dst_origin: *const size_t,
+    region: *const size_t,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = unsafe {
+        clCommandCopyImageKHR(
+            command_buffer,
+            command_queue,
+            src_image,
+            dst_image,
+            src_origin,
+            dst_origin,
+            region,
+            sync_point_wait_list.len() as cl_uint,
+            sync_point_wait_list.as_ptr(),
+            sync_point,
+            mutable_handle,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn command_copy_image_to_buffer_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    src_image: cl_mem,
+    dst_buffer: cl_mem,
+    src_origin: *const size_t,
+    region: *const size_t,
+    dst_offset: size_t,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = unsafe {
+        clCommandCopyImageToBufferKHR(
+            command_buffer,
+            command_queue,
+            src_image,
+            dst_buffer,
+            src_origin,
+            region,
+            dst_offset,
+            sync_point_wait_list.len() as cl_uint,
+            sync_point_wait_list.as_ptr(),
+            sync_point,
+            mutable_handle,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn command_fill_buffer_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    buffer: cl_mem,
+    pattern: *const c_void,
+    pattern_size: size_t,
+    offset: size_t,
+    size: size_t,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = unsafe {
+        clCommandFillBufferKHR(
+            command_buffer,
+            command_queue,
+            buffer,
+            pattern,
+            pattern_size,
+            offset,
+            size,
+            sync_point_wait_list.len() as cl_uint,
+            sync_point_wait_list.as_ptr(),
+            sync_point,
+            mutable_handle,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn command_fill_image_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    image: cl_mem,
+    fill_color: *const c_void,
+    origin: *const size_t,
+    region: *const size_t,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = unsafe {
+        clCommandFillImageKHR(
+            command_buffer,
+            command_queue,
+            image,
+            fill_color,
+            origin,
+            region,
+            sync_point_wait_list.len() as cl_uint,
+            sync_point_wait_list.as_ptr(),
+            sync_point,
+            mutable_handle,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn command_nd_range_kernel_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    properties: *const cl_ndrange_kernel_command_properties_khr,
+    kernel: cl_kernel,
+    work_dim: cl_uint,
+    global_work_offset: *const size_t,
+    global_work_size: *const size_t,
+    local_work_size: *const size_t,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = unsafe {
+        clCommandNDRangeKernelKHR(
+            command_buffer,
+            command_queue,
+            properties,
+            kernel,
+            work_dim,
+            global_work_offset,
+            global_work_size,
+            local_work_size,
+            sync_point_wait_list.len() as cl_uint,
+            sync_point_wait_list.as_ptr(),
+            sync_point,
+            mutable_handle,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn get_command_buffer_data_khr(
+    command_buffer: cl_command_buffer_khr,
+    param_name: cl_command_buffer_info_khr,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetCommandBufferInfoKHR);
+    let size = get_size(command_buffer, param_name)?;
+    api_info_vector!(get_vector, u8, clGetCommandBufferInfoKHR);
+    get_vector(command_buffer, param_name, size)
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub fn get_command_buffer_info_khr(
+    command_queue: cl_command_buffer_khr,
+    param_name: cl_command_buffer_info_khr,
+) -> Result<InfoType, cl_int> {
+    match param_name {
+        CL_COMMAND_BUFFER_NUM_QUEUES_KHR
+        | CL_COMMAND_BUFFER_REFERENCE_COUNT_KHR
+        | CL_COMMAND_BUFFER_STATE_KHR => {
+            api_info_value!(get_value, cl_uint, clGetCommandBufferInfoKHR);
+            Ok(InfoType::Uint(get_value(command_queue, param_name)?))
+        }
+
+        CL_COMMAND_BUFFER_PROPERTIES_ARRAY_KHR => {
+            api_info_size!(get_size, clGetCommandBufferInfoKHR);
+            api_info_vector!(
+                get_vec,
+                cl_command_buffer_properties_khr,
+                clGetCommandBufferInfoKHR
+            );
+            let size = get_size(command_queue, param_name)?;
+            Ok(InfoType::VecUlong(get_vec(
+                command_queue,
+                param_name,
+                size,
+            )?))
+        }
+
+        CL_COMMAND_BUFFER_QUEUES_KHR => {
+            api_info_size!(get_size, clGetCommandBufferInfoKHR);
+            api_info_vector!(get_vec, intptr_t, clGetCommandBufferInfoKHR);
+            let size = get_size(command_queue, param_name)?;
+            Ok(InfoType::VecIntPtr(get_vec(
+                command_queue,
+                param_name,
+                size,
+            )?))
+        }
+
+        _ => Ok(InfoType::VecUchar(get_command_buffer_data_khr(
+            command_queue,
+            param_name,
+        )?)),
+    }
+}
+
 #[cfg(feature = "cl_apple_setmemobjectdestructor")]
 pub fn set_mem_object_destructor_apple(
     memobj: cl_mem,
