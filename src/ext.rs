@@ -13,6 +13,7 @@
 // limitations under the License.
 
 //! OpenCL extensions that don't have external (OpenGL, D3D) dependencies.
+//! See: [OpenCL Extension Specification](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_Ext.html)
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]

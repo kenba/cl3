@@ -73,7 +73,7 @@ pub const CL_COMMAND_BUFFER_STATE_EXECUTABLE_KHR: cl_command_buffer_state_khr = 
 pub const CL_COMMAND_BUFFER_STATE_PENDING_KHR: cl_command_buffer_state_khr = 2;
 pub const CL_COMMAND_BUFFER_STATE_INVALID_KHR: cl_command_buffer_state_khr = 3;
 
-pub const CL_COMMAND_COMMAND_BUFFER_KHR: u32 = 4776;
+pub const CL_COMMAND_COMMAND_BUFFER_KHR: cl_command_type = 0x12A8;
 
 // cl_khr_fp64
 
