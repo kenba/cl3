@@ -1,5 +1,11 @@
 # Releases
 
+## Version 0.6.3 (2021-11-20)
+
+### New Features
+
+* Issue [#17](https://github.com/kenba/cl3/issues/17) Update for new OpenCL extension `cl_khr_command_buffer`.
+
 ## Version 0.6.2 (2021-11-12)
 
 ### New Features
