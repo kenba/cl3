@@ -590,6 +590,9 @@ pub const CL_COMMAND_TERMINATION_CONTROLLED_SUCCESS_ARM: cl_command_termination_
 pub const CL_COMMAND_TERMINATION_CONTROLLED_FAILURE_ARM: cl_command_termination_reason_arm = 2;
 pub const CL_COMMAND_TERMINATION_ERROR_ARM: cl_command_termination_reason_arm = 3;
 
+// cl_arm_protected_memory_allocation
+pub const CL_MEM_PROTECTED_ALLOC_ARM: cl_bitfield = 1 << 36;
+
 // cl_intel_exec_by_local_thread extension
 pub const CL_QUEUE_THREAD_LOCAL_EXEC_ENABLE_INTEL: cl_bitfield = 1 << 31;
 
