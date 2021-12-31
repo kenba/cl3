@@ -1,5 +1,13 @@
 # Releases
 
+## Version 0.6.4 (2021-12-31)
+
+### New Features
+
+* Issue [#19](https://github.com/kenba/cl3/issues/19) Update for extension `cl_arm_protected_memory_allocation `.
+
+* Issue [#18](https://github.com/kenba/cl3/issues/18) Update for extension `cl_intel_unified_shared_memory`.
+
 ## Version 0.6.3 (2021-11-20)
 
 ### New Features
