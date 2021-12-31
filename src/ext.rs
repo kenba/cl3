@@ -1389,8 +1389,8 @@ pub fn shared_mem_alloc_intel(
 }
 
 #[cfg(feature = "cl_intel_unified_shared_memory")]
-pub fn mem_free_intel(context: cl_context) -> Result<(), cl_int> {
-    let status = unsafe { clMemFreeINTEL(context) };
+pub fn mem_free_intel(context: cl_context, ptr: *mut c_void) -> Result<(), cl_int> {
+    let status = unsafe { clMemFreeINTEL(context, ptr) };
     if CL_SUCCESS != status {
         Err(status)
     } else {

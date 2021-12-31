@@ -887,13 +887,19 @@ pub const CL_AVC_ME_INTERLACED_SCAN_TOP_FIELD_INTEL: cl_intel_avc_motion_estimat
 pub const CL_AVC_ME_INTERLACED_SCAN_BOTTOM_FIELD_INTEL: cl_intel_avc_motion_estimation = 0x1;
 
 // cl_intel_unified_shared_memory extension
+pub type cl_device_unified_shared_memory_capabilities_intel = cl_bitfield;
+pub type cl_mem_properties_intel = cl_properties;
+pub type cl_mem_alloc_flags_intel = cl_bitfield;
+pub type cl_mem_info_intel = cl_uint;
+pub type cl_unified_shared_memory_type_intel = cl_uint;
+pub type cl_mem_advice_intel = cl_uint;
+
 pub const CL_DEVICE_HOST_MEM_CAPABILITIES_INTEL: cl_device_info = 0x4190;
 pub const CL_DEVICE_DEVICE_MEM_CAPABILITIES_INTEL: cl_device_info = 0x4191;
 pub const CL_DEVICE_SINGLE_DEVICE_SHARED_MEM_CAPABILITIES_INTEL: cl_device_info = 0x4192;
 pub const CL_DEVICE_CROSS_DEVICE_SHARED_MEM_CAPABILITIES_INTEL: cl_device_info = 0x4193;
 pub const CL_DEVICE_SHARED_SYSTEM_MEM_CAPABILITIES_INTEL: cl_device_info = 0x4194;
 
-pub type cl_device_unified_shared_memory_capabilities_intel = cl_bitfield;
 pub const CL_UNIFIED_SHARED_MEMORY_ACCESS_INTEL:
     cl_device_unified_shared_memory_capabilities_intel = 1 << 0;
 pub const CL_UNIFIED_SHARED_MEMORY_ATOMIC_ACCESS_INTEL:
@@ -903,25 +909,21 @@ pub const CL_UNIFIED_SHARED_MEMORY_CONCURRENT_ACCESS_INTEL:
 pub const CL_UNIFIED_SHARED_MEMORY_CONCURRENT_ATOMIC_ACCESS_INTEL:
     cl_device_unified_shared_memory_capabilities_intel = 1 << 3;
 
-pub type cl_mem_properties_intel = cl_properties;
 pub const CL_MEM_ALLOC_FLAGS_INTEL: cl_mem_properties_intel = 0x4195;
 
-pub type cl_mem_alloc_flags_intel = cl_bitfield;
 pub const CL_MEM_ALLOC_WRITE_COMBINED_INTEL: cl_mem_alloc_flags_intel = 1 << 0;
+pub const CL_MEM_ALLOC_INITIAL_PLACEMENT_DEVICE_INTEL: cl_mem_alloc_flags_intel = 1 << 1;
+pub const CL_MEM_ALLOC_INITIAL_PLACEMENT_HOST_INTEL: cl_mem_alloc_flags_intel = 1 << 2;
 
-pub type cl_mem_info_intel = cl_uint;
 pub const CL_MEM_ALLOC_TYPE_INTEL: cl_mem_info_intel = 0x419A;
 pub const CL_MEM_ALLOC_BASE_PTR_INTEL: cl_mem_info_intel = 0x419B;
 pub const CL_MEM_ALLOC_SIZE_INTEL: cl_mem_info_intel = 0x419C;
 pub const CL_MEM_ALLOC_DEVICE_INTEL: cl_mem_info_intel = 0x419D;
 
-pub type cl_unified_shared_memory_type_intel = cl_uint;
 pub const CL_MEM_TYPE_UNKNOWN_INTEL: cl_unified_shared_memory_type_intel = 0x4196;
 pub const CL_MEM_TYPE_HOST_INTEL: cl_unified_shared_memory_type_intel = 0x4197;
 pub const CL_MEM_TYPE_DEVICE_INTEL: cl_unified_shared_memory_type_intel = 0x4198;
 pub const CL_MEM_TYPE_SHARED_INTEL: cl_unified_shared_memory_type_intel = 0x4199;
-
-pub type cl_mem_advice_intel = cl_uint;
 
 pub const CL_KERNEL_EXEC_INFO_INDIRECT_HOST_ACCESS_INTEL: cl_kernel_exec_info = 0x4200;
 pub const CL_KERNEL_EXEC_INFO_INDIRECT_DEVICE_ACCESS_INTEL: cl_kernel_exec_info = 0x4201;
@@ -1477,7 +1479,7 @@ extern "system" {
         errcode_ret: *mut cl_int,
     );
 
-    pub fn clMemFreeINTEL(context: cl_context) -> cl_int;
+    pub fn clMemFreeINTEL(context: cl_context, ptr: *mut c_void) -> cl_int;
 
     pub fn clMemBlockingFreeINTEL(context: cl_context, ptr: *mut c_void) -> cl_int;
 
@@ -1494,16 +1496,6 @@ extern "system" {
         kernel: cl_kernel,
         arg_index: cl_uint,
         arg_value: *const c_void,
-    ) -> cl_int;
-
-    pub fn clEnqueueMemsetINTEL(
-        command_queue: cl_command_queue,
-        dst_ptr: *mut c_void,
-        value: cl_int,
-        size: size_t,
-        num_events_in_wait_list: cl_uint,
-        event_wait_list: *const cl_event,
-        event: *mut cl_event,
     ) -> cl_int;
 
     pub fn clEnqueueMemFillINTEL(
@@ -1528,6 +1520,16 @@ extern "system" {
         event: *mut cl_event,
     ) -> cl_int;
 
+    pub fn clEnqueueMemAdviseINTEL(
+        command_queue: cl_command_queue,
+        ptr: *const c_void,
+        size: size_t,
+        advice: cl_mem_advice_intel,
+        num_events_in_wait_list: cl_uint,
+        event_wait_list: *const cl_event,
+        event: *mut cl_event,
+    ) -> cl_int;
+
     pub fn clEnqueueMigrateMemINTEL(
         command_queue: cl_command_queue,
         ptr: *const c_void,
@@ -1538,11 +1540,11 @@ extern "system" {
         event: *mut cl_event,
     ) -> cl_int;
 
-    pub fn clEnqueueMemAdviseINTEL(
+    pub fn clEnqueueMemsetINTEL(
         command_queue: cl_command_queue,
-        ptr: *const c_void,
+        dst_ptr: *mut c_void,
+        value: cl_int,
         size: size_t,
-        advice: cl_mem_advice_intel,
         num_events_in_wait_list: cl_uint,
         event_wait_list: *const cl_event,
         event: *mut cl_event,

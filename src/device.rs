@@ -1741,6 +1741,28 @@ mod tests {
             ),
         };
 
+        match get_device_info(device_id, CL_DEVICE_COMMAND_BUFFER_CAPABILITIES_KHR) {
+            Ok(value) => {
+                let value: cl_ulong = value.into();
+                println!("CL_DEVICE_COMMAND_BUFFER_CAPABILITIES_KHR: {}", value)
+            }
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_COMMAND_BUFFER_CAPABILITIES_KHR: {}",
+                ClError(e)
+            ),
+        };
+
+        match get_device_info(device_id, CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR) {
+            Ok(value) => {
+                let value: cl_ulong = value.into();
+                println!("CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR: {}", value)
+            }
+            Err(e) => println!(
+                "OpenCL error, CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR: {}",
+                ClError(e)
+            ),
+        };
+
         // CL_VERSION_2_0
         if is_opencl_2 {
             let value = get_device_info(device_id, CL_DEVICE_IMAGE_PITCH_ALIGNMENT).unwrap();
