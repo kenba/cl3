@@ -913,6 +913,7 @@ pub const CL_UNIFIED_SHARED_MEMORY_CONCURRENT_ATOMIC_ACCESS_INTEL:
     cl_device_unified_shared_memory_capabilities_intel = 1 << 3;
 
 pub const CL_MEM_ALLOC_FLAGS_INTEL: cl_mem_properties_intel = 0x4195;
+pub const CL_MEM_ALLOC_BUFFER_LOCATION_INTEL: cl_mem_properties_intel = 0x419E;
 
 pub const CL_MEM_ALLOC_WRITE_COMBINED_INTEL: cl_mem_alloc_flags_intel = 1 << 0;
 pub const CL_MEM_ALLOC_INITIAL_PLACEMENT_DEVICE_INTEL: cl_mem_alloc_flags_intel = 1 << 1;
