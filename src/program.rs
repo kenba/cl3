@@ -325,15 +325,15 @@ pub fn compile_program(
 ) -> Result<(), cl_int> {
     assert!(input_headers.len() == header_include_names.len());
     let status: cl_int = unsafe {
-        let input_headers_ptr = if input_headers.len() > 0 {
+        let input_headers_ptr = if input_headers.is_empty() {
+            ptr::null()
+        } else {
             input_headers.as_ptr()
-        } else {
-            ptr::null()
         };
-        let header_include_names_ptr = if header_include_names.len() > 0 {
-            header_include_names.as_ptr()
-        } else {
+        let header_include_names_ptr = if header_include_names.is_empty() {
             ptr::null()
+        } else {
+            header_include_names.as_ptr()
         };
         clCompileProgram(
             program,
@@ -370,7 +370,7 @@ pub fn compile_program(
 ///
 /// # Panics
 ///
-/// Panics if `input_programs.len()` == 0.
+/// Panics if `input_programs.is_empty()`.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn link_program(
@@ -381,7 +381,7 @@ pub fn link_program(
     pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<cl_program, cl_int> {
-    assert!(input_programs.len() > 0);
+    assert!(!input_programs.is_empty());
     let mut status: cl_int = CL_INVALID_VALUE;
     let programme: cl_program = unsafe {
         clLinkProgram(
@@ -876,7 +876,7 @@ mod tests {
             ptr::null_mut(),
         )
         .unwrap();
-        
+
         let programs = [program];
         link_program(
             context,
