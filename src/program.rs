@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -308,6 +308,10 @@ pub fn build_program(
 ///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+///
+/// # Panics
+///
+/// Panics if `input_headers.len()` != `header_include_names.len()`.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn compile_program(
@@ -319,15 +323,26 @@ pub fn compile_program(
     pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
+    assert!(input_headers.len() == header_include_names.len());
     let status: cl_int = unsafe {
+        let input_headers_ptr = if input_headers.len() > 0 {
+            input_headers.as_ptr()
+        } else {
+            ptr::null()
+        };
+        let header_include_names_ptr = if header_include_names.len() > 0 {
+            header_include_names.as_ptr()
+        } else {
+            ptr::null()
+        };
         clCompileProgram(
             program,
             devices.len() as cl_uint,
             devices.as_ptr(),
             options.as_ptr(),
             input_headers.len() as cl_uint,
-            input_headers.as_ptr(),
-            header_include_names.as_ptr() as *const *const c_char,
+            input_headers_ptr,
+            header_include_names_ptr as *const *const c_char,
             pfn_notify,
             user_data,
         )
@@ -346,12 +361,16 @@ pub fn compile_program(
 /// * `context` - a valid OpenCL context.
 /// * `devices` - a slice of devices that are in context.
 /// * `options` - the link options in a null-terminated string.
-/// * `input_programs` - a slice of programs that describe headers in the input_headers.
+/// * `input_programs` - a slice of programs that are to be linked to create the program executable.
 /// * `pfn_notify` - an optional function pointer to a notification routine.
 /// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
 ///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
+///
+/// # Panics
+///
+/// Panics if `input_programs.len()` == 0.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub fn link_program(
@@ -362,6 +381,7 @@ pub fn link_program(
     pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<cl_program, cl_int> {
+    assert!(input_programs.len() > 0);
     let mut status: cl_int = CL_INVALID_VALUE;
     let programme: cl_program = unsafe {
         clLinkProgram(
@@ -799,6 +819,74 @@ mod tests {
         if let Err(e) = unload_platform_compiler(platform_id) {
             println!("OpenCL error, clUnloadPlatformCompiler: {}", error_text(e));
         }
+
+        release_program(program).unwrap();
+
+        release_context(context).unwrap();
+    }
+
+    #[test]
+    fn test_compile_and_link_program() {
+        let platform_ids = get_platform_ids().unwrap();
+
+        let mut platform_id = platform_ids[0];
+        let mut device_count: usize = 0;
+
+        // Search for a platform with the most devices
+        for p in platform_ids {
+            let ids = get_device_ids(p, CL_DEVICE_TYPE_ALL).unwrap();
+            let count = ids.len();
+            if device_count < count {
+                device_count = count;
+                platform_id = p;
+            }
+        }
+
+        println!("Platform device_count: {}", device_count);
+
+        let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_ALL).unwrap();
+
+        let context = create_context(&device_ids, ptr::null(), None, ptr::null_mut());
+        let context = context.unwrap();
+
+        let source = r#"
+            kernel void saxpy_float (global float* z,
+                global float const* x,
+                global float const* y,
+                float a)
+            {
+            size_t i = get_global_id(0);
+            z[i] = a*x[i] + y[i];
+            }
+        "#;
+
+        // Convert source to an array
+        let sources = [source];
+        let program = create_program_with_source(context, &sources).unwrap();
+
+        use std::ffi::CString;
+        let no_options = CString::new("").unwrap();
+        compile_program(
+            program,
+            &device_ids,
+            &no_options,
+            &[],
+            &[],
+            None,
+            ptr::null_mut(),
+        )
+        .unwrap();
+        
+        let programs = [program];
+        link_program(
+            context,
+            &device_ids,
+            &no_options,
+            &programs,
+            None,
+            ptr::null_mut(),
+        )
+        .unwrap();
 
         release_program(program).unwrap();
 
