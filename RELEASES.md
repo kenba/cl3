@@ -1,10 +1,20 @@
 # Releases
 
+## Version 0.6.5 (2022-04-09)
+
+### New Features
+
+* Issue [#20](https://github.com/kenba/cl3/issues/20) Add `cl_intel_mem_alloc_buffer_location` property.
+
+### Bug fixes
+
+* Issue [#21](https://github.com/kenba/cl3/issues/21) Empty slice is not null.
+
 ## Version 0.6.4 (2021-12-31)
 
 ### New Features
 
-* Issue [#19](https://github.com/kenba/cl3/issues/19) Update for extension `cl_arm_protected_memory_allocation `.
+* Issue [#19](https://github.com/kenba/cl3/issues/19) Update for extension `cl_arm_protected_memory_allocation`.
 
 * Issue [#18](https://github.com/kenba/cl3/issues/18) Update for extension `cl_intel_unified_shared_memory`.
 
