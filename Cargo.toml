@@ -1,6 +1,6 @@
 [package]
 name = "cl3"
-version = "0.6.5"
+version = "0.7.0"
 authors = ["Ken Barker <ken.barker@via-technology.aero>"]
 description = "A Rust implementation of the Khronos OpenCL 3.0 API and extensions."
 documentation = "https://docs.rs/cl3/"
@@ -10,7 +10,7 @@ readme = "README.md"
 keywords = ["opencl", "gpu", "gpgpu", "ffi", "api"]
 categories = ["api-bindings", "asynchronous", "external-ffi-bindings"]
 license = "Apache-2.0"
-edition = "2018"
+edition = "2021"
 
 [features]
 

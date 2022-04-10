@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -66,8 +66,8 @@ pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
         let len = count as usize;
         let mut ids: Vec<cl_platform_id> = Vec::with_capacity(len);
         unsafe {
-            ids.set_len(len);
             status = clGetPlatformIDs(count, ids.as_mut_ptr(), ptr::null_mut());
+            ids.set_len(len);
         };
 
         if CL_SUCCESS != status {

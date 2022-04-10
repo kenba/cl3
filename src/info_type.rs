@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -212,7 +212,7 @@ impl fmt::Display for InfoType {
 
                     s.push_str(&b.version.to_string());
                     s.push_str(": ");
-                    s.push_str(&String::from_utf8_lossy(&b.name).into_owned());
+                    s.push_str(&String::from_utf8_lossy(&b.name));
                 }
 
                 write!(f, "{}", s)
@@ -238,7 +238,7 @@ impl fmt::Display for InfoType {
                 let mut s = String::default();
                 for b in a.iter() {
                     s.push('\n');
-                    s.push_str(&String::from_utf8_lossy(b).into_owned());
+                    s.push_str(&String::from_utf8_lossy(b));
                 }
 
                 write!(f, "{}", s)

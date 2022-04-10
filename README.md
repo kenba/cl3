@@ -49,7 +49,7 @@ OpenCL 2.0 ICD loader then add the following to your project's `Cargo.toml`:
 
 ```toml
 [dependencies]
-cl3 = "0.6"
+cl3 = "0.7"
 ```
 
 If your OpenCL ICD loader supports higher versions of OpenCL then add the
@@ -58,7 +58,7 @@ following to your project's `Cargo.toml` instead:
 
 ```toml
 [dependencies.cl3]
-version = "0.6"
+version = "0.7"
 features = ["CL_VERSION_2_1", "CL_VERSION_2_2"]
 ```
 
@@ -66,7 +66,7 @@ OpenCL extensions can also be enabled by adding their features, e.g.:
 
 ```toml
 [dependencies.cl3]
-version = "0.6"
+version = "0.7"
 features = ["cl_khr_gl_sharing", "cl_khr_dx9_media_sharing"]
 ```
 
@@ -113,7 +113,7 @@ Just please abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
 ## License
 
 Licensed under the Apache License, Version 2.0, as per Khronos Group OpenCL.  
-You may obtain a copy of the License at: http://www.apache.org/licenses/LICENSE-2.0
+You may obtain a copy of the License at: <http://www.apache.org/licenses/LICENSE-2.0>
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be licensed as above, without any additional terms or conditions.
 

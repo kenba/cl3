@@ -142,7 +142,6 @@ pub fn create_program_with_binary(
     let binaries_length = binaries.len();
     let lengths: Vec<size_t> = binaries.iter().map(|bin| bin.len()).collect();
     let mut binary_status: Vec<cl_int> = Vec::with_capacity(binaries_length);
-    unsafe { binary_status.set_len(binaries_length) };
     let mut status: cl_int = CL_INVALID_VALUE;
     let program: cl_program = unsafe {
         clCreateProgramWithBinary(
@@ -155,6 +154,7 @@ pub fn create_program_with_binary(
             &mut status,
         )
     };
+    unsafe { binary_status.set_len(binaries_length) };
     if CL_SUCCESS != status {
         Err(status)
     } else {

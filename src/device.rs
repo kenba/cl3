@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 #![allow(non_camel_case_types)]
 #![allow(non_upper_case_globals)]
 #![allow(clippy::wildcard_in_or_patterns)]
+#![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 use super::error_codes::{CL_DEVICE_NOT_FOUND, CL_SUCCESS};
 
@@ -227,7 +228,6 @@ pub fn get_device_ids(
         let len = count as size_t;
         let mut ids: Vec<cl_device_id> = Vec::with_capacity(len);
         unsafe {
-            ids.set_len(len);
             status = clGetDeviceIDs(
                 platform,
                 device_type,
@@ -235,6 +235,7 @@ pub fn get_device_ids(
                 ids.as_mut_ptr(),
                 ptr::null_mut(),
             );
+            ids.set_len(len);
         };
 
         if CL_SUCCESS != status {
@@ -1752,10 +1753,16 @@ mod tests {
             ),
         };
 
-        match get_device_info(device_id, CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR) {
+        match get_device_info(
+            device_id,
+            CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR,
+        ) {
             Ok(value) => {
                 let value: cl_ulong = value.into();
-                println!("CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR: {}", value)
+                println!(
+                    "CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR: {}",
+                    value
+                )
             }
             Err(e) => println!(
                 "OpenCL error, CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR: {}",
