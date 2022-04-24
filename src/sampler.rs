@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,34 +14,27 @@
 
 //! OpenCL Sampler API.
 
-#![allow(non_camel_case_types)]
-#![allow(clippy::not_unsafe_ptr_arg_deref)]
-#![allow(clippy::wildcard_in_or_patterns)]
+#![allow(non_camel_case_types, deprecated)]
+#![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
-pub use cl_sys::{
-    CL_SAMPLER_ADDRESSING_MODE, CL_SAMPLER_CONTEXT, CL_SAMPLER_FILTER_MODE, CL_SAMPLER_LOD_MAX,
-    CL_SAMPLER_LOD_MIN, CL_SAMPLER_MIP_FILTER_MODE, CL_SAMPLER_NORMALIZED_COORDS,
-    CL_SAMPLER_REFERENCE_COUNT,
-};
-
-use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-use super::info_type::InfoType;
-#[allow(unused_imports)]
-use super::types::{
+pub use opencl_sys::{
     cl_addressing_mode, cl_bool, cl_context, cl_filter_mode, cl_int, cl_sampler, cl_sampler_info,
-    cl_sampler_properties, cl_uint, cl_ulong,
+    cl_sampler_properties, cl_uint, cl_ulong, CL_INVALID_VALUE, CL_SAMPLER_ADDRESSING_MODE,
+    CL_SAMPLER_CONTEXT, CL_SAMPLER_FILTER_MODE, CL_SAMPLER_LOD_MAX, CL_SAMPLER_LOD_MIN,
+    CL_SAMPLER_MIP_FILTER_MODE, CL_SAMPLER_NORMALIZED_COORDS, CL_SAMPLER_PROPERTIES,
+    CL_SAMPLER_REFERENCE_COUNT, CL_SUCCESS,
 };
-use super::{api_info_size, api_info_value, api_info_vector};
+
+use opencl_sys::{clCreateSampler, clGetSamplerInfo, clReleaseSampler, clRetainSampler};
+
 #[cfg(feature = "CL_VERSION_2_0")]
-use cl_sys::clCreateSamplerWithProperties;
-use cl_sys::{clCreateSampler, clGetSamplerInfo, clReleaseSampler, clRetainSampler};
+use opencl_sys::clCreateSamplerWithProperties;
+
+use super::info_type::InfoType;
+use super::{api_info_size, api_info_value, api_info_vector};
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
-
-// Missing from cl_sys
-// CL_VERSION_3_0
-pub const CL_SAMPLER_PROPERTIES: cl_sampler_info = 0x1158;
 
 /// Create an OpenCL buffer sampler for a context.  
 /// Calls clCreateSampler to create an OpenCL sampler object.  
@@ -56,6 +49,10 @@ pub const CL_SAMPLER_PROPERTIES: cl_sampler_info = 0x1158;
 /// are described in: [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table) table.  
 /// returns a Result containing the new OpenCL sampler object
 /// or the error code from the OpenCL C API function.
+#[deprecated(
+    since = "0.1.0",
+    note = "From CL_VERSION_2_0 use create_sampler_with_properties"
+)]
 #[inline]
 pub fn create_sampler(
     context: cl_context,

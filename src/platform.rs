@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,30 +17,23 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::wildcard_in_or_patterns)]
 
-pub use cl_sys::{
-    CL_PLATFORM_EXTENSIONS, CL_PLATFORM_HOST_TIMER_RESOLUTION, CL_PLATFORM_NAME,
-    CL_PLATFORM_PROFILE, CL_PLATFORM_VENDOR, CL_PLATFORM_VERSION,
-};
-
-use super::ffi::cl_ext::{
-    CL_PLATFORM_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR,
+pub use opencl_sys::{
+    cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong, cl_version,
+    CL_PLATFORM_EXTENSIONS, CL_PLATFORM_EXTENSIONS_WITH_VERSION,
+    CL_PLATFORM_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR, CL_PLATFORM_HOST_TIMER_RESOLUTION,
+    CL_PLATFORM_NAME, CL_PLATFORM_NUMERIC_VERSION, CL_PLATFORM_PROFILE,
     CL_PLATFORM_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR, CL_PLATFORM_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR,
-    CL_PLATFORM_SEMAPHORE_TYPES_KHR,
+    CL_PLATFORM_SEMAPHORE_TYPES_KHR, CL_PLATFORM_VENDOR, CL_PLATFORM_VERSION, CL_SUCCESS,
 };
 
-use super::error_codes::CL_SUCCESS;
+use opencl_sys::{clGetPlatformIDs, clGetPlatformInfo};
+
 use super::info_type::InfoType;
-use super::types::{cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong};
 use super::{api_info_size, api_info_value, api_info_vector};
-use cl_sys::{clGetPlatformIDs, clGetPlatformInfo};
 
 use libc::{c_void, size_t};
 use std::mem;
 use std::ptr;
-
-// cl_platform_info constants missing in cl_sys
-pub const CL_PLATFORM_NUMERIC_VERSION: cl_platform_info = 0x0906;
-pub const CL_PLATFORM_EXTENSIONS_WITH_VERSION: cl_platform_info = 0x0907;
 
 /// Get the available platforms.  
 /// Calls clGetPlatformIDs to get the available platform ids.

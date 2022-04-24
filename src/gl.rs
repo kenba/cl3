@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2021-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,57 +14,35 @@
 
 //! OpenCL OpenGl Interoperability API.
 
-#![allow(non_camel_case_types)]
+#![allow(non_camel_case_types, deprecated)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
-pub use cl_sys::{
-    cl_command_queue, cl_context_properties, cl_event, cl_gl_context_info, cl_gl_object_type,
-    cl_gl_platform_info, cl_gl_texture_info, CL_CGL_SHAREGROUP_KHR,
-    CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, CL_DEVICES_FOR_GL_CONTEXT_KHR, CL_EGL_DISPLAY_KHR,
-    CL_GLX_DISPLAY_KHR, CL_GL_CONTEXT_KHR, CL_GL_MIPMAP_LEVEL, CL_GL_NUM_SAMPLES,
-    CL_GL_OBJECT_BUFFER, CL_GL_OBJECT_RENDERBUFFER, CL_GL_OBJECT_TEXTURE1D,
-    CL_GL_OBJECT_TEXTURE1D_ARRAY, CL_GL_OBJECT_TEXTURE2D, CL_GL_OBJECT_TEXTURE2D_ARRAY,
-    CL_GL_OBJECT_TEXTURE3D, CL_GL_OBJECT_TEXTURE_BUFFER, CL_GL_TEXTURE_TARGET, CL_KHR_GL_SHARING,
-    CL_WGL_HDC_KHR,
+pub use opencl_sys::{
+    cl_GLenum, cl_GLint, cl_GLsync, cl_GLuint, cl_command_queue, cl_context, cl_context_properties,
+    cl_event, cl_gl_context_info, cl_gl_object_type, cl_gl_platform_info, cl_gl_texture_info,
+    cl_int, cl_mem, cl_mem_flags, cl_uint, CL_CGL_SHAREGROUP_KHR,
+    CL_COMMAND_GL_FENCE_SYNC_OBJECT_KHR, CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR,
+    CL_DEVICES_FOR_GL_CONTEXT_KHR, CL_EGL_DISPLAY_KHR, CL_GLX_DISPLAY_KHR, CL_GL_CONTEXT_KHR,
+    CL_GL_MIPMAP_LEVEL, CL_GL_NUM_SAMPLES, CL_GL_OBJECT_BUFFER, CL_GL_OBJECT_RENDERBUFFER,
+    CL_GL_OBJECT_TEXTURE1D, CL_GL_OBJECT_TEXTURE1D_ARRAY, CL_GL_OBJECT_TEXTURE2D,
+    CL_GL_OBJECT_TEXTURE2D_ARRAY, CL_GL_OBJECT_TEXTURE3D, CL_GL_OBJECT_TEXTURE_BUFFER,
+    CL_GL_TEXTURE_TARGET, CL_INVALID_VALUE, CL_KHR_GL_SHARING, CL_SUCCESS, CL_WGL_HDC_KHR,
 };
 
-use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
+#[allow(unused_imports)]
+use opencl_sys::{
+    clCreateEventFromGLsyncKHR, clCreateFromGLBuffer, clCreateFromGLRenderbuffer,
+    clCreateFromGLTexture, clCreateFromGLTexture2D, clCreateFromGLTexture3D,
+    clEnqueueAcquireGLObjects, clEnqueueReleaseGLObjects, clGetGLContextInfoKHR, clGetGLObjectInfo,
+    clGetGLTextureInfo,
+};
+
 use super::info_type::InfoType;
-#[allow(unused_imports)]
-use super::types::{cl_context, cl_int, cl_mem, cl_mem_flags, cl_uint};
-
-#[allow(unused_imports)]
-use cl_sys::{
-    clCreateFromGLBuffer, clCreateFromGLRenderbuffer, clCreateFromGLTexture,
-    clCreateFromGLTexture2D, clCreateFromGLTexture3D, clEnqueueAcquireGLObjects,
-    clEnqueueReleaseGLObjects, clGetGLContextInfoKHR, clGetGLObjectInfo, clGetGLTextureInfo,
-};
-
 use super::{api_info_size, api_info_value, api_info_vector};
-
 #[allow(unused_imports)]
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
-
-pub type gl_uint = cl_uint;
-pub type gl_int = cl_int;
-pub type gl_enum = cl_uint;
-pub type gl_sizei = gl_int;
-pub type gl_sync = *mut c_void;
-
-pub const CL_COMMAND_GL_FENCE_SYNC_OBJECT_KHR: cl_uint = 0x200D;
-
-// clCreateEventFromGLsyncKHR is not in cl_sys
-#[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
-#[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
-extern "system" {
-    pub fn clCreateEventFromGLsyncKHR(
-        context: cl_context,
-        sync: gl_sync,
-        errcode_ret: *mut cl_int,
-    ) -> cl_event;
-}
 
 /// Create an OpenCL buffer object for a context from an OpenGL buffer.  
 /// Calls clCreateFromGLBuffer to create an OpenCL buffer object.  
@@ -81,7 +59,7 @@ extern "system" {
 pub fn create_from_gl_buffer(
     context: cl_context,
     flags: cl_mem_flags,
-    bufobj: gl_uint,
+    bufobj: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem = unsafe { clCreateFromGLBuffer(context, flags, bufobj, &mut status) };
@@ -111,9 +89,9 @@ pub fn create_from_gl_buffer(
 pub fn create_from_gl_texture(
     context: cl_context,
     flags: cl_mem_flags,
-    texture_target: gl_enum,
-    miplevel: gl_int,
-    texture: gl_uint,
+    texture_target: cl_GLenum,
+    miplevel: cl_GLint,
+    texture: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem = unsafe {
@@ -148,7 +126,7 @@ pub fn create_from_gl_texture(
 pub fn create_from_gl_render_buffer(
     context: cl_context,
     flags: cl_mem_flags,
-    renderbuffer: gl_uint,
+    renderbuffer: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem = unsafe { clCreateFromGLRenderbuffer(context, flags, renderbuffer, &mut status) };
@@ -167,7 +145,7 @@ pub fn create_from_gl_render_buffer(
 /// returns a Result containing the OpenGL object type and name
 /// or the error code from the OpenCL C API function.
 #[inline]
-pub fn get_gl_object_info(memobj: cl_mem) -> Result<(gl_uint, gl_uint), cl_int> {
+pub fn get_gl_object_info(memobj: cl_mem) -> Result<(cl_GLuint, cl_GLuint), cl_int> {
     let mut object_type: cl_uint = CL_GL_OBJECT_BUFFER;
     let mut object_name: cl_uint = 0;
     let status = unsafe { clGetGLObjectInfo(memobj, &mut object_type, &mut object_name) };
@@ -205,12 +183,12 @@ pub fn get_gl_texture_info(
 ) -> Result<InfoType, cl_int> {
     match param_name {
         CL_GL_TEXTURE_TARGET => {
-            api_info_value!(get_value, gl_enum, clGetGLTextureInfo);
+            api_info_value!(get_value, cl_GLenum, clGetGLTextureInfo);
             Ok(InfoType::Uint(get_value(memobj, param_name)?))
         }
 
         CL_GL_MIPMAP_LEVEL | CL_GL_NUM_SAMPLES => {
-            api_info_value!(get_value, gl_int, clGetGLTextureInfo);
+            api_info_value!(get_value, cl_GLint, clGetGLTextureInfo);
             Ok(InfoType::Int(get_value(memobj, param_name)?))
         }
 
@@ -307,13 +285,17 @@ pub fn enqueue_release_gl_objects(
 ///
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
+#[deprecated(
+    since = "0.1.0",
+    note = "From CL_VERSION_1_2 use create_from_gl_texture"
+)]
 #[inline]
 pub fn create_from_gl_texture_2d(
     context: cl_context,
     flags: cl_mem_flags,
-    texture_target: gl_enum,
-    miplevel: gl_int,
-    texture: gl_uint,
+    texture_target: cl_GLenum,
+    miplevel: cl_GLint,
+    texture: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem = unsafe {
@@ -347,13 +329,17 @@ pub fn create_from_gl_texture_2d(
 ///
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
+#[deprecated(
+    since = "0.1.0",
+    note = "From CL_VERSION_1_2 use create_from_gl_texture"
+)]
 #[inline]
 pub fn create_from_gl_texture_3d(
     context: cl_context,
     flags: cl_mem_flags,
-    texture_target: gl_enum,
-    miplevel: gl_int,
-    texture: gl_uint,
+    texture_target: cl_GLenum,
+    miplevel: cl_GLint,
+    texture: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem = unsafe {
@@ -483,7 +469,7 @@ pub fn get_gl_context_info_khr(
 #[inline]
 pub fn create_event_from_gl_sync_khr(
     context: cl_context,
-    sync: gl_sync,
+    sync: cl_GLsync,
 ) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let event: cl_event = unsafe { clCreateEventFromGLsyncKHR(context, sync, &mut status) };

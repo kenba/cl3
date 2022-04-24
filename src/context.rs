@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,36 +17,25 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
-pub use cl_sys::{
-    CL_CONTEXT_DEVICES, CL_CONTEXT_INTEROP_USER_SYNC, CL_CONTEXT_NUM_DEVICES, CL_CONTEXT_PLATFORM,
-    CL_CONTEXT_PROPERTIES, CL_CONTEXT_REFERENCE_COUNT,
+pub use opencl_sys::{
+    cl_context, cl_context_info, cl_context_properties, cl_device_id, cl_device_type, cl_int,
+    cl_uint, CL_CONTEXT_DEVICES, CL_CONTEXT_INTEROP_USER_SYNC, CL_CONTEXT_NUM_DEVICES,
+    CL_CONTEXT_PLATFORM, CL_CONTEXT_PROPERTIES, CL_CONTEXT_REFERENCE_COUNT, CL_INVALID_VALUE,
+    CL_SUCCESS,
 };
 
-use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-use super::info_type::InfoType;
-use super::types::{
-    cl_context, cl_context_info, cl_context_properties, cl_device_id, cl_device_type, cl_int,
-    cl_uint,
-};
-use super::{api_info_size, api_info_value, api_info_vector};
-use cl_sys::{
+use opencl_sys::{
     clCreateContext, clCreateContextFromType, clGetContextInfo, clReleaseContext, clRetainContext,
 };
 
+#[cfg(feature = "CL_VERSION_3_0")]
+use opencl_sys::clSetContextDestructorCallback;
+
+use super::info_type::InfoType;
+use super::{api_info_size, api_info_value, api_info_vector};
 use libc::{c_char, c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
-
-// clSetContextDestructorCallback is CL_VERSION_3_0, not in cl_sys yet
-#[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
-#[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
-extern "system" {
-    pub fn clSetContextDestructorCallback(
-        context: cl_context,
-        pfn_notify: extern "C" fn(cl_context, *const c_void),
-        user_data: *mut c_void,
-    ) -> cl_int;
-}
 
 /// Create an OpenCL context.  
 /// Calls clCreateContext to create an OpenCL context.
@@ -63,7 +52,7 @@ extern "system" {
 pub fn create_context(
     devices: &[cl_device_id],
     properties: *const cl_context_properties,
-    pfn_notify: Option<extern "C" fn(*const c_char, *const c_void, size_t, *mut c_void)>,
+    pfn_notify: Option<unsafe extern "C" fn(*const c_char, *const c_void, size_t, *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<cl_context, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
@@ -100,7 +89,7 @@ pub fn create_context(
 pub fn create_context_from_type(
     device_type: cl_device_type,
     properties: *const cl_context_properties,
-    pfn_notify: Option<extern "C" fn(*const c_char, *const c_void, size_t, *mut c_void)>,
+    pfn_notify: Option<unsafe extern "C" fn(*const c_char, *const c_void, size_t, *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<cl_context, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
@@ -203,7 +192,7 @@ pub fn get_context_info(
 #[inline]
 pub fn set_context_destructor_callback(
     context: cl_context,
-    pfn_notify: extern "C" fn(cl_context, *const c_void),
+    pfn_notify: Option<unsafe extern "C" fn(cl_context, *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clSetContextDestructorCallback(context, pfn_notify, user_data) };

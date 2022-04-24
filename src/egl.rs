@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2021-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
 
 //! OpenCL OpenGl ES Interoperability API.
 
-#[allow(unused_imports)]
-use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-pub use super::ffi::cl_egl::*;
-#[allow(unused_imports)]
-pub use cl_sys::{cl_context, cl_event, cl_int, cl_mem_flags};
+pub use opencl_sys::cl_egl::*;
+
+pub use opencl_sys::{
+    cl_command_queue, cl_context, cl_event, cl_int, cl_mem, cl_mem_flags, cl_uint,
+    CL_INVALID_VALUE, CL_SUCCESS,
+};
+
 #[allow(unused_imports)]
 use std::ptr;
 

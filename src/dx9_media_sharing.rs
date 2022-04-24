@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2021-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,149 +13,32 @@
 // limitations under the License.
 
 //! FFI bindings for cl_dx9_media_sharing.h  
-//! cl_ecl_dx9_media_sharingxt.h contains OpenCL extensions that provide interoperability with Direct3D 9.  
+//! cl_ecl_dx9_media_sharing.h contains OpenCL extensions that provide interoperability with Direct3D 9.  
 //! OpenCL extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
 #![allow(non_camel_case_types)]
 
-#[allow(unused_imports)]
-use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-pub use super::ffi::cl_dx9_media_sharing::*;
-#[allow(unused_imports)]
-pub use cl_sys::{cl_device_id, cl_platform_id, cl_uint};
+pub use opencl_sys::cl_dx9_media_sharing::*;
+pub use opencl_sys::{
+    cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint, CL_INVALID_VALUE, CL_SUCCESS,
+};
+
+#[cfg(feature = "cl_intel_dx9_media_sharing")]
+use opencl_sys::cl_dx9_media_sharing::{
+    clCreateFromDX9MediaSurfaceINTEL, clEnqueueAcquireDX9ObjectsINTEL,
+    clEnqueueReleaseDX9ObjectsINTEL, clGetDeviceIDsFromDX9INTEL,
+};
+
+#[cfg(any(
+    feature = "cl_khr_dx9_media_sharing",
+    feature = "cl_intel_dx9_media_sharing"
+))]
+use opencl_sys::cl_dx9_media_sharing::clGetSupportedDX9MediaSurfaceFormatsINTEL;
+
 #[allow(unused_imports)]
 use libc::c_void;
 #[allow(unused_imports)]
 use std::ptr;
-
-#[cfg(feature = "cl_khr_dx9_media_sharing")]
-pub fn get_device_ids_from_dx9_media_adapter_khr(
-    platform: cl_platform_id,
-    num_media_adapters: cl_uint,
-    media_adapter_type: *mut cl_dx9_media_adapter_type_khr,
-    media_adapters: *mut c_void,
-    media_adapter_set: cl_dx9_media_adapter_set_khr,
-) -> Result<Vec<cl_device_id>, cl_int> {
-    let mut count: cl_uint = 0;
-    let status: cl_int = unsafe {
-        clGetDeviceIDsFromDX9MediaAdapterKHR(
-            platform,
-            num_media_adapters,
-            media_adapter_type,
-            media_adapters,
-            media_adapter_set,
-            0,
-            ptr::null_mut(),
-            &mut count,
-        )
-    };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
-        if 0 < count {
-            // Get the device ids.
-            let len = count as usize;
-            let mut ids: Vec<cl_device_id> = Vec::with_capacity(len);
-            let status: cl_int = unsafe {
-                clGetDeviceIDsFromDX9MediaAdapterKHR(
-                    platform,
-                    num_media_adapters,
-                    media_adapter_type,
-                    media_adapters,
-                    media_adapter_set,
-                    count,
-                    ids.as_mut_ptr(),
-                    ptr::null_mut(),
-                )
-            };
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
-                Ok(ids)
-            }
-        } else {
-            Ok(Vec::default())
-        }
-    }
-}
-
-#[cfg(feature = "cl_khr_dx9_media_sharing")]
-pub fn create_from_dx9_media_surface_khr(
-    context: cl_context,
-    flags: cl_mem_flags,
-    adapter_type: cl_dx9_media_adapter_type_khr,
-    surface_info: *mut c_void,
-    plane: cl_uint,
-) -> Result<cl_mem, cl_int> {
-    let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = unsafe {
-        clCreateFromDX9MediaSurfaceKHR(
-            context,
-            flags,
-            adapter_type,
-            surface_info,
-            plane,
-            &mut status,
-        )
-    };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
-        Ok(mem)
-    }
-}
-
-#[cfg(feature = "cl_khr_dx9_media_sharing")]
-pub fn enqueue_acquire_dx9_media_surfaces_khr(
-    command_queue: cl_command_queue,
-    num_objects: cl_uint,
-    mem_objects: *const cl_mem,
-    num_events_in_wait_list: cl_uint,
-    event_wait_list: *const cl_event,
-) -> Result<cl_event, cl_int> {
-    let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = unsafe {
-        clEnqueueAcquireDX9MediaSurfacesKHR(
-            command_queue,
-            num_objects,
-            mem_objects,
-            num_events_in_wait_list,
-            event_wait_list,
-            &mut event,
-        )
-    };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
-        Ok(event)
-    }
-}
-
-#[cfg(feature = "cl_khr_dx9_media_sharing")]
-pub fn enqueue_release_dx9_media_surfaces_khr(
-    command_queue: cl_command_queue,
-    num_objects: cl_uint,
-    mem_objects: *const cl_mem,
-    num_events_in_wait_list: cl_uint,
-    event_wait_list: *const cl_event,
-) -> Result<cl_event, cl_int> {
-    let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = unsafe {
-        clEnqueueReleaseDX9MediaSurfacesKHR(
-            command_queue,
-            num_objects,
-            mem_objects,
-            num_events_in_wait_list,
-            event_wait_list,
-            &mut event,
-        )
-    };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
-        Ok(event)
-    }
-}
 
 #[cfg(feature = "cl_intel_dx9_media_sharing")]
 pub fn get_device_ids_from_dx9_intel(
@@ -280,5 +163,56 @@ pub fn enqueue_release_dx9_objects_intel(
         Err(status)
     } else {
         Ok(event)
+    }
+}
+
+#[cfg(any(
+    feature = "cl_khr_dx9_media_sharing",
+    feature = "cl_intel_dx9_media_sharing"
+))]
+pub fn get_supported_dx9_media_surface_formats_intel(
+    context: cl_context,
+    flags: cl_mem_flags,
+    image_type: cl_mem_object_type,
+    plane: cl_uint,
+) -> Result<Vec<cl_uint>, cl_int> {
+    let mut count: cl_uint = 0;
+    let status: cl_int = unsafe {
+        clGetSupportedDX9MediaSurfaceFormatsINTEL(
+            context,
+            flags,
+            image_type,
+            plane,
+            0,
+            ptr::null_mut(),
+            &mut count,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        if 0 < count {
+            // Get the dx9 formats.
+            let len = count as usize;
+            let mut ids: Vec<cl_uint> = Vec::with_capacity(len);
+            let status: cl_int = unsafe {
+                clGetSupportedDX9MediaSurfaceFormatsINTEL(
+                    context,
+                    flags,
+                    image_type,
+                    plane,
+                    count,
+                    ids.as_mut_ptr(),
+                    ptr::null_mut(),
+                )
+            };
+            if CL_SUCCESS != status {
+                Err(status)
+            } else {
+                Ok(ids)
+            }
+        } else {
+            Ok(Vec::default())
+        }
     }
 }

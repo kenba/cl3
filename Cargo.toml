@@ -14,58 +14,53 @@ edition = "2021"
 
 [features]
 
-CL_VERSION_1_2 = ["cl-sys/opencl_version_1_2"]
-CL_VERSION_2_0 = ["cl-sys/opencl_version_2_0"]
-CL_VERSION_2_1 = ["cl-sys/opencl_version_2_1"]
-CL_VERSION_2_2 = ["cl-sys/opencl_version_2_2"]
-CL_VERSION_3_0 = []
+CL_VERSION_1_1 = ["opencl-sys/CL_VERSION_1_1"]
+CL_VERSION_1_2 = ["opencl-sys/CL_VERSION_1_2"]
+CL_VERSION_2_0 = ["opencl-sys/CL_VERSION_2_0"]
+CL_VERSION_2_1 = ["opencl-sys/CL_VERSION_2_1"]
+CL_VERSION_2_2 = ["opencl-sys/CL_VERSION_2_2"]
+CL_VERSION_3_0 = ["opencl-sys/CL_VERSION_3_0"]
 
-cl_apple_setmemobjectdestructor = []
-cl_khr_icd = []
-cl_khr_il_program = []
-cl_khr_terminate_context = []
-cl_khr_create_command_queue = []
-cl_ext_device_fission = []
-cl_ext_migrate_memobject = []
-cl_qcom_ext_host_ptr = []
-cl_img_use_gralloc_ptr = []
-cl_img_generate_mipmap = []
-cl_khr_subgroups = []
-cl_khr_suggested_local_work_size = []
-cl_khr_external_memory = []
-cl_khr_external_semaphore = []
-cl_khr_semaphore = []
-cl_arm_import_memory = []
-cl_arm_shared_virtual_memory = []
-cl_intel_accelerator = []
-cl_intel_unified_shared_memory = []
-cl_intel_create_buffer_with_properties = []
-cl_khr_command_buffer = []
+cl_apple_setmemobjectdestructor = ["opencl-sys/cl_apple_setmemobjectdestructor"]
+cl_apple_contextloggingfunctions = ["opencl-sys/cl_apple_contextloggingfunctions"]
 
-cl_khr_gl_sharing = []
-cl_khr_gl_event = []
-cl_khr_egl_image = []
-cl_khr_egl_event = []
+cl_khr_icd = ["opencl-sys/cl_khr_icd"]
+cl_khr_il_program = ["opencl-sys/cl_khr_il_program"]
+cl_khr_terminate_context = ["opencl-sys/cl_khr_terminate_context"]
+cl_khr_create_command_queue = ["opencl-sys/cl_khr_create_command_queue"]
+cl_ext_device_fission = ["opencl-sys/cl_ext_device_fission"]
+cl_ext_migrate_memobject = ["opencl-sys/cl_ext_migrate_memobject"]
+cl_qcom_ext_host_ptr = ["opencl-sys/cl_qcom_ext_host_ptr"]
+cl_img_use_gralloc_ptr = ["opencl-sys/cl_img_use_gralloc_ptr"]
+cl_img_generate_mipmap = ["opencl-sys/cl_img_generate_mipmap"]
+cl_khr_subgroups = ["opencl-sys/cl_khr_subgroups"]
+cl_khr_suggested_local_work_size = ["opencl-sys/cl_khr_suggested_local_work_size"]
+cl_khr_external_memory = ["opencl-sys/cl_khr_external_memory"]
+cl_khr_external_semaphore = ["opencl-sys/cl_khr_external_semaphore"]
+cl_khr_semaphore = ["opencl-sys/cl_khr_semaphore"]
+cl_arm_import_memory = ["opencl-sys/cl_arm_import_memory"]
+cl_arm_shared_virtual_memory = ["opencl-sys/cl_arm_shared_virtual_memory"]
+cl_intel_accelerator = ["opencl-sys/cl_intel_accelerator"]
+cl_intel_unified_shared_memory = ["opencl-sys/cl_intel_unified_shared_memory"]
+cl_intel_create_buffer_with_properties = ["opencl-sys/cl_intel_create_buffer_with_properties"]
+cl_khr_command_buffer = ["opencl-sys/cl_khr_command_buffer"]
 
-cl_khr_dx9_media_sharing = []
-cl_intel_dx9_media_sharing = []
-cl_khr_d3d10_sharing = []
-cl_khr_d3d11_sharing = []
+cl_khr_gl_sharing = ["opencl-sys/cl_khr_gl_sharing"]
+cl_khr_gl_event = ["opencl-sys/cl_khr_gl_event"]
+cl_khr_egl_image = ["opencl-sys/cl_khr_egl_image"]
+cl_khr_egl_event = ["opencl-sys/cl_khr_egl_event"]
+
+cl_khr_dx9_media_sharing = ["opencl-sys/cl_khr_dx9_media_sharing"]
+cl_intel_dx9_media_sharing = ["opencl-sys/cl_intel_dx9_media_sharing"]
+cl_khr_d3d10_sharing = ["opencl-sys/cl_khr_d3d10_sharing"]
+cl_khr_d3d11_sharing = ["opencl-sys/cl_khr_d3d11_sharing"]
 
 # Default features:
-default = ["CL_VERSION_1_2", "CL_VERSION_2_0"]
+default = ["CL_VERSION_1_1", "CL_VERSION_1_2"]
 
 [dependencies]
 libc = "0.2"
-
-[dependencies.cl-sys]
-version = "0.4.2"
-default-features = false
-# The `opencl_version_1_2` always needs to be enabled, else `cl-sys` won't
-# compile due to
-# https://github.com/cogciprocate/ocl/blob/03086863e95e43033ae67f1530801cb57032e1a3/cl-sys/src/cl_h.rs#L1051
-# accidentally not being commented out.
-features = ["opencl_version_1_2"]
+opencl-sys = "0.2"
 
 [[example]]
 name = "clinfo"

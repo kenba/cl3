@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@
 //!
 //! OpenCL and the OpenCL logo are trademarks of Apple Inc. used under license by Khronos.
 
-extern crate cl_sys;
+extern crate opencl_sys;
 
 pub mod command_queue;
 pub mod context;
@@ -80,7 +80,6 @@ pub mod egl;
 pub mod error_codes;
 pub mod event;
 pub mod ext;
-pub mod ffi;
 pub mod gl;
 pub mod info_type;
 pub mod kernel;

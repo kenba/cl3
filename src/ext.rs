@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2021-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,8 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 #![allow(clippy::wildcard_in_or_patterns)]
 
-pub use super::ffi::cl_ext::*;
+pub use opencl_sys::*;
 
-#[allow(unused_imports)]
-use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
 #[allow(unused_imports)]
 use super::info_type::InfoType;
 #[allow(unused_imports)]
@@ -484,7 +482,7 @@ pub fn get_command_buffer_info_khr(
 #[cfg(feature = "cl_apple_setmemobjectdestructor")]
 pub fn set_mem_object_destructor_apple(
     memobj: cl_mem,
-    pfn_notify: extern "C" fn(cl_context, *const c_void),
+    pfn_notify: Option<unsafe extern "C" fn(cl_context, *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clSetMemObjectDestructorAPPLE(memobj, pfn_notify, user_data) };
@@ -1080,12 +1078,12 @@ pub fn svm_free_arm(context: cl_context, svm_pointer: *mut c_void) {
 pub fn enqueue_svm_free_arm(
     command_queue: cl_command_queue,
     num_svm_pointers: cl_uint,
-    svm_pointers: *const *const c_void,
+    svm_pointers: *mut *mut c_void,
     pfn_free_func: Option<
-        extern "C" fn(
+        unsafe extern "C" fn(
             queue: cl_command_queue,
             num_svm_pointers: cl_uint,
-            svm_pointers: *const *const c_void,
+            svm_pointers: *mut *mut c_void,
             user_data: *mut c_void,
         ),
     >,

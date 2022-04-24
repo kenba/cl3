@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,52 +14,44 @@
 
 //! OpenCL Command Queue API.
 
-#![allow(non_camel_case_types)]
-#![allow(clippy::too_many_arguments)]
-#![allow(clippy::not_unsafe_ptr_arg_deref)]
+#![allow(non_camel_case_types, deprecated)]
+#![allow(clippy::too_many_arguments, clippy::not_unsafe_ptr_arg_deref)]
 
-pub use cl_sys::{
-    CL_QUEUE_CONTEXT, CL_QUEUE_DEVICE, CL_QUEUE_DEVICE_DEFAULT, CL_QUEUE_ON_DEVICE,
-    CL_QUEUE_ON_DEVICE_DEFAULT, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, CL_QUEUE_PROFILING_ENABLE,
-    CL_QUEUE_PROPERTIES, CL_QUEUE_REFERENCE_COUNT, CL_QUEUE_SIZE,
-};
-
-use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-use super::info_type::InfoType;
-#[allow(unused_imports)]
-use super::types::{
+pub use opencl_sys::{
     cl_bool, cl_command_queue, cl_command_queue_info, cl_command_queue_properties, cl_context,
     cl_device_id, cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_mem_migration_flags,
-    cl_queue_properties, cl_uint, cl_ulong,
+    cl_queue_properties, cl_uint, cl_ulong, CL_BLOCKING, CL_INVALID_VALUE, CL_NON_BLOCKING,
+    CL_QUEUE_CONTEXT, CL_QUEUE_DEVICE, CL_QUEUE_DEVICE_DEFAULT, CL_QUEUE_ON_DEVICE,
+    CL_QUEUE_ON_DEVICE_DEFAULT, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, CL_QUEUE_PROFILING_ENABLE,
+    CL_QUEUE_PROPERTIES, CL_QUEUE_PROPERTIES_ARRAY, CL_QUEUE_REFERENCE_COUNT, CL_QUEUE_SIZE,
+    CL_SUCCESS,
 };
-use super::{api_info_size, api_info_value, api_info_vector};
-#[cfg(feature = "CL_VERSION_2_1")]
-use cl_sys::clEnqueueSVMMigrateMem;
-use cl_sys::{
-    clCreateCommandQueue, clEnqueueCopyBuffer, clEnqueueCopyBufferRect, clEnqueueCopyBufferToImage,
-    clEnqueueCopyImage, clEnqueueCopyImageToBuffer, clEnqueueMapBuffer, clEnqueueMapImage,
+
+use opencl_sys::{
+    clCreateCommandQueue, clEnqueueBarrierWithWaitList, clEnqueueCopyBuffer,
+    clEnqueueCopyBufferRect, clEnqueueCopyBufferToImage, clEnqueueCopyImage,
+    clEnqueueCopyImageToBuffer, clEnqueueFillBuffer, clEnqueueFillImage, clEnqueueMapBuffer,
+    clEnqueueMapImage, clEnqueueMarkerWithWaitList, clEnqueueMigrateMemObjects,
     clEnqueueNDRangeKernel, clEnqueueNativeKernel, clEnqueueReadBuffer, clEnqueueReadBufferRect,
-    clEnqueueReadImage, clEnqueueUnmapMemObject, clEnqueueWriteBuffer, clEnqueueWriteBufferRect,
-    clEnqueueWriteImage, clFinish, clFlush, clGetCommandQueueInfo, clReleaseCommandQueue,
-    clRetainCommandQueue,
+    clEnqueueReadImage, clEnqueueTask, clEnqueueUnmapMemObject, clEnqueueWriteBuffer,
+    clEnqueueWriteBufferRect, clEnqueueWriteImage, clFinish, clFlush, clGetCommandQueueInfo,
+    clReleaseCommandQueue, clRetainCommandQueue,
 };
+
 #[cfg(feature = "CL_VERSION_2_0")]
-use cl_sys::{
+use opencl_sys::{
     clCreateCommandQueueWithProperties, clEnqueueSVMFree, clEnqueueSVMMap, clEnqueueSVMMemFill,
     clEnqueueSVMMemcpy, clEnqueueSVMUnmap,
 };
-#[cfg(feature = "CL_VERSION_1_2")]
-use cl_sys::{
-    clEnqueueBarrierWithWaitList, clEnqueueFillBuffer, clEnqueueFillImage,
-    clEnqueueMarkerWithWaitList, clEnqueueMigrateMemObjects, clEnqueueTask,
-};
 
+#[cfg(feature = "CL_VERSION_2_1")]
+use opencl_sys::clEnqueueSVMMigrateMem;
+
+use super::info_type::InfoType;
+use super::{api_info_size, api_info_value, api_info_vector};
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
-
-// Missing from cl_sys
-pub const CL_QUEUE_PROPERTIES_ARRAY: cl_command_queue_info = 0x1098;
 
 /// Create an OpenCL host or device command-queue on a specific device.  
 /// Calls clCreateCommandQueue to create an OpenCL context.  
@@ -72,6 +64,10 @@ pub const CL_QUEUE_PROPERTIES_ARRAY: cl_command_queue_info = 0x1098;
 ///
 /// returns a Result containing the new OpenCL command-queue
 /// or the error code from the OpenCL C API function.
+#[deprecated(
+    since = "0.1.0",
+    note = "From CL_VERSION_2_0 use create_command_queue_with_properties"
+)]
 #[inline]
 pub fn create_command_queue(
     context: cl_context,
@@ -865,6 +861,10 @@ pub fn enqueue_nd_range_kernel(
 
 // Deprecated in CL_VERSION_2_0
 #[cfg(feature = "CL_VERSION_1_2")]
+#[deprecated(
+    since = "0.1.0",
+    note = "From CL_VERSION_2_0 use enqueue_nd_range_kernel"
+)]
 #[inline]
 pub fn enqueue_task(
     command_queue: cl_command_queue,
@@ -892,7 +892,7 @@ pub fn enqueue_task(
 #[inline]
 pub fn enqueue_native_kernel(
     command_queue: cl_command_queue,
-    user_func: Option<extern "C" fn(*mut c_void)>,
+    user_func: Option<unsafe extern "C" fn(*mut c_void)>,
     args: *mut c_void,
     cb_args: size_t,
     num_mem_objects: cl_uint,
@@ -976,10 +976,10 @@ pub fn enqueue_svm_free(
     num_svm_pointers: cl_uint,
     svm_pointers: *const *const c_void,
     pfn_free_func: Option<
-        extern "C" fn(
+        unsafe extern "C" fn(
             queue: cl_command_queue,
             num_svm_pointers: cl_uint,
-            svm_pointers: *const *const c_void,
+            svm_pointers: *mut *mut c_void,
             user_data: *mut c_void,
         ),
     >,

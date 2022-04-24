@@ -17,102 +17,50 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
-pub use cl_sys::{
-    CL_RGBx, CL_RGx, CL_Rx, CL_sRGB, CL_sRGBA, CL_sRGBx, CL_A, CL_ABGR, CL_ADDRESS_CLAMP,
-    CL_ADDRESS_CLAMP_TO_EDGE, CL_ADDRESS_MIRRORED_REPEAT, CL_ADDRESS_NONE, CL_ADDRESS_REPEAT,
-    CL_ARGB, CL_BGRA, CL_BUFFER_CREATE_TYPE_REGION, CL_DEPTH, CL_DEPTH_STENCIL, CL_FILTER_LINEAR,
+pub use opencl_sys::{
+    cl_buffer_create_type, cl_buffer_region, cl_context, cl_image_desc, cl_image_format,
+    cl_image_info, cl_int, cl_mem, cl_mem_flags, cl_mem_info, cl_mem_object_type,
+    cl_mem_properties, cl_pipe_info, cl_svm_mem_flags, cl_uint, cl_ulong, CL_RGBx, CL_RGx, CL_Rx,
+    CL_sRGB, CL_sRGBA, CL_sRGBx, CL_A, CL_ABGR, CL_ADDRESS_CLAMP, CL_ADDRESS_CLAMP_TO_EDGE,
+    CL_ADDRESS_MIRRORED_REPEAT, CL_ADDRESS_NONE, CL_ADDRESS_REPEAT, CL_ARGB, CL_BGRA,
+    CL_BUFFER_CREATE_TYPE_REGION, CL_DEPTH, CL_DEPTH_STENCIL, CL_FALSE, CL_FILTER_LINEAR,
     CL_FILTER_NEAREST, CL_FLOAT, CL_HALF_FLOAT, CL_IMAGE_ARRAY_SIZE, CL_IMAGE_BUFFER,
     CL_IMAGE_DEPTH, CL_IMAGE_ELEMENT_SIZE, CL_IMAGE_FORMAT, CL_IMAGE_HEIGHT,
     CL_IMAGE_NUM_MIP_LEVELS, CL_IMAGE_NUM_SAMPLES, CL_IMAGE_ROW_PITCH, CL_IMAGE_SLICE_PITCH,
-    CL_IMAGE_WIDTH, CL_INTENSITY, CL_LUMINANCE, CL_MAP_READ, CL_MAP_WRITE,
+    CL_IMAGE_WIDTH, CL_INTENSITY, CL_INVALID_VALUE, CL_LUMINANCE, CL_MAP_READ, CL_MAP_WRITE,
     CL_MAP_WRITE_INVALIDATE_REGION, CL_MEM_ALLOC_HOST_PTR, CL_MEM_ASSOCIATED_MEMOBJECT,
     CL_MEM_CONTEXT, CL_MEM_COPY_HOST_PTR, CL_MEM_FLAGS, CL_MEM_HOST_NO_ACCESS, CL_MEM_HOST_PTR,
     CL_MEM_HOST_READ_ONLY, CL_MEM_HOST_WRITE_ONLY, CL_MEM_KERNEL_READ_AND_WRITE, CL_MEM_MAP_COUNT,
     CL_MEM_OBJECT_BUFFER, CL_MEM_OBJECT_IMAGE1D, CL_MEM_OBJECT_IMAGE1D_ARRAY,
     CL_MEM_OBJECT_IMAGE1D_BUFFER, CL_MEM_OBJECT_IMAGE2D, CL_MEM_OBJECT_IMAGE2D_ARRAY,
-    CL_MEM_OBJECT_IMAGE3D, CL_MEM_OBJECT_PIPE, CL_MEM_OFFSET, CL_MEM_READ_ONLY, CL_MEM_READ_WRITE,
-    CL_MEM_REFERENCE_COUNT, CL_MEM_SIZE, CL_MEM_SVM_ATOMICS, CL_MEM_SVM_FINE_GRAIN_BUFFER,
-    CL_MEM_TYPE, CL_MEM_USES_SVM_POINTER, CL_MEM_USE_HOST_PTR, CL_MEM_WRITE_ONLY,
-    CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED, CL_MIGRATE_MEM_OBJECT_HOST, CL_PIPE_MAX_PACKETS,
-    CL_PIPE_PACKET_SIZE, CL_R, CL_RA, CL_RG, CL_RGB, CL_RGBA, CL_SIGNED_INT16, CL_SIGNED_INT32,
-    CL_SIGNED_INT8, CL_SNORM_INT16, CL_SNORM_INT8, CL_UNORM_INT16, CL_UNORM_INT24, CL_UNORM_INT8,
-    CL_UNORM_INT_101010, CL_UNORM_INT_101010_2, CL_UNORM_SHORT_555, CL_UNORM_SHORT_565,
-    CL_UNSIGNED_INT16, CL_UNSIGNED_INT32, CL_UNSIGNED_INT8,
+    CL_MEM_OBJECT_IMAGE3D, CL_MEM_OBJECT_PIPE, CL_MEM_OFFSET, CL_MEM_PROPERTIES, CL_MEM_READ_ONLY,
+    CL_MEM_READ_WRITE, CL_MEM_REFERENCE_COUNT, CL_MEM_SIZE, CL_MEM_SVM_ATOMICS,
+    CL_MEM_SVM_FINE_GRAIN_BUFFER, CL_MEM_TYPE, CL_MEM_USES_SVM_POINTER, CL_MEM_USE_HOST_PTR,
+    CL_MEM_WRITE_ONLY, CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED, CL_MIGRATE_MEM_OBJECT_HOST,
+    CL_PIPE_MAX_PACKETS, CL_PIPE_PACKET_SIZE, CL_PIPE_PROPERTIES, CL_R, CL_RA, CL_RG, CL_RGB,
+    CL_RGBA, CL_SIGNED_INT16, CL_SIGNED_INT32, CL_SIGNED_INT8, CL_SNORM_INT16, CL_SNORM_INT8,
+    CL_SUCCESS, CL_TRUE, CL_UNORM_INT16, CL_UNORM_INT24, CL_UNORM_INT8, CL_UNORM_INT_101010,
+    CL_UNORM_INT_101010_2, CL_UNORM_SHORT_555, CL_UNORM_SHORT_565, CL_UNSIGNED_INT16,
+    CL_UNSIGNED_INT32, CL_UNSIGNED_INT8,
 };
 
-use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-use super::info_type::InfoType;
-#[allow(unused_imports)]
-use super::types::{
-    cl_buffer_create_type, cl_context, cl_image_desc, cl_image_format, cl_image_info, cl_int,
-    cl_map_flags, cl_mem, cl_mem_flags, cl_mem_info, cl_mem_object_type, cl_mem_properties,
-    cl_pipe_info, cl_svm_mem_flags, cl_uint, cl_ulong,
+use opencl_sys::{
+    clCreateBuffer, clCreateImage, clCreateSubBuffer, clGetImageInfo, clGetMemObjectInfo,
+    clGetSupportedImageFormats, clReleaseMemObject, clRetainMemObject,
+    clSetMemObjectDestructorCallback,
 };
-use cl_sys::{
-    clCreateBuffer, clCreateSubBuffer, clGetImageInfo, clGetMemObjectInfo, clReleaseMemObject,
-    clRetainMemObject, clSetMemObjectDestructorCallback,
-};
+
 #[cfg(feature = "CL_VERSION_2_0")]
-use cl_sys::{clCreatePipe, clGetPipeInfo, clSVMAlloc, clSVMFree};
+use opencl_sys::{clCreatePipe, clGetPipeInfo, clSVMAlloc, clSVMFree};
 
+#[cfg(feature = "CL_VERSION_3_0")]
+use opencl_sys::{clCreateBufferWithProperties, clCreateImageWithProperties};
+
+use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
-
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
-
-// clGetSupportedImageFormats and clCreateImage because cl_image_format does not
-// derive the Debug trait.
-// clCreateBufferWithProperties, clCreateImageWithProperties are CL_VERSION_3_0
-#[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
-#[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
-extern "system" {
-    pub fn clGetSupportedImageFormats(
-        context: cl_context,
-        flags: cl_mem_flags,
-        image_type: cl_mem_object_type,
-        num_entries: cl_uint,
-        image_formats: *mut cl_image_format,
-        num_image_formats: *mut cl_uint,
-    ) -> cl_int;
-
-    #[cfg(feature = "CL_VERSION_1_2")]
-    pub fn clCreateImage(
-        context: cl_context,
-        flags: cl_mem_flags,
-        image_format: *const cl_image_format,
-        image_desc: *const cl_image_desc,
-        host_ptr: *mut c_void,
-        errcode_ret: *mut cl_int,
-    ) -> cl_mem;
-
-    // #ifdef CL_VERSION_3_0
-    #[cfg(feature = "CL_VERSION_3_0")]
-    pub fn clCreateBufferWithProperties(
-        context: cl_context,
-        properties: *const cl_mem_properties,
-        flags: cl_mem_flags,
-        size: size_t,
-        host_ptr: *mut c_void,
-        errcode_ret: *mut cl_int,
-    ) -> cl_mem;
-
-    #[cfg(feature = "CL_VERSION_3_0")]
-    pub fn clCreateImageWithProperties(
-        context: cl_context,
-        properties: *const cl_mem_properties,
-        flags: cl_mem_flags,
-        image_format: *const cl_image_format,
-        image_desc: *const cl_image_desc,
-        host_ptr: *mut c_void,
-        errcode_ret: *mut cl_int,
-    ) -> cl_mem;
-    // #endif
-}
-
-// Missing from cl_sys
-pub const CL_MEM_PROPERTIES: cl_mem_info = 0x110A;
-pub const CL_PIPE_PROPERTIES: cl_pipe_info = 0x1122;
 
 /// Create an OpenCL buffer object for a context.  
 /// Calls clCreateBuffer to create an OpenCL buffer object.  

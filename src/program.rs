@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,40 +15,33 @@
 //! OpenCL Program Object API.
 
 #![allow(non_camel_case_types)]
-#![allow(clippy::not_unsafe_ptr_arg_deref)]
-#![allow(clippy::wildcard_in_or_patterns)]
+#![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
-pub use cl_sys::{
-    CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE, CL_BUILD_SUCCESS, CL_PROGRAM_BINARIES,
-    CL_PROGRAM_BINARY_SIZES, CL_PROGRAM_BINARY_TYPE, CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT,
+pub use opencl_sys::{
+    cl_context, cl_device_id, cl_int, cl_platform_id, cl_program, cl_program_build_info,
+    cl_program_info, cl_uchar, cl_uint, CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE,
+    CL_BUILD_SUCCESS, CL_FALSE, CL_INVALID_VALUE, CL_PROGRAM_BINARIES, CL_PROGRAM_BINARY_SIZES,
+    CL_PROGRAM_BINARY_TYPE, CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT,
     CL_PROGRAM_BINARY_TYPE_EXECUTABLE, CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_NONE,
     CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE, CL_PROGRAM_BUILD_LOG, CL_PROGRAM_BUILD_OPTIONS,
     CL_PROGRAM_BUILD_STATUS, CL_PROGRAM_CONTEXT, CL_PROGRAM_DEVICES, CL_PROGRAM_IL,
     CL_PROGRAM_KERNEL_NAMES, CL_PROGRAM_NUM_DEVICES, CL_PROGRAM_NUM_KERNELS,
-    CL_PROGRAM_REFERENCE_COUNT, CL_PROGRAM_SOURCE,
+    CL_PROGRAM_REFERENCE_COUNT, CL_PROGRAM_SOURCE, CL_SUCCESS, CL_TRUE,
 };
 
-use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-use super::info_type::InfoType;
-#[allow(unused_imports)]
-use super::types::{
-    cl_context, cl_device_id, cl_int, cl_platform_id, cl_program, cl_program_build_info,
-    cl_program_info, cl_uint,
+use opencl_sys::{
+    clBuildProgram, clCompileProgram, clCreateProgramWithBinary, clCreateProgramWithSource,
+    clGetProgramBuildInfo, clGetProgramInfo, clLinkProgram, clReleaseProgram, clRetainProgram,
 };
+
+#[cfg(feature = "CL_VERSION_2_1")]
+use opencl_sys::clCreateProgramWithIL;
+
+use super::info_type::InfoType;
 use super::{
     api2_info_size, api2_info_value, api2_info_vector, api_info_size, api_info_value,
     api_info_vector,
 };
-
-#[cfg(feature = "CL_VERSION_2_1")]
-use cl_sys::clCreateProgramWithIL;
-use cl_sys::{
-    clBuildProgram, clCreateProgramWithBinary, clCreateProgramWithSource, clGetProgramBuildInfo,
-    clGetProgramInfo, clReleaseProgram, clRetainProgram,
-};
-#[cfg(feature = "CL_VERSION_1_2")]
-use cl_sys::{clCompileProgram, clLinkProgram};
-
 use libc::{c_char, c_uchar, c_void, intptr_t, size_t};
 use std::ffi::CStr;
 use std::mem;
@@ -273,7 +266,7 @@ pub fn build_program(
     program: cl_program,
     devices: &[cl_device_id],
     options: &CStr,
-    pfn_notify: Option<extern "C" fn(cl_program, *mut c_void)>,
+    pfn_notify: Option<unsafe extern "C" fn(cl_program, *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = unsafe {
@@ -320,7 +313,7 @@ pub fn compile_program(
     options: &CStr,
     input_headers: &[cl_program],
     header_include_names: &[&CStr],
-    pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
+    pfn_notify: Option<unsafe extern "C" fn(program: cl_program, user_data: *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
     assert!(input_headers.len() == header_include_names.len());
@@ -378,7 +371,7 @@ pub fn link_program(
     devices: &[cl_device_id],
     options: &CStr,
     input_programs: &[cl_program],
-    pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
+    pfn_notify: Option<unsafe extern "C" fn(program: cl_program, user_data: *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<cl_program, cl_int> {
     assert!(!input_programs.is_empty());
@@ -652,7 +645,6 @@ mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
     use crate::device::{get_device_ids, CL_DEVICE_TYPE_ALL};
-    #[allow(unused_imports)]
     use crate::error_codes::error_text;
     use crate::platform::get_platform_ids;
     use std::ffi::CString;

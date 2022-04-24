@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,11 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 #![allow(clippy::wildcard_in_or_patterns)]
 
-pub use cl_sys::{
-    CL_KERNEL_ARG_ACCESS_NONE, CL_KERNEL_ARG_ACCESS_QUALIFIER, CL_KERNEL_ARG_ACCESS_READ_ONLY,
+pub use opencl_sys::{
+    cl_device_id, cl_int, cl_kernel, cl_kernel_arg_access_qualifier, cl_kernel_arg_info,
+    cl_kernel_exec_info, cl_kernel_info, cl_kernel_sub_group_info, cl_kernel_work_group_info,
+    cl_program, cl_uint, cl_ulong, CL_INVALID_VALUE, CL_KERNEL_ARG_ACCESS_NONE,
+    CL_KERNEL_ARG_ACCESS_QUALIFIER, CL_KERNEL_ARG_ACCESS_READ_ONLY,
     CL_KERNEL_ARG_ACCESS_READ_WRITE, CL_KERNEL_ARG_ACCESS_WRITE_ONLY,
     CL_KERNEL_ARG_ADDRESS_CONSTANT, CL_KERNEL_ARG_ADDRESS_GLOBAL, CL_KERNEL_ARG_ADDRESS_LOCAL,
     CL_KERNEL_ARG_ADDRESS_PRIVATE, CL_KERNEL_ARG_ADDRESS_QUALIFIER, CL_KERNEL_ARG_NAME,
@@ -33,30 +36,25 @@ pub use cl_sys::{
     CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE, CL_KERNEL_NUM_ARGS,
     CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, CL_KERNEL_PRIVATE_MEM_SIZE, CL_KERNEL_PROGRAM,
     CL_KERNEL_REFERENCE_COUNT, CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE, CL_KERNEL_WORK_GROUP_SIZE,
+    CL_SUCCESS,
 };
 
-use super::error_codes::{CL_INVALID_VALUE, CL_SUCCESS};
-use super::info_type::InfoType;
-#[allow(unused_imports)]
-use super::types::{
-    cl_device_id, cl_int, cl_kernel, cl_kernel_arg_access_qualifier,
-    cl_kernel_arg_address_qualifier, cl_kernel_arg_info, cl_kernel_exec_info, cl_kernel_info,
-    cl_kernel_sub_group_info, cl_kernel_work_group_info, cl_program, cl_uint, cl_ulong,
+use opencl_sys::{
+    clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
+    clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel, clSetKernelArg,
 };
+
+#[cfg(feature = "CL_VERSION_2_0")]
+use opencl_sys::{clSetKernelArgSVMPointer, clSetKernelExecInfo};
+
+#[cfg(feature = "CL_VERSION_2_1")]
+use opencl_sys::{clCloneKernel, clGetKernelSubGroupInfo};
+
+use super::info_type::InfoType;
 use super::{
     api2_info_size, api2_info_value, api2_info_vector, api_info_size, api_info_value,
     api_info_vector,
 };
-#[cfg(feature = "CL_VERSION_2_1")]
-use cl_sys::{clCloneKernel, clGetKernelSubGroupInfo};
-#[allow(unused_imports)]
-use cl_sys::{
-    clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
-    clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel, clSetKernelArg,
-};
-#[cfg(feature = "CL_VERSION_2_0")]
-use cl_sys::{clSetKernelArgSVMPointer, clSetKernelExecInfo};
-
 use libc::{c_void, intptr_t, size_t};
 use std::ffi::CStr;
 use std::mem;
@@ -284,7 +282,7 @@ pub fn get_kernel_info(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<
 pub fn get_kernel_arg_data(
     kernel: cl_kernel,
     arg_indx: cl_uint,
-    param_name: cl_kernel_arg_access_qualifier,
+    param_name: cl_kernel_arg_info,
 ) -> Result<Vec<u8>, cl_int> {
     api2_info_size!(get_size, cl_uint, clGetKernelArgInfo);
     let size = get_size(kernel, arg_indx, param_name)?;
@@ -306,7 +304,7 @@ pub fn get_kernel_arg_data(
 pub fn get_kernel_arg_info(
     kernel: cl_kernel,
     arg_indx: cl_uint,
-    param_name: cl_kernel_arg_access_qualifier,
+    param_name: cl_kernel_arg_info,
 ) -> Result<InfoType, cl_int> {
     match param_name {
         CL_KERNEL_ARG_ADDRESS_QUALIFIER | CL_KERNEL_ARG_ACCESS_QUALIFIER => {
