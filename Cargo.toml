@@ -60,7 +60,7 @@ default = ["CL_VERSION_1_1", "CL_VERSION_1_2"]
 
 [dependencies]
 libc = "0.2"
-opencl-sys = "0.2"
+opencl-sys = { git = "https://github.com/kenba/opencl-sys-rs", branch = "develop", version = "0.2"}
 
 [[example]]
 name = "clinfo"

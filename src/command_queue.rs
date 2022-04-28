@@ -64,9 +64,17 @@ use std::ptr;
 ///
 /// returns a Result containing the new OpenCL command-queue
 /// or the error code from the OpenCL C API function.
-#[deprecated(
-    since = "0.1.0",
-    note = "From CL_VERSION_2_0 use create_command_queue_with_properties"
+#[cfg_attr(
+    any(
+        feature = "CL_VERSION_2_0",
+        feature = "CL_VERSION_2_1",
+        feature = "CL_VERSION_2_2",
+        feature = "CL_VERSION_3_0"
+    ),
+    deprecated(
+        since = "0.1.0",
+        note = "From CL_VERSION_2_0 use create_command_queue_with_properties"
+    )
 )]
 #[inline]
 pub fn create_command_queue(
@@ -860,10 +868,17 @@ pub fn enqueue_nd_range_kernel(
 }
 
 // Deprecated in CL_VERSION_2_0
-#[cfg(feature = "CL_VERSION_1_2")]
-#[deprecated(
-    since = "0.1.0",
-    note = "From CL_VERSION_2_0 use enqueue_nd_range_kernel"
+#[cfg_attr(
+    any(
+        feature = "CL_VERSION_2_0",
+        feature = "CL_VERSION_2_1",
+        feature = "CL_VERSION_2_2",
+        feature = "CL_VERSION_3_0"
+    ),
+    deprecated(
+        since = "0.1.0",
+        note = "From CL_VERSION_2_0 use enqueue_nd_range_kernel"
+    )
 )]
 #[inline]
 pub fn enqueue_task(

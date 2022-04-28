@@ -49,9 +49,17 @@ use std::ptr;
 /// are described in: [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table) table.  
 /// returns a Result containing the new OpenCL sampler object
 /// or the error code from the OpenCL C API function.
-#[deprecated(
-    since = "0.1.0",
-    note = "From CL_VERSION_2_0 use create_sampler_with_properties"
+#[cfg_attr(
+    any(
+        feature = "CL_VERSION_2_0",
+        feature = "CL_VERSION_2_1",
+        feature = "CL_VERSION_2_2",
+        feature = "CL_VERSION_3_0"
+    ),
+    deprecated(
+        since = "0.1.0",
+        note = "From CL_VERSION_2_0 use create_sampler_with_properties"
+    )
 )]
 #[inline]
 pub fn create_sampler(
