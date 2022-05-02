@@ -1,6 +1,6 @@
 [package]
 name = "cl3"
-version = "0.7.0"
+version = "0.8.0"
 authors = ["Ken Barker <ken.barker@via-technology.aero>"]
 description = "A Rust implementation of the Khronos OpenCL 3.0 API and extensions."
 documentation = "https://docs.rs/cl3/"
@@ -60,7 +60,7 @@ default = ["CL_VERSION_1_1", "CL_VERSION_1_2"]
 
 [dependencies]
 libc = "0.2"
-opencl-sys = { git = "https://github.com/kenba/opencl-sys-rs", branch = "develop", version = "0.2"}
+opencl-sys = "0.2"
 
 [[example]]
 name = "clinfo"

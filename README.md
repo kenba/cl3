@@ -10,9 +10,9 @@ A Rust adapter for the Khronos [OpenCL](https://www.khronos.org/registry/OpenCL/
 
 # Description
 
-A functional, safe Rust interface to the Khronos OpenCL 3.0
-[C API](https://github.com/KhronosGroup/OpenCL-Headers/blob/master/CL/cl.h)
-based upon the [cl-sys](https://crates.io/crates/cl-sys) OpenCL FFI bindings.  
+A functional, safe Rust interface to the Khronos
+[OpenCL 3.0 C API](https://github.com/KhronosGroup/OpenCL-Headers)
+based upon the [opencl-sys](https://crates.io/crates/opencl-sys) OpenCL FFI bindings.  
 It is the foundation of the [opencl3](https://crates.io/crates/opencl3) crate
 which provides a simpler, object based model of the OpenCL 3.0 API.
 
@@ -38,6 +38,12 @@ They contain Rust adapter functions for the OpenCL API C functions defined
 in those sections with their associated types and constants.  
 For more information see the Rust [documentation](https://docs.rs/cl3/).
 
+The API for OpenCL versions and extensions are controlled by Rust features such as "CL_VERSION_2_0" and "cl_khr_gl_sharing". To enable an OpenCL version, the feature for that version and **all** previous OpenCL versions must be enabled, e.g. for "CL_VERSION_2_0"; "CL_VERSION_1_1" and "CL_VERSION_1_2" must also be enabled.
+
+The default features are "CL_VERSION_1_1" and "CL_VERSION_1_2".
+
+Rust deprecation warnings are given for OpenCL API functions that are deprecated by an enabled OpenCL version e.g., `clCreateCommandQueue` is deprecated whenever "CL_VERSION_2_0" is enabled.
+
 ## Use
 
 Ensure that an OpenCL Installable Client Driver (ICD) and the appropriate OpenCL
@@ -49,24 +55,24 @@ OpenCL 2.0 ICD loader then add the following to your project's `Cargo.toml`:
 
 ```toml
 [dependencies]
-cl3 = "0.7"
+cl3 = "0.8"
 ```
 
 If your OpenCL ICD loader supports higher versions of OpenCL then add the
-appropriate features to cl3, e.g. for an OpenCL 2.2 ICD loader add the
+appropriate features to cl3, e.g. for an OpenCL 2.1 ICD loader add the
 following to your project's `Cargo.toml` instead:
 
 ```toml
 [dependencies.cl3]
-version = "0.7"
-features = ["CL_VERSION_2_1", "CL_VERSION_2_2"]
+version = "0.8"
+features = ["CL_VERSION_1_1", "CL_VERSION_1_2", "CL_VERSION_2_0", "CL_VERSION_2_1"]
 ```
 
 OpenCL extensions can also be enabled by adding their features, e.g.:
 
 ```toml
 [dependencies.cl3]
-version = "0.7"
+version = "0.8"
 features = ["cl_khr_gl_sharing", "cl_khr_dx9_media_sharing"]
 ```
 

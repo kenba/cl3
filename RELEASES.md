@@ -1,5 +1,12 @@
 # Releases
 
+## Version 0.8.0 (2022-05-02)
+
+### Breaking Changes
+
+* Issue [#22](https://github.com/kenba/cl3/issues/22) Base `cl3` on [opencl-sys](https://crates.io/crates/opencl-sys) crate.
+* Issue [#23](https://github.com/kenba/cl3/issues/23) Put deprecation notices behind conditional attributes.
+
 ## Version 0.7.0 (2022-04-10)
 
 ### Breaking Changes
