@@ -24,7 +24,7 @@
 //!
 //! A functional, safe Rust interface to the Khronos OpenCL 3.0
 //! [C API](https://github.com/KhronosGroup/OpenCL-Headers/blob/master/CL/cl.h)
-//! based upon the [cl-sys](https://crates.io/crates/cl-sys) OpenCL FFI bindings.
+//! based upon the [opencl-sys](https://crates.io/crates/opencl-sys) OpenCL FFI bindings.
 //!
 //! [OpenCL 3.0](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html)
 //! is a unified specification that adds little new functionality to previous OpenCL versions.  
