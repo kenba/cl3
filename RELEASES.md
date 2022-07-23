@@ -1,5 +1,11 @@
 # Releases
 
+## Version 0.8.1 (2022-07-23)
+
+### New Features
+
+* Issue [#24](https://github.com/kenba/cl3/issues/24) Update for extension `cl_ext_image_requirements_info`.
+
 ## Version 0.8.0 (2022-05-02)
 
 ### Breaking Changes
