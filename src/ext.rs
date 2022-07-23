@@ -1660,3 +1660,54 @@ pub fn create_buffer_with_properties_intel(
         Ok(mem)
     }
 }
+
+#[cfg(feature = "cl_ext_image_requirements_info")]
+pub fn get_image_requirements_info_ext(
+    context: cl_context,
+    properties: *const cl_mem_properties,
+    flags: cl_mem_flags,
+    image_format: *const cl_image_format,
+    image_desc: *const cl_image_desc,
+    param_name: cl_image_requirements_info_ext,
+) -> Result<Vec<u8>, cl_int> {
+    // get the size
+    let mut size: size_t = mem::size_of::<u8>();
+    let status: cl_int = unsafe {
+        clGetImageRequirementsInfoEXT(
+            context,
+            properties,
+            flags,
+            image_format,
+            image_desc,
+            param_name,
+            0,
+            ptr::null_mut(),
+            &mut size,
+        )
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        // Get the data.
+        let mut data: Vec<u8> = Vec::with_capacity(size);
+        let status = unsafe {
+            data.set_len(size);
+            clGetImageRequirementsInfoEXT(
+                context,
+                properties,
+                flags,
+                image_format,
+                image_desc,
+                param_name,
+                size,
+                data.as_mut_ptr() as *mut c_void,
+                ptr::null_mut(),
+            )
+        };
+        if CL_SUCCESS != status {
+            Err(status)
+        } else {
+            Ok(data)
+        }
+    }
+}
