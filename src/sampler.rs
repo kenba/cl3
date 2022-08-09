@@ -118,8 +118,8 @@ pub fn create_sampler_with_properties(
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clRetainSampler(sampler) };
+pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
+    let status: cl_int = clRetainSampler(sampler);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -134,8 +134,8 @@ pub fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clReleaseSampler(sampler) };
+pub unsafe fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
+    let status: cl_int = clReleaseSampler(sampler);
     if CL_SUCCESS != status {
         Err(status)
     } else {

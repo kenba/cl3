@@ -243,17 +243,19 @@ fn test_opencl_1_2_example() {
     /////////////////////////////////////////////////////////////////////
     // Release OpenCL objects
 
-    release_event(x_write_event).unwrap();
-    release_event(y_write_event).unwrap();
-    release_event(kernel_event).unwrap();
-    release_event(read_event).unwrap();
-    release_mem_object(z).unwrap();
-    release_mem_object(y).unwrap();
-    release_mem_object(x).unwrap();
+    unsafe {
+        release_event(x_write_event).unwrap();
+        release_event(y_write_event).unwrap();
+        release_event(kernel_event).unwrap();
+        release_event(read_event).unwrap();
+        release_mem_object(z).unwrap();
+        release_mem_object(y).unwrap();
+        release_mem_object(x).unwrap();
 
-    // Release the OpenCL compute environment
-    release_kernel(kernel).unwrap();
-    release_program(program).unwrap();
-    release_command_queue(queue).unwrap();
-    release_context(context).unwrap();
+        // Release the OpenCL compute environment
+        release_kernel(kernel).unwrap();
+        release_program(program).unwrap();
+        release_command_queue(queue).unwrap();
+        release_context(context).unwrap();
+    }
 }

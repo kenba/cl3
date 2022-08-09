@@ -301,8 +301,8 @@ pub fn create_image_with_properties(
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clRetainMemObject(memobj) };
+pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
+    let status: cl_int = clRetainMemObject(memobj);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -317,8 +317,8 @@ pub fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn release_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clReleaseMemObject(memobj) };
+pub unsafe fn release_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
+    let status: cl_int = clReleaseMemObject(memobj);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -589,6 +589,6 @@ pub fn svm_alloc(
 /// * `svm_pointer` - the value returned by a call to clSVMAlloc.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
-pub fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
-    unsafe { clSVMFree(context, svm_pointer) };
+pub unsafe fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
+    clSVMFree(context, svm_pointer);
 }

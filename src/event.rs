@@ -133,8 +133,8 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn retain_event(event: cl_event) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clRetainEvent(event) };
+pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
+    let status: cl_int = clRetainEvent(event);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -149,8 +149,8 @@ pub fn retain_event(event: cl_event) -> Result<(), cl_int> {
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn release_event(event: cl_event) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clReleaseEvent(event) };
+pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
+    let status: cl_int = clReleaseEvent(event);
     if CL_SUCCESS != status {
         Err(status)
     } else {

@@ -127,8 +127,8 @@ pub fn create_command_queue_with_properties(
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn retain_command_queue(command_queue: cl_command_queue) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clRetainCommandQueue(command_queue) };
+pub unsafe fn retain_command_queue(command_queue: cl_command_queue) -> Result<(), cl_int> {
+    let status: cl_int = clRetainCommandQueue(command_queue);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -143,8 +143,8 @@ pub fn retain_command_queue(command_queue: cl_command_queue) -> Result<(), cl_in
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn release_command_queue(command_queue: cl_command_queue) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clReleaseCommandQueue(command_queue) };
+pub unsafe fn release_command_queue(command_queue: cl_command_queue) -> Result<(), cl_int> {
+    let status: cl_int = clReleaseCommandQueue(command_queue);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -1247,8 +1247,9 @@ mod tests {
             Err(e) => println!("OpenCL error, CL_QUEUE_PROPERTIES_ARRAY: {}", error_text(e)),
         };
 
-        release_command_queue(queue).unwrap();
-
-        release_context(context).unwrap();
+        unsafe {
+            release_command_queue(queue).unwrap();
+            release_context(context).unwrap();
+        }
     }
 }

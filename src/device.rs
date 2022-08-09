@@ -618,8 +618,8 @@ pub fn create_sub_devices(
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clRetainDevice(device) };
+pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
+    let status: cl_int = clRetainDevice(device);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -636,8 +636,8 @@ pub fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub fn release_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clReleaseDevice(device) };
+pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
+    let status: cl_int = clReleaseDevice(device);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -1954,7 +1954,7 @@ mod tests {
             assert!(0 < sub_devices.len());
 
             for device in sub_devices {
-                release_device(device).unwrap();
+                unsafe { release_device(device).unwrap() };
             }
         } else {
             println!("OpenCL device capable of sub division not found");

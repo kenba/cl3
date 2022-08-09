@@ -144,8 +144,8 @@ pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clRetainKernel(kernel) };
+pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
+    let status: cl_int = clRetainKernel(kernel);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -160,8 +160,8 @@ pub fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clReleaseKernel(kernel) };
+pub unsafe fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
+    let status: cl_int = clReleaseKernel(kernel);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -705,8 +705,10 @@ mod tests {
             ),
         }
 
-        release_kernel(kernel).unwrap();
-        release_program(program).unwrap();
-        release_context(context).unwrap();
+        unsafe {
+            release_kernel(kernel).unwrap();
+            release_program(program).unwrap();
+            release_context(context).unwrap();
+        }
     }
 }

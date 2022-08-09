@@ -64,8 +64,10 @@ pub fn finalize_command_buffer_khr(command_buffer: cl_command_buffer_khr) -> Res
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
-pub fn retain_command_buffer_khr(command_buffer: cl_command_buffer_khr) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clRetainCommandBufferKHR(command_buffer) };
+pub unsafe fn retain_command_buffer_khr(
+    command_buffer: cl_command_buffer_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = clRetainCommandBufferKHR(command_buffer);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -74,8 +76,10 @@ pub fn retain_command_buffer_khr(command_buffer: cl_command_buffer_khr) -> Resul
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
-pub fn release_command_buffer_khr(command_buffer: cl_command_buffer_khr) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clReleaseCommandBufferKHR(command_buffer) };
+pub unsafe fn release_command_buffer_khr(
+    command_buffer: cl_command_buffer_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = clReleaseCommandBufferKHR(command_buffer);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -567,8 +571,8 @@ pub fn create_command_queue_with_properties_khr(
 }
 
 #[cfg(feature = "cl_ext_device_fission")]
-pub fn release_device_ext(device: cl_device_id) -> Result<(), cl_int> {
-    let status = unsafe { clReleaseDeviceEXT(device) };
+pub unsafe fn release_device_ext(device: cl_device_id) -> Result<(), cl_int> {
+    let status = clReleaseDeviceEXT(device);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -577,8 +581,8 @@ pub fn release_device_ext(device: cl_device_id) -> Result<(), cl_int> {
 }
 
 #[cfg(feature = "cl_ext_device_fission")]
-pub fn retain_device_ext(device: cl_device_id) -> Result<(), cl_int> {
-    let status = unsafe { clRetainDeviceEXT(device) };
+pub unsafe fn retain_device_ext(device: cl_device_id) -> Result<(), cl_int> {
+    let status = clRetainDeviceEXT(device);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -1017,8 +1021,8 @@ pub fn get_semaphore_info_khr(
 }
 
 #[cfg(feature = "cl_khr_semaphore")]
-pub fn release_semaphore_khr(sema_object: cl_semaphore_khr) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clReleaseSemaphoreKHR(sema_object) };
+pub unsafe fn release_semaphore_khr(sema_object: cl_semaphore_khr) -> Result<(), cl_int> {
+    let status: cl_int = clReleaseSemaphoreKHR(sema_object);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -1027,8 +1031,8 @@ pub fn release_semaphore_khr(sema_object: cl_semaphore_khr) -> Result<(), cl_int
 }
 
 #[cfg(feature = "cl_khr_semaphore")]
-pub fn retain_semaphore_khr(sema_object: cl_semaphore_khr) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clRetainSemaphoreKHR(sema_object) };
+pub unsafe fn retain_semaphore_khr(sema_object: cl_semaphore_khr) -> Result<(), cl_int> {
+    let status: cl_int = clRetainSemaphoreKHR(sema_object);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -1317,8 +1321,8 @@ pub fn get_accelerator_info_intel(
 }
 
 #[cfg(feature = "cl_intel_accelerator")]
-pub fn retain_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<(), cl_int> {
-    let status = unsafe { clRetainAcceleratorINTEL(accelerator) };
+pub unsafe fn retain_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<(), cl_int> {
+    let status = clRetainAcceleratorINTEL(accelerator);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -1327,8 +1331,8 @@ pub fn retain_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<(),
 }
 
 #[cfg(feature = "cl_intel_accelerator")]
-pub fn release_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<(), cl_int> {
-    let status = unsafe { clReleaseAcceleratorINTEL(accelerator) };
+pub unsafe fn release_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<(), cl_int> {
+    let status = clReleaseAcceleratorINTEL(accelerator);
     if CL_SUCCESS != status {
         Err(status)
     } else {

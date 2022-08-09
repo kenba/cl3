@@ -110,8 +110,8 @@ pub fn create_context_from_type(
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn retain_context(context: cl_context) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clRetainContext(context) };
+pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
+    let status: cl_int = clRetainContext(context);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -126,8 +126,8 @@ pub fn retain_context(context: cl_context) -> Result<(), cl_int> {
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn release_context(context: cl_context) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clReleaseContext(context) };
+pub unsafe fn release_context(context: cl_context) -> Result<(), cl_int> {
+    let status: cl_int = clReleaseContext(context);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -245,6 +245,8 @@ mod tests {
         println!("CL_CONTEXT_NUM_DEVICES: {}", value);
         assert!(0 < value);
 
-        release_context(context).unwrap();
+        unsafe {
+            release_context(context).unwrap();
+        }
     }
 }

@@ -225,8 +225,8 @@ pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_progr
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn retain_program(program: cl_program) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clRetainProgram(program) };
+pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
+    let status: cl_int = clRetainProgram(program);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -241,8 +241,8 @@ pub fn retain_program(program: cl_program) -> Result<(), cl_int> {
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn release_program(program: cl_program) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clReleaseProgram(program) };
+pub unsafe fn release_program(program: cl_program) -> Result<(), cl_int> {
+    let status: cl_int = clReleaseProgram(program);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -812,9 +812,10 @@ mod tests {
             println!("OpenCL error, clUnloadPlatformCompiler: {}", error_text(e));
         }
 
-        release_program(program).unwrap();
-
-        release_context(context).unwrap();
+        unsafe {
+            release_program(program).unwrap();
+            release_context(context).unwrap()
+        };
     }
 
     #[test]
@@ -880,8 +881,9 @@ mod tests {
         )
         .unwrap();
 
-        release_program(program).unwrap();
-
-        release_context(context).unwrap();
+        unsafe {
+            release_program(program).unwrap();
+            release_context(context).unwrap();
+        }
     }
 }
