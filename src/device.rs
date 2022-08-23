@@ -616,6 +616,10 @@ pub fn create_sub_devices(
 /// * `device` - the cl_device_id of the OpenCL device.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
@@ -634,6 +638,10 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 /// * `device` - the cl_device_id of the OpenCL device.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {

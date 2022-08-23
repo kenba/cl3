@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2022 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -76,14 +76,14 @@ use std::ptr;
 /// returns a Result containing the new OpenCL buffer object
 /// or the error code from the OpenCL C API function.
 #[inline]
-pub fn create_buffer(
+pub unsafe fn create_buffer(
     context: cl_context,
     flags: cl_mem_flags,
     size: size_t,
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = unsafe { clCreateBuffer(context, flags, size, host_ptr, &mut status) };
+    let mem: cl_mem = clCreateBuffer(context, flags, size, host_ptr, &mut status);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -105,22 +105,20 @@ pub fn create_buffer(
 /// returns a Result containing the new OpenCL buffer object
 /// or the error code from the OpenCL C API function.
 #[inline]
-pub fn create_sub_buffer(
+pub unsafe fn create_sub_buffer(
     buffer: cl_mem,
     flags: cl_mem_flags,
     buffer_create_type: cl_buffer_create_type,
     buffer_create_info: *const c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = unsafe {
-        clCreateSubBuffer(
-            buffer,
-            flags,
-            buffer_create_type,
-            buffer_create_info,
-            &mut status,
-        )
-    };
+    let mem: cl_mem = clCreateSubBuffer(
+        buffer,
+        flags,
+        buffer_create_type,
+        buffer_create_info,
+        &mut status,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -146,7 +144,7 @@ pub fn create_sub_buffer(
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub fn create_image(
+pub unsafe fn create_image(
     context: cl_context,
     flags: cl_mem_flags,
     image_format: *const cl_image_format,
@@ -154,16 +152,14 @@ pub fn create_image(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = unsafe {
-        clCreateImage(
-            context,
-            flags,
-            image_format,
-            image_desc,
-            host_ptr,
-            &mut status,
-        )
-    };
+    let mem: cl_mem = clCreateImage(
+        context,
+        flags,
+        image_format,
+        image_desc,
+        host_ptr,
+        &mut status,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -187,7 +183,7 @@ pub fn create_image(
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
-pub fn create_pipe(
+pub unsafe fn create_pipe(
     context: cl_context,
     flags: cl_mem_flags,
     pipe_packet_size: cl_uint,
@@ -195,16 +191,14 @@ pub fn create_pipe(
     // properties: *const cl_pipe_properties,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = unsafe {
-        clCreatePipe(
-            context,
-            flags,
-            pipe_packet_size,
-            pipe_max_packets,
-            ptr::null(),
-            &mut status,
-        )
-    };
+    let mem: cl_mem = clCreatePipe(
+        context,
+        flags,
+        pipe_packet_size,
+        pipe_max_packets,
+        ptr::null(),
+        &mut status,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -229,7 +223,7 @@ pub fn create_pipe(
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_3_0")]
 #[inline]
-pub fn create_buffer_with_properties(
+pub unsafe fn create_buffer_with_properties(
     context: cl_context,
     properties: *const cl_mem_properties,
     flags: cl_mem_flags,
@@ -237,9 +231,8 @@ pub fn create_buffer_with_properties(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = unsafe {
-        clCreateBufferWithProperties(context, properties, flags, size, host_ptr, &mut status)
-    };
+    let mem: cl_mem =
+        clCreateBufferWithProperties(context, properties, flags, size, host_ptr, &mut status);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -267,7 +260,7 @@ pub fn create_buffer_with_properties(
 /// or the error code from the OpenCL C API function.
 #[inline]
 #[cfg(feature = "CL_VERSION_3_0")]
-pub fn create_image_with_properties(
+pub unsafe fn create_image_with_properties(
     context: cl_context,
     properties: *const cl_mem_properties,
     flags: cl_mem_flags,
@@ -276,17 +269,15 @@ pub fn create_image_with_properties(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = unsafe {
-        clCreateImageWithProperties(
-            context,
-            properties,
-            flags,
-            image_format,
-            image_desc,
-            host_ptr,
-            &mut status,
-        )
-    };
+    let mem: cl_mem = clCreateImageWithProperties(
+        context,
+        properties,
+        flags,
+        image_format,
+        image_desc,
+        host_ptr,
+        &mut status,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -300,6 +291,10 @@ pub fn create_image_with_properties(
 /// * `memobj` - the OpenCL memory object.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     let status: cl_int = clRetainMemObject(memobj);
@@ -316,6 +311,10 @@ pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
 /// * `memobj` - the OpenCL memory object.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn release_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     let status: cl_int = clReleaseMemObject(memobj);
@@ -537,13 +536,12 @@ pub fn get_pipe_info(pipe: cl_mem, param_name: cl_pipe_info) -> Result<InfoType,
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn set_mem_object_destructor_callback(
+pub unsafe fn set_mem_object_destructor_callback(
     memobj: cl_mem,
     pfn_notify: extern "C" fn(cl_mem, *mut c_void),
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int =
-        unsafe { clSetMemObjectDestructorCallback(memobj, Some(pfn_notify), user_data) };
+    let status: cl_int = clSetMemObjectDestructorCallback(memobj, Some(pfn_notify), user_data);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -567,13 +565,13 @@ pub fn set_mem_object_destructor_callback(
 /// or the error code: CL_INVALID_VALUE if the address is NULL.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
-pub fn svm_alloc(
+pub unsafe fn svm_alloc(
     context: cl_context,
     flags: cl_svm_mem_flags,
     size: size_t,
     alignment: cl_uint,
 ) -> Result<*mut c_void, cl_int> {
-    let ptr = unsafe { clSVMAlloc(context, flags, size, alignment) };
+    let ptr = clSVMAlloc(context, flags, size, alignment);
     if ptr.is_null() {
         Err(CL_INVALID_VALUE)
     } else {

@@ -143,6 +143,10 @@ pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
 /// * `program` - the OpenCL kernel.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     let status: cl_int = clRetainKernel(kernel);
@@ -159,6 +163,10 @@ pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
 /// * `kernel` - the OpenCL kernel.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     let status: cl_int = clReleaseKernel(kernel);
@@ -178,13 +186,13 @@ pub unsafe fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
-pub fn set_kernel_arg(
+pub unsafe fn set_kernel_arg(
     kernel: cl_kernel,
     arg_index: cl_uint,
     arg_size: size_t,
     arg_value: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clSetKernelArg(kernel, arg_index, arg_size, arg_value) };
+    let status: cl_int = clSetKernelArg(kernel, arg_index, arg_size, arg_value);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -202,12 +210,12 @@ pub fn set_kernel_arg(
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
-pub fn set_kernel_arg_svm_pointer(
+pub unsafe fn set_kernel_arg_svm_pointer(
     kernel: cl_kernel,
     arg_index: cl_uint,
     arg_ptr: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clSetKernelArgSVMPointer(kernel, arg_index, arg_ptr) };
+    let status: cl_int = clSetKernelArgSVMPointer(kernel, arg_index, arg_ptr);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -226,14 +234,13 @@ pub fn set_kernel_arg_svm_pointer(
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
-pub fn set_kernel_exec_info(
+pub unsafe fn set_kernel_exec_info(
     kernel: cl_kernel,
     param_name: cl_kernel_exec_info,
     param_value_size: size_t,
     param_value: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int =
-        unsafe { clSetKernelExecInfo(kernel, param_name, param_value_size, param_value) };
+    let status: cl_int = clSetKernelExecInfo(kernel, param_name, param_value_size, param_value);
     if CL_SUCCESS != status {
         Err(status)
     } else {

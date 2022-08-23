@@ -127,7 +127,7 @@ pub fn create_program_with_source(
 ///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
-pub fn create_program_with_binary(
+pub unsafe fn create_program_with_binary(
     context: cl_context,
     devices: &[cl_device_id],
     binaries: &[&[u8]],
@@ -136,18 +136,16 @@ pub fn create_program_with_binary(
     let lengths: Vec<size_t> = binaries.iter().map(|bin| bin.len()).collect();
     let mut binary_status: Vec<cl_int> = Vec::with_capacity(binaries_length);
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program: cl_program = unsafe {
-        clCreateProgramWithBinary(
-            context,
-            devices.len() as cl_uint,
-            devices.as_ptr(),
-            lengths.as_ptr(),
-            binaries.as_ptr() as *const *const c_uchar,
-            binary_status.as_mut_ptr(),
-            &mut status,
-        )
-    };
-    unsafe { binary_status.set_len(binaries_length) };
+    let program: cl_program = clCreateProgramWithBinary(
+        context,
+        devices.len() as cl_uint,
+        devices.as_ptr(),
+        lengths.as_ptr(),
+        binaries.as_ptr() as *const *const c_uchar,
+        binary_status.as_mut_ptr(),
+        &mut status,
+    );
+    binary_status.set_len(binaries_length);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -167,21 +165,19 @@ pub fn create_program_with_binary(
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub fn create_program_with_builtin_kernels(
+pub unsafe fn create_program_with_builtin_kernels(
     context: cl_context,
     devices: &[cl_device_id],
     kernel_names: &CStr,
 ) -> Result<cl_program, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program: cl_program = unsafe {
-        clCreateProgramWithBuiltInKernels(
-            context,
-            devices.len() as cl_uint,
-            devices.as_ptr(),
-            kernel_names.as_ptr(),
-            &mut status,
-        )
-    };
+    let program: cl_program = clCreateProgramWithBuiltInKernels(
+        context,
+        devices.len() as cl_uint,
+        devices.as_ptr(),
+        kernel_names.as_ptr(),
+        &mut status,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -224,6 +220,10 @@ pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_progr
 /// * `program` - the OpenCL program.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
     let status: cl_int = clRetainProgram(program);
@@ -240,6 +240,10 @@ pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
 /// * `program` - the OpenCL program.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn release_program(program: cl_program) -> Result<(), cl_int> {
     let status: cl_int = clReleaseProgram(program);
@@ -366,7 +370,7 @@ pub fn compile_program(
 /// Panics if `input_programs.is_empty()`.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub fn link_program(
+pub unsafe fn link_program(
     context: cl_context,
     devices: &[cl_device_id],
     options: &CStr,
@@ -376,19 +380,17 @@ pub fn link_program(
 ) -> Result<cl_program, cl_int> {
     assert!(!input_programs.is_empty());
     let mut status: cl_int = CL_INVALID_VALUE;
-    let programme: cl_program = unsafe {
-        clLinkProgram(
-            context,
-            devices.len() as cl_uint,
-            devices.as_ptr(),
-            options.as_ptr(),
-            input_programs.len() as cl_uint,
-            input_programs.as_ptr(),
-            pfn_notify,
-            user_data,
-            &mut status,
-        )
-    };
+    let programme: cl_program = clLinkProgram(
+        context,
+        devices.len() as cl_uint,
+        devices.as_ptr(),
+        options.as_ptr(),
+        input_programs.len() as cl_uint,
+        input_programs.as_ptr(),
+        pfn_notify,
+        user_data,
+        &mut status,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -408,12 +410,12 @@ pub fn link_program(
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_2")]
 #[inline]
-pub fn set_program_release_callback(
+pub unsafe fn set_program_release_callback(
     program: cl_program,
     pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clSetProgramReleaseCallback(program, pfn_notify, user_data) };
+    let status: cl_int = clSetProgramReleaseCallback(program, pfn_notify, user_data);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -434,14 +436,14 @@ pub fn set_program_release_callback(
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_2_2")]
 #[inline]
-pub fn set_program_specialization_constant(
+pub unsafe fn set_program_specialization_constant(
     program: cl_program,
     spec_id: cl_uint,
     spec_size: size_t,
     spec_value: *const c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int =
-        unsafe { clSetProgramSpecializationConstant(program, spec_id, spec_size, spec_value) };
+        clSetProgramSpecializationConstant(program, spec_id, spec_size, spec_value);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -457,8 +459,8 @@ pub fn set_program_specialization_constant(
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clUnloadPlatformCompiler(platform) };
+pub unsafe fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), cl_int> {
+    let status: cl_int = clUnloadPlatformCompiler(platform);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -808,7 +810,7 @@ mod tests {
         };
 
         #[cfg(feature = "CL_VERSION_1_2")]
-        if let Err(e) = unload_platform_compiler(platform_id) {
+        if let Err(e) = unsafe { unload_platform_compiler(platform_id) } {
             println!("OpenCL error, clUnloadPlatformCompiler: {}", error_text(e));
         }
 
@@ -871,15 +873,17 @@ mod tests {
         .unwrap();
 
         let programs = [program];
-        link_program(
-            context,
-            &device_ids,
-            &no_options,
-            &programs,
-            None,
-            ptr::null_mut(),
-        )
-        .unwrap();
+        unsafe {
+            link_program(
+                context,
+                &device_ids,
+                &no_options,
+                &programs,
+                None,
+                ptr::null_mut(),
+            )
+            .unwrap()
+        };
 
         unsafe {
             release_program(program).unwrap();

@@ -39,7 +39,7 @@ use std::ptr;
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "cl_khr_egl_image")]
 #[inline]
-pub fn create_from_egl_image(
+pub unsafe fn create_from_egl_image(
     context: cl_context,
     display: CLeglDisplayKHR,
     image: CLeglImageKHR,
@@ -47,8 +47,7 @@ pub fn create_from_egl_image(
     properties: *const cl_egl_image_properties_khr,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem =
-        unsafe { clCreateFromEGLImageKHR(context, display, image, flags, properties, &mut status) };
+    let mem = clCreateFromEGLImageKHR(context, display, image, flags, properties, &mut status);
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -70,7 +69,7 @@ pub fn create_from_egl_image(
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "cl_khr_egl_image")]
 #[inline]
-pub fn enqueue_acquire_egl_objects(
+pub unsafe fn enqueue_acquire_egl_objects(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -78,16 +77,14 @@ pub fn enqueue_acquire_egl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = unsafe {
-        clEnqueueAcquireEGLObjectsKHR(
-            command_queue,
-            num_objects,
-            mem_objects,
-            num_events_in_wait_list,
-            event_wait_list,
-            &mut event,
-        )
-    };
+    let status: cl_int = clEnqueueAcquireEGLObjectsKHR(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        &mut event,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -109,7 +106,7 @@ pub fn enqueue_acquire_egl_objects(
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "cl_khr_egl_image")]
 #[inline]
-pub fn enqueue_release_egl_objects(
+pub unsafe fn enqueue_release_egl_objects(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -117,16 +114,14 @@ pub fn enqueue_release_egl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = unsafe {
-        clEnqueueReleaseEGLObjectsKHR(
-            command_queue,
-            num_objects,
-            mem_objects,
-            num_events_in_wait_list,
-            event_wait_list,
-            &mut event,
-        )
-    };
+    let status: cl_int = clEnqueueReleaseEGLObjectsKHR(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        &mut event,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {

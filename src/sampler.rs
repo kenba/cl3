@@ -117,6 +117,10 @@ pub fn create_sampler_with_properties(
 /// * `sampler` - the OpenCL sampler.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     let status: cl_int = clRetainSampler(sampler);
@@ -133,6 +137,10 @@ pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
 /// * `sampler` - the OpenCL sampler.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     let status: cl_int = clReleaseSampler(sampler);

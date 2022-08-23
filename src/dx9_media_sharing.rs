@@ -89,7 +89,7 @@ pub fn get_device_ids_from_dx9_intel(
 }
 
 #[cfg(feature = "cl_intel_dx9_media_sharing")]
-pub fn create_from_dx9_media_surface_intel(
+pub unsafe fn create_from_dx9_media_surface_intel(
     context: cl_context,
     flags: cl_mem_flags,
     resource: IDirect3DSurface9_ptr,
@@ -97,16 +97,14 @@ pub fn create_from_dx9_media_surface_intel(
     plane: cl_uint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = unsafe {
-        clCreateFromDX9MediaSurfaceINTEL(
-            context,
-            flags,
-            resource,
-            shared_handle,
-            plane,
-            &mut status,
-        )
-    };
+    let mem = clCreateFromDX9MediaSurfaceINTEL(
+        context,
+        flags,
+        resource,
+        shared_handle,
+        plane,
+        &mut status,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -115,7 +113,7 @@ pub fn create_from_dx9_media_surface_intel(
 }
 
 #[cfg(feature = "cl_intel_dx9_media_sharing")]
-pub fn enqueue_acquire_dx9_objects_intel(
+pub unsafe fn enqueue_acquire_dx9_objects_intel(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -123,16 +121,14 @@ pub fn enqueue_acquire_dx9_objects_intel(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = unsafe {
-        clEnqueueAcquireDX9ObjectsINTEL(
-            command_queue,
-            num_objects,
-            mem_objects,
-            num_events_in_wait_list,
-            event_wait_list,
-            &mut event,
-        )
-    };
+    let status: cl_int = clEnqueueAcquireDX9ObjectsINTEL(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        &mut event,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {
@@ -141,7 +137,7 @@ pub fn enqueue_acquire_dx9_objects_intel(
 }
 
 #[cfg(feature = "cl_intel_dx9_media_sharing")]
-pub fn enqueue_release_dx9_objects_intel(
+pub unsafe fn enqueue_release_dx9_objects_intel(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -149,16 +145,14 @@ pub fn enqueue_release_dx9_objects_intel(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = unsafe {
-        clEnqueueReleaseDX9ObjectsINTEL(
-            command_queue,
-            num_objects,
-            mem_objects,
-            num_events_in_wait_list,
-            event_wait_list,
-            &mut event,
-        )
-    };
+    let status: cl_int = clEnqueueReleaseDX9ObjectsINTEL(
+        command_queue,
+        num_objects,
+        mem_objects,
+        num_events_in_wait_list,
+        event_wait_list,
+        &mut event,
+    );
     if CL_SUCCESS != status {
         Err(status)
     } else {

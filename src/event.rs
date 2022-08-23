@@ -132,6 +132,10 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
 /// * `event` - the OpenCL event.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
     let status: cl_int = clRetainEvent(event);
@@ -148,6 +152,10 @@ pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
 /// * `event` - the OpenCL event.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
     let status: cl_int = clReleaseEvent(event);

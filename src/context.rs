@@ -109,6 +109,10 @@ pub fn create_context_from_type(
 /// * `context` - the cl_context of the OpenCL context.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
     let status: cl_int = clRetainContext(context);
@@ -125,6 +129,10 @@ pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
 /// * `context` - the cl_context of the OpenCL context.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because it changes the OpenCL object reference count.
 #[inline]
 pub unsafe fn release_context(context: cl_context) -> Result<(), cl_int> {
     let status: cl_int = clReleaseContext(context);
