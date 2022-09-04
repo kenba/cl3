@@ -185,6 +185,10 @@ pub unsafe fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
 /// * `arg_ptr` - pointer to the data for the argument at arg_index.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+/// 
+/// # Safety
+///
+/// This function is unsafe because arg must match the kernel argument.
 #[inline]
 pub unsafe fn set_kernel_arg(
     kernel: cl_kernel,
@@ -208,6 +212,10 @@ pub unsafe fn set_kernel_arg(
 /// * `arg_ptr` - the SVM pointer to the data for the argument at arg_index.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+/// 
+/// # Safety
+///
+/// This function is unsafe because arg must match the kernel argument.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub unsafe fn set_kernel_arg_svm_pointer(
@@ -232,6 +240,10 @@ pub unsafe fn set_kernel_arg_svm_pointer(
 /// * `param_ptr` - pointer to the data for the param_name.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+/// 
+/// # Safety
+///
+/// This function is unsafe because param must match the kernel argument.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub unsafe fn set_kernel_exec_info(

@@ -15,7 +15,7 @@
 //! OpenCL OpenGl Interoperability API.
 
 #![allow(non_camel_case_types, deprecated)]
-#![allow(clippy::not_unsafe_ptr_arg_deref)]
+#![allow(clippy::not_unsafe_ptr_arg_deref, clippy::missing_safety_doc)]
 
 pub use opencl_sys::{
     cl_GLenum, cl_GLint, cl_GLsync, cl_GLuint, cl_command_queue, cl_context, cl_context_properties,

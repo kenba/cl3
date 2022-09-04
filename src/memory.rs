@@ -75,6 +75,10 @@ use std::ptr;
 ///
 /// returns a Result containing the new OpenCL buffer object
 /// or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[inline]
 pub unsafe fn create_buffer(
     context: cl_context,
@@ -104,6 +108,10 @@ pub unsafe fn create_buffer(
 ///
 /// returns a Result containing the new OpenCL buffer object
 /// or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[inline]
 pub unsafe fn create_sub_buffer(
     buffer: cl_mem,
@@ -142,6 +150,10 @@ pub unsafe fn create_sub_buffer(
 ///
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn create_image(
@@ -181,6 +193,10 @@ pub unsafe fn create_image(
 ///
 /// returns a Result containing the new OpenCL pipe object
 /// or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub unsafe fn create_pipe(
@@ -221,6 +237,10 @@ pub unsafe fn create_pipe(
 ///
 /// returns a Result containing the new OpenCL buffer object
 /// or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[cfg(feature = "CL_VERSION_3_0")]
 #[inline]
 pub unsafe fn create_buffer_with_properties(
@@ -258,6 +278,10 @@ pub unsafe fn create_buffer_with_properties(
 ///
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[inline]
 #[cfg(feature = "CL_VERSION_3_0")]
 pub unsafe fn create_image_with_properties(
@@ -535,6 +559,10 @@ pub fn get_pipe_info(pipe: cl_mem, param_name: cl_pipe_info) -> Result<InfoType,
 /// * `user_data` - passed as the user_data argument when pfn_notify is called.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
+/// 
+/// # Safety
+///
+/// This function is unsafe because `user_data` must be valid.
 #[inline]
 pub unsafe fn set_mem_object_destructor_callback(
     memobj: cl_mem,
@@ -563,6 +591,10 @@ pub unsafe fn set_mem_object_destructor_callback(
 ///
 /// returns Result containing the address of the SVM buffer
 /// or the error code: CL_INVALID_VALUE if the address is NULL.
+/// 
+/// # Safety
+///
+/// This function is unsafe because `flags` must be valid.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub unsafe fn svm_alloc(
@@ -585,6 +617,10 @@ pub unsafe fn svm_alloc(
 ///
 /// * `context` - the valid OpenCL context used to create the SVM buffer.
 /// * `svm_pointer` - the value returned by a call to clSVMAlloc.
+///
+/// # Safety
+///
+/// This function is unsafe because `svm_pointer` is no longer valid after it is called.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub unsafe fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
