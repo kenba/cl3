@@ -1,5 +1,18 @@
 # Releases
 
+## Version 0.9.1 (2022-09-17)
+
+### New Features
+
+* Issue [#27](https://github.com/kenba/cl3/issues/27) Update for extension `cl_khr_command_buffer_mutable_dispatch`.
+
+## Version 0.9.0 (2022-09-10)
+
+### Breaking Changes
+
+* Issue [#25](https://github.com/kenba/cl3/issues/25) Declare OpenCL release_* and retain_* functions unsafe.
+* Issue [#26](https://github.com/kenba/cl3/issues/26) Declare OpenCL functions that can lead to undefined behaviour as unsafe.
+
 ## Version 0.8.1 (2022-07-23)
 
 ### New Features
