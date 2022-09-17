@@ -16,8 +16,11 @@
 //! See: [OpenCL Extension Specification](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_Ext.html)
 
 #![allow(non_camel_case_types)]
-#![allow(clippy::not_unsafe_ptr_arg_deref)]
-#![allow(clippy::wildcard_in_or_patterns)]
+#![allow(
+    clippy::not_unsafe_ptr_arg_deref,
+    clippy::wildcard_in_or_patterns,
+    clippy::missing_safety_doc
+)]
 
 pub use opencl_sys::*;
 
@@ -461,6 +464,30 @@ pub fn get_command_buffer_info_khr(
             param_name,
         )?)),
     }
+}
+
+#[cfg(feature = "cl_khr_command_buffer_mutable_dispatch")]
+pub unsafe fn update_mutable_commands_khr(
+    command_buffer: cl_command_buffer_khr,
+    mutable_config: *const cl_mutable_base_config_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = clUpdateMutableCommandsKHR(command_buffer, mutable_config);
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer_mutable_dispatch")]
+pub fn get_command_buffer_mutable_dispatch_data(
+    command: cl_mutable_command_khr,
+    param_name: cl_mutable_command_info_khr,
+) -> Result<Vec<u8>, cl_int> {
+    api_info_size!(get_size, clGetMutableCommandInfoKHR);
+    let size = get_size(command, param_name)?;
+    api_info_vector!(get_vector, u8, clGetMutableCommandInfoKHR);
+    get_vector(command, param_name, size)
 }
 
 #[cfg(feature = "cl_apple_setmemobjectdestructor")]
