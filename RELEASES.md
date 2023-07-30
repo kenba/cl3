@@ -1,5 +1,15 @@
 # Releases
 
+## Version 0.9.2 (2023-07-30)
+
+### New Features
+
+* PR [#30](https://github.com/kenba/cl3/pull/30) Adds `thiserror` crate and derives impls std::error::Error for ClError.
+
+### Bug fixes
+
+* PR [#28](https://github.com/kenba/cl3/pull/28) use `opencl_sys::cl_char`.
+
 ## Version 0.9.1 (2022-09-17)
 
 ### New Features
