@@ -63,6 +63,7 @@ default = ["CL_VERSION_1_1", "CL_VERSION_1_2"]
 [dependencies]
 libc = "0.2"
 opencl-sys = "0.2"
+thiserror = "1.0.44"
 
 [[example]]
 name = "clinfo"

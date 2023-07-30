@@ -53,6 +53,7 @@ pub use opencl_sys::cl_dx9_media_sharing::{
 };
 pub use opencl_sys::cl_egl::{CL_EGL_RESOURCE_NOT_ACQUIRED_KHR, CL_INVALID_EGL_OBJECT_KHR};
 use std::fmt;
+use thiserror::Error;
 
 pub fn error_text(error_code: cl_int) -> &'static str {
     match error_code {
@@ -163,7 +164,7 @@ pub fn error_text(error_code: cl_int) -> &'static str {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 /// ClError is a newtype around the OpenCL cl_int error number
 pub struct ClError(pub cl_int);
 
