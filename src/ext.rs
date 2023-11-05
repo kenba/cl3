@@ -29,7 +29,7 @@ use super::info_type::InfoType;
 #[allow(unused_imports)]
 use super::{api_info_size, api_info_value, api_info_vector};
 #[allow(unused_imports)]
-use libc::{c_void, intptr_t, size_t};
+use libc::{c_char, c_void, intptr_t, size_t};
 #[allow(unused_imports)]
 use std::mem;
 #[allow(unused_imports)]
@@ -410,6 +410,66 @@ pub unsafe fn command_nd_range_kernel_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+pub unsafe fn command_svm_memcpy_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    dst_ptr: *mut c_void,
+    src_ptr: *const c_void,
+    size: size_t,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = clCommandSVMMemcpyKHR(
+        command_buffer,
+        command_queue,
+        dst_ptr,
+        src_ptr,
+        size,
+        sync_point_wait_list.len() as cl_uint,
+        sync_point_wait_list.as_ptr(),
+        sync_point,
+        mutable_handle,
+    );
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
+pub unsafe fn command_svm_mem_fill_khr(
+    command_buffer: cl_command_buffer_khr,
+    command_queue: cl_command_queue,
+    svm_ptr: *mut c_void,
+    pattern: *const c_void,
+    pattern_size: size_t,
+    size: size_t,
+    sync_point_wait_list: &[cl_sync_point_khr],
+    sync_point: *mut cl_sync_point_khr,
+    mutable_handle: *mut cl_mutable_command_khr,
+) -> Result<(), cl_int> {
+    let status: cl_int = clCommandSVMMemFillKHR(
+        command_buffer,
+        command_queue,
+        svm_ptr,
+        pattern,
+        pattern_size,
+        size,
+        sync_point_wait_list.len() as cl_uint,
+        sync_point_wait_list.as_ptr(),
+        sync_point,
+        mutable_handle,
+    );
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer")]
 pub fn get_command_buffer_data_khr(
     command_buffer: cl_command_buffer_khr,
     param_name: cl_command_buffer_info_khr,
@@ -463,6 +523,34 @@ pub fn get_command_buffer_info_khr(
             command_queue,
             param_name,
         )?)),
+    }
+}
+
+#[cfg(feature = "cl_khr_command_buffer_multi_device")]
+pub unsafe fn get_command_buffer_mutable_dispatch_data(
+    command_buffer: cl_command_buffer_khr,
+    automatic: cl_bool,
+    num_queues: cl_uint,
+    queues: *const cl_command_queue,
+    num_handles: cl_uint,
+    handles: *const cl_mutable_command_khr,
+    handles_ret: *mut cl_mutable_command_khr,
+) -> Result<cl_command_buffer_khr, cl_int> {
+    let mut errcode_ret: cl_int = CL_INVALID_VALUE;
+    let cmd_buffer = clRemapCommandBufferKHR(
+        command_buffer,
+        automatic,
+        num_queues,
+        queues,
+        num_handles,
+        handles,
+        handles_ret,
+        &mut errcode_ret,
+    );
+    if CL_SUCCESS != errcode_ret {
+        Err(errcode_ret)
+    } else {
+        Ok(cmd_buffer)
     }
 }
 
@@ -1631,6 +1719,66 @@ pub unsafe fn create_buffer_with_properties_intel(
         Err(status)
     } else {
         Ok(mem)
+    }
+}
+
+#[cfg(feature = "cl_intel_program_scope_host_pipe")]
+pub unsafe fn enqueue_read_host_pipe_intel(
+    command_queue: cl_command_queue,
+    program: cl_program,
+    pipe_symbol: *const c_char,
+    blocking_read: cl_bool,
+    ptr: *mut c_void,
+    size: size_t,
+    num_events_in_wait_list: cl_uint,
+    event_wait_list: *const cl_event,
+) -> Result<cl_event, cl_int> {
+    let mut event: cl_event = ptr::null_mut();
+    let status: cl_int = clEnqueueReadHostPipeINTEL(
+        command_queue,
+        program,
+        pipe_symbol,
+        blocking_read,
+        ptr,
+        size,
+        num_events_in_wait_list,
+        event_wait_list,
+        &mut event,
+    );
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(event)
+    }
+}
+
+#[cfg(feature = "cl_intel_program_scope_host_pipe")]
+pub unsafe fn enqueue_write_host_pipe_intel(
+    command_queue: cl_command_queue,
+    program: cl_program,
+    pipe_symbol: *const c_char,
+    blocking_write: cl_bool,
+    ptr: *const c_void,
+    size: size_t,
+    num_events_in_wait_list: cl_uint,
+    event_wait_list: *const cl_event,
+) -> Result<cl_event, cl_int> {
+    let mut event: cl_event = ptr::null_mut();
+    let status: cl_int = clEnqueueWriteHostPipeINTEL(
+        command_queue,
+        program,
+        pipe_symbol,
+        blocking_write,
+        ptr,
+        size,
+        num_events_in_wait_list,
+        event_wait_list,
+        &mut event,
+    );
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(event)
     }
 }
 

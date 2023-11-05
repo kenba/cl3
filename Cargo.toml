@@ -43,8 +43,10 @@ cl_arm_shared_virtual_memory = ["opencl-sys/cl_arm_shared_virtual_memory"]
 cl_intel_accelerator = ["opencl-sys/cl_intel_accelerator"]
 cl_intel_unified_shared_memory = ["opencl-sys/cl_intel_unified_shared_memory"]
 cl_intel_create_buffer_with_properties = ["opencl-sys/cl_intel_create_buffer_with_properties"]
+cl_intel_program_scope_host_pipe = ["opencl-sys/cl_intel_program_scope_host_pipe"]
 cl_ext_image_requirements_info = ["opencl-sys/cl_ext_image_requirements_info"]
 cl_khr_command_buffer = ["opencl-sys/cl_khr_command_buffer"]
+cl_khr_command_buffer_multi_device = ["opencl-sys/cl_khr_command_buffer_multi_device"]
 cl_khr_command_buffer_mutable_dispatch = ["opencl-sys/cl_khr_command_buffer_mutable_dispatch"]
 
 cl_khr_gl_sharing = ["opencl-sys/cl_khr_gl_sharing"]
@@ -63,7 +65,7 @@ default = ["CL_VERSION_1_1", "CL_VERSION_1_2"]
 [dependencies]
 libc = "0.2"
 opencl-sys = "0.2"
-thiserror = "1.0.44"
+thiserror = "1.0"
 
 [[example]]
 name = "clinfo"
