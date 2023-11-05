@@ -1,5 +1,18 @@
 # Releases
 
+## Version 0.9.4 (2023-11-05)
+
+### New Features
+
+* Issue [#31](https://github.com/kenba/cl3/issues/31) Update with new functions in OpenCL-Headers repo.
+
+## Version 0.9.3 (2023-11-04)
+
+### Bug fixes
+
+Remove deprecated OpenCL constants: `CL_DEPTH_STENCIL` and `CL_UNORM_INT24`
+for compatibility with [opencl-sys](https://crates.io/crates/opencl-sys) crate.
+
 ## Version 0.9.2 (2023-07-30)
 
 ### New Features
@@ -20,7 +33,7 @@
 
 ### Breaking Changes
 
-* Issue [#25](https://github.com/kenba/cl3/issues/25) Declare OpenCL release_* and retain_* functions unsafe.
+* Issue [#25](https://github.com/kenba/cl3/issues/25) Declare OpenCL release_*and retain_* functions unsafe.
 * Issue [#26](https://github.com/kenba/cl3/issues/26) Declare OpenCL functions that can lead to undefined behaviour as unsafe.
 
 ## Version 0.8.1 (2022-07-23)
