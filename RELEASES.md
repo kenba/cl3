@@ -1,5 +1,11 @@
 # Releases
 
+## Version 0.9.5 (2023-12-22)
+
+### New Features
+
+* Issue [#32](https://github.com/kenba/cl3/issues/32) Update with new functions in OpenCL-Headers repo.
+
 ## Version 0.9.4 (2023-11-05)
 
 ### New Features
