@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Via Technology Ltd.
+// Copyright (c) 2020-2023 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -94,6 +94,8 @@ pub mod ext;
 pub mod gl;
 pub mod info_type;
 pub mod kernel;
+#[cfg(feature = "cl_loader_layers")]
+pub mod layer;
 pub mod macros;
 pub mod memory;
 pub mod platform;

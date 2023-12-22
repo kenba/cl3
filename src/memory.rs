@@ -391,7 +391,7 @@ pub fn get_supported_image_formats(
             flags,
             image_type,
             count,
-            image_formats.as_mut_ptr() as *mut cl_image_format,
+            image_formats.as_mut_ptr(),
             ptr::null_mut(),
         )
     };

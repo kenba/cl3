@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 Via Technology Ltd.
+// Copyright (c) 2021-2023 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ use super::info_type::InfoType;
 #[allow(unused_imports)]
 use super::{api_info_size, api_info_value, api_info_vector};
 #[allow(unused_imports)]
-use libc::{c_char, c_void, intptr_t, size_t};
+use libc::{c_char, c_int, c_void, intptr_t, size_t};
 #[allow(unused_imports)]
 use std::mem;
 #[allow(unused_imports)]
@@ -1018,6 +1018,20 @@ pub fn get_semaphore_handle_for_type_khr(
         } else {
             Ok(data)
         }
+    }
+}
+
+#[cfg(feature = "cl_khr_external_semaphore_sync_fd")]
+pub unsafe fn reimport_semaphore_sync_fd(
+    sema_object: cl_semaphore_khr,
+    reimport_props: *mut cl_semaphore_reimport_properties_khr,
+    fd: c_int,
+) -> Result<(), cl_int> {
+    let status: cl_int = clReImportSemaphoreSyncFdKHR(sema_object, reimport_props, fd);
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
     }
 }
 
