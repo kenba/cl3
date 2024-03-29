@@ -1846,3 +1846,42 @@ pub fn get_image_requirements_info_ext(
         }
     }
 }
+
+#[cfg(feature = "cl_loader_info")]
+pub fn get_icd_loader_info_oclicd(param_name: cl_icdl_info) -> Result<Vec<u8>, cl_int> {
+    // get the size
+    let mut size: size_t = 0;
+    let status = unsafe { clGetICDLoaderInfoOCLICD(param_name, 0, ptr::null_mut(), &mut size) };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        // Get the data.
+        let mut data: Vec<u8> = Vec::with_capacity(size);
+        let status = unsafe {
+            clGetICDLoaderInfoOCLICD(
+                param_name,
+                size,
+                data.as_mut_ptr() as *mut c_void,
+                ptr::null_mut(),
+            )
+        };
+        if CL_SUCCESS != status {
+            Err(status)
+        } else {
+            Ok(data)
+        }
+    }
+}
+
+#[cfg(feature = "cl_pocl_content_size")]
+pub fn set_content_size_buffer_pocl(
+    buffer: cl_mem,
+    content_size_buffer: cl_mem,
+) -> Result<(), cl_int> {
+    let status = unsafe { clSetContentSizeBufferPoCL(buffer, content_size_buffer) };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else {
+        Ok(())
+    }
+}
