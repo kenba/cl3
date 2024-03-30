@@ -63,10 +63,10 @@ use std::ptr;
 #[allow(clippy::cast_possible_truncation)]
 pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clWaitForEvents(events.len() as cl_uint, events.as_ptr()) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -120,10 +120,10 @@ pub fn get_event_info(event: cl_event, param_name: cl_event_info) -> Result<Info
 pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let event: cl_event = unsafe { clCreateUserEvent(context, &mut status) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -140,10 +140,10 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
 #[inline]
 pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
     let status: cl_int = clRetainEvent(event);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -160,10 +160,10 @@ pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
 #[inline]
 pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
     let status: cl_int = clReleaseEvent(event);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -177,10 +177,10 @@ pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
 #[inline]
 pub fn set_user_event_status(event: cl_event, execution_status: cl_int) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clSetUserEventStatus(event, execution_status) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -207,10 +207,10 @@ pub fn set_event_callback(
             user_data,
         )
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 

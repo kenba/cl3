@@ -63,10 +63,10 @@ pub unsafe fn create_from_gl_buffer(
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem = clCreateFromGLBuffer(context, flags, bufobj, &mut status);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -102,10 +102,10 @@ pub unsafe fn create_from_gl_texture(
         texture,
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -128,10 +128,10 @@ pub unsafe fn create_from_gl_render_buffer(
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem = clCreateFromGLRenderbuffer(context, flags, renderbuffer, &mut status);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -147,10 +147,10 @@ pub fn get_gl_object_info(memobj: cl_mem) -> Result<(cl_GLuint, cl_GLuint), cl_i
     let mut object_type: cl_uint = CL_GL_OBJECT_BUFFER;
     let mut object_name: cl_uint = 0;
     let status = unsafe { clGetGLObjectInfo(memobj, &mut object_type, &mut object_name) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok((object_type, object_name))
+    } else {
+        Err(status)
     }
 }
 
@@ -222,10 +222,10 @@ pub unsafe fn enqueue_acquire_gl_objects(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -257,10 +257,10 @@ pub unsafe fn enqueue_release_gl_objects(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -309,10 +309,10 @@ pub unsafe fn create_from_gl_texture_2d(
         texture,
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -360,10 +360,10 @@ pub unsafe fn create_from_gl_texture_3d(
         texture,
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -394,10 +394,10 @@ pub fn get_gl_context_info_khr(
                     ptr::null_mut(),
                 )
             };
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
+            if CL_SUCCESS == status {
                 Ok(InfoType::Ptr(data))
+            } else {
+                Err(status)
             }
         }
 
@@ -422,10 +422,10 @@ pub fn get_gl_context_info_khr(
                         ptr::null_mut(),
                     )
                 };
-                if CL_SUCCESS != status {
-                    Err(status)
-                } else {
+                if CL_SUCCESS == status {
                     Ok(InfoType::VecIntPtr(data))
+                } else {
+                    Err(status)
                 }
             } else {
                 Ok(InfoType::VecIntPtr(Vec::default()))
@@ -452,10 +452,10 @@ pub fn get_gl_context_info_khr(
                         ptr::null_mut(),
                     )
                 };
-                if CL_SUCCESS != status {
-                    Err(status)
-                } else {
+                if CL_SUCCESS == status {
                     Ok(InfoType::VecUchar(data))
+                } else {
+                    Err(status)
                 }
             } else {
                 Ok(InfoType::VecUchar(Vec::default()))
@@ -481,9 +481,9 @@ pub fn create_event_from_gl_sync_khr(
 ) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let event: cl_event = unsafe { clCreateEventFromGLsyncKHR(context, sync, &mut status) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }

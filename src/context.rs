@@ -67,10 +67,10 @@ pub fn create_context(
             &mut status,
         )
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(context)
+    } else {
+        Err(status)
     }
 }
 
@@ -97,10 +97,10 @@ pub fn create_context_from_type(
     let context = unsafe {
         clCreateContextFromType(properties, device_type, pfn_notify, user_data, &mut status)
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(context)
+    } else {
+        Err(status)
     }
 }
 
@@ -117,10 +117,10 @@ pub fn create_context_from_type(
 #[inline]
 pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
     let status: cl_int = clRetainContext(context);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -137,10 +137,10 @@ pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
 #[inline]
 pub unsafe fn release_context(context: cl_context) -> Result<(), cl_int> {
     let status: cl_int = clReleaseContext(context);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -204,10 +204,10 @@ pub fn set_context_destructor_callback(
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clSetContextDestructorCallback(context, pfn_notify, user_data) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 // #endif

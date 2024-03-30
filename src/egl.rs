@@ -52,10 +52,10 @@ pub unsafe fn create_from_egl_image(
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem = clCreateFromEGLImageKHR(context, display, image, flags, properties, &mut status);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -93,10 +93,10 @@ pub unsafe fn enqueue_acquire_egl_objects(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -134,10 +134,10 @@ pub unsafe fn enqueue_release_egl_objects(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -164,9 +164,9 @@ pub unsafe fn create_event_from_egl_sync_khr(
 ) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let event: cl_event = clCreateEventFromEGLSyncKHR(context, sync, display, &mut status);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }

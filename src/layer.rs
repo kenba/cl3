@@ -27,9 +27,7 @@ use std::ptr;
 pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
     let mut size: size_t = 0;
     let status = unsafe { clGetLayerInfo(param_name, 0, ptr::null_mut(), &mut size) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         let mut data: Vec<u8> = Vec::with_capacity(size);
         let status = unsafe {
             clGetLayerInfo(
@@ -39,11 +37,13 @@ pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
                 ptr::null_mut(),
             )
         };
-        if CL_SUCCESS != status {
-            Err(status)
-        } else {
+        if CL_SUCCESS == status {
             Ok(data)
+        } else {
+            Err(status)
         }
+    } else {
+        Err(status)
     }
 }
 
@@ -65,10 +65,10 @@ pub unsafe fn init_layer(
         &mut num_entries_ret,
         &mut layer_dispatch_ret,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         let slice = std::slice::from_raw_parts(layer_dispatch_ret, num_entries_ret as usize);
         Ok(slice)
+    } else {
+        Err(status)
     }
 }

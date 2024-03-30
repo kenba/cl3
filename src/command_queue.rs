@@ -92,10 +92,10 @@ pub unsafe fn create_command_queue(
 ) -> Result<cl_command_queue, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let queue: cl_command_queue = clCreateCommandQueue(context, device, properties, &mut status);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(queue)
+    } else {
+        Err(status)
     }
 }
 
@@ -124,10 +124,10 @@ pub unsafe fn create_command_queue_with_properties(
     let mut status: cl_int = CL_INVALID_VALUE;
     let queue: cl_command_queue =
         clCreateCommandQueueWithProperties(context, device, properties, &mut status);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(queue)
+    } else {
+        Err(status)
     }
 }
 
@@ -144,10 +144,10 @@ pub unsafe fn create_command_queue_with_properties(
 #[inline]
 pub unsafe fn retain_command_queue(command_queue: cl_command_queue) -> Result<(), cl_int> {
     let status: cl_int = clRetainCommandQueue(command_queue);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -164,10 +164,10 @@ pub unsafe fn retain_command_queue(command_queue: cl_command_queue) -> Result<()
 #[inline]
 pub unsafe fn release_command_queue(command_queue: cl_command_queue) -> Result<(), cl_int> {
     let status: cl_int = clReleaseCommandQueue(command_queue);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -244,10 +244,10 @@ pub fn get_command_queue_info(
 #[inline]
 pub fn flush(command_queue: cl_command_queue) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clFlush(command_queue) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -260,10 +260,10 @@ pub fn flush(command_queue: cl_command_queue) -> Result<(), cl_int> {
 #[inline]
 pub fn finish(command_queue: cl_command_queue) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clFinish(command_queue) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -292,10 +292,10 @@ pub unsafe fn enqueue_read_buffer(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -332,10 +332,10 @@ pub unsafe fn enqueue_read_buffer_rect(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -362,10 +362,10 @@ pub unsafe fn enqueue_write_buffer(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -402,10 +402,10 @@ pub unsafe fn enqueue_write_buffer_rect(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -433,10 +433,10 @@ pub unsafe fn enqueue_fill_buffer(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -463,10 +463,10 @@ pub unsafe fn enqueue_copy_buffer(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -501,10 +501,10 @@ pub unsafe fn enqueue_copy_buffer_rect(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -535,10 +535,10 @@ pub unsafe fn enqueue_read_image(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -569,10 +569,10 @@ pub unsafe fn enqueue_write_image(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -598,10 +598,10 @@ pub unsafe fn enqueue_fill_image(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -628,10 +628,10 @@ pub unsafe fn enqueue_copy_image(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -658,10 +658,10 @@ pub unsafe fn enqueue_copy_image_to_buffer(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -688,10 +688,10 @@ pub unsafe fn enqueue_copy_buffer_to_image(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -723,10 +723,10 @@ pub unsafe fn enqueue_map_buffer(
         &mut event,
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -762,10 +762,10 @@ pub unsafe fn enqueue_map_image(
         &mut event,
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -786,10 +786,10 @@ pub unsafe fn enqueue_unmap_mem_object(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -813,10 +813,10 @@ pub unsafe fn enqueue_migrate_mem_object(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -843,10 +843,10 @@ pub unsafe fn enqueue_nd_range_kernel(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -878,10 +878,10 @@ pub unsafe fn enqueue_task(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -910,10 +910,10 @@ pub unsafe fn enqueue_native_kernel(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -931,10 +931,10 @@ pub unsafe fn enqueue_marker_with_wait_list(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -952,10 +952,10 @@ pub unsafe fn enqueue_barrier_with_wait_list(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -988,10 +988,10 @@ pub unsafe fn enqueue_svm_free(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -1017,10 +1017,10 @@ pub unsafe fn enqueue_svm_mem_cpy(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -1046,10 +1046,10 @@ pub unsafe fn enqueue_svm_mem_fill(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -1075,10 +1075,10 @@ pub unsafe fn enqueue_svm_map(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -1098,10 +1098,10 @@ pub unsafe fn enqueue_svm_unmap(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -1127,10 +1127,10 @@ pub unsafe fn enqueue_svm_migrate_mem(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 

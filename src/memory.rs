@@ -87,10 +87,10 @@ pub unsafe fn create_buffer(
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem: cl_mem = clCreateBuffer(context, flags, size, host_ptr, &mut status);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -126,10 +126,10 @@ pub unsafe fn create_sub_buffer(
         buffer_create_info,
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -171,10 +171,10 @@ pub unsafe fn create_image(
         host_ptr,
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -214,10 +214,10 @@ pub unsafe fn create_pipe(
         ptr::null(),
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -252,10 +252,10 @@ pub unsafe fn create_buffer_with_properties(
     let mut status: cl_int = CL_INVALID_VALUE;
     let mem: cl_mem =
         clCreateBufferWithProperties(context, properties, flags, size, host_ptr, &mut status);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -301,10 +301,10 @@ pub unsafe fn create_image_with_properties(
         host_ptr,
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -321,10 +321,10 @@ pub unsafe fn create_image_with_properties(
 #[inline]
 pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     let status: cl_int = clRetainMemObject(memobj);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -341,10 +341,10 @@ pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
 #[inline]
 pub unsafe fn release_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     let status: cl_int = clReleaseMemObject(memobj);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -357,10 +357,10 @@ fn count_supported_image_formats(
     let status: cl_int = unsafe {
         clGetSupportedImageFormats(context, flags, image_type, 0, ptr::null_mut(), &mut count)
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(count)
+    } else {
+        Err(status)
     }
 }
 
@@ -395,10 +395,10 @@ pub fn get_supported_image_formats(
             ptr::null_mut(),
         )
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(image_formats)
+    } else {
+        Err(status)
     }
 }
 
@@ -569,10 +569,10 @@ pub unsafe fn set_mem_object_destructor_callback(
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = clSetMemObjectDestructorCallback(memobj, Some(pfn_notify), user_data);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 

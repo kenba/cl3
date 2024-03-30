@@ -172,10 +172,10 @@ pub fn get_device_ids(
             ids.set_len(len);
         };
 
-        if CL_SUCCESS != status {
-            Err(status)
-        } else {
+        if CL_SUCCESS == status {
             Ok(ids)
+        } else {
+            Err(status)
         }
     } else {
         Ok(Vec::default())
@@ -448,10 +448,10 @@ pub fn get_device_info(
                     value.as_mut_ptr().cast::<c_void>(),
                      ptr::null_mut(),)
                     };
-            if CL_SUCCESS != status {
-                Err(status)
+            if CL_SUCCESS == status {
+                Ok(InfoType::Uuid(value))
             } else {
-            Ok(InfoType::Uuid(value))
+                Err(status)
             }
         }
 
@@ -466,10 +466,10 @@ pub fn get_device_info(
                     value.as_mut_ptr().cast::<c_void>(),
                     ptr::null_mut(),)
                 };
-            if CL_SUCCESS != status {
-                Err(status)
+            if CL_SUCCESS == status {
+                Ok(InfoType::Luid(value))
             } else {
-            Ok(InfoType::Luid(value))
+                Err(status)
             }
         }
 
@@ -574,10 +574,10 @@ fn count_sub_devices(
             &mut count,
         )
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(count)
+    } else {
+        Err(status)
     }
 }
 
@@ -613,10 +613,10 @@ pub fn create_sub_devices(
         )
     };
 
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(ids)
+    } else {
+        Err(status)
     }
 }
 
@@ -635,10 +635,10 @@ pub fn create_sub_devices(
 #[inline]
 pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
     let status: cl_int = clRetainDevice(device);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -657,10 +657,10 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 #[inline]
 pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
     let status: cl_int = clReleaseDevice(device);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -682,10 +682,10 @@ pub fn set_default_device_command_queue(
     command_queue: cl_command_queue,
 ) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clSetDefaultDeviceCommandQueue(context, device, command_queue) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -704,10 +704,10 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
     let mut host_timestamp: cl_ulong = 0;
     let status: cl_int =
         unsafe { clGetDeviceAndHostTimer(device, &mut device_timestamp, &mut host_timestamp) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok([device_timestamp, host_timestamp])
+    } else {
+        Err(status)
     }
 }
 
@@ -724,10 +724,10 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
 pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
     let mut host_timestamp: cl_ulong = 0;
     let status: cl_int = unsafe { clGetHostTimer(device, &mut host_timestamp) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(host_timestamp)
+    } else {
+        Err(status)
     }
 }
 // #endif

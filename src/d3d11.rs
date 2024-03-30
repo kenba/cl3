@@ -60,10 +60,10 @@ pub unsafe fn get_supported_d3d11_texture_formats_intel(
             ids.as_mut_ptr(),
             ptr::null_mut(),
         );
-        if CL_SUCCESS != status {
-            Err(status)
-        } else {
+        if CL_SUCCESS == status {
             Ok(ids)
+        } else {
+            Err(status)
         }
     } else {
         Ok(Vec::default())

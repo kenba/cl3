@@ -75,10 +75,10 @@ use std::ptr;
 pub fn create_kernel(program: cl_program, kernel_name: &CStr) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let kernel: cl_kernel = unsafe { clCreateKernel(program, kernel_name.as_ptr(), &mut status) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(kernel)
+    } else {
+        Err(status)
     }
 }
 
@@ -86,10 +86,10 @@ fn count_kernels_in_program(program: cl_program) -> Result<cl_uint, cl_int> {
     let mut count: cl_uint = 0;
     let status: cl_int =
         unsafe { clCreateKernelsInProgram(program, 0, ptr::null_mut(), &mut count) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(count)
+    } else {
+        Err(status)
     }
 }
 
@@ -113,10 +113,10 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
             ptr::null_mut(),
         )
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(kernels)
+    } else {
+        Err(status)
     }
 }
 
@@ -133,10 +133,10 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
 pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let kernel: cl_kernel = unsafe { clCloneKernel(source_kernel, &mut status) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(kernel)
+    } else {
+        Err(status)
     }
 }
 
@@ -153,10 +153,10 @@ pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
 #[inline]
 pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     let status: cl_int = clRetainKernel(kernel);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -173,10 +173,10 @@ pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
 #[inline]
 pub unsafe fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     let status: cl_int = clReleaseKernel(kernel);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -200,10 +200,10 @@ pub unsafe fn set_kernel_arg(
     arg_value: *const c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = clSetKernelArg(kernel, arg_index, arg_size, arg_value);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -227,10 +227,10 @@ pub unsafe fn set_kernel_arg_svm_pointer(
     arg_ptr: *const c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = clSetKernelArgSVMPointer(kernel, arg_index, arg_ptr);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -256,10 +256,10 @@ pub unsafe fn set_kernel_exec_info(
     param_value: *const c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = clSetKernelExecInfo(kernel, param_name, param_value_size, param_value);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -463,10 +463,10 @@ pub fn get_kernel_sub_group_info(
                     ptr::null_mut(),
                 )
             };
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
+            if CL_SUCCESS == status {
                 Ok(InfoType::Size(data))
+            } else {
+                Err(status)
             }
         }
 
@@ -484,9 +484,7 @@ pub fn get_kernel_sub_group_info(
                     &mut size,
                 )
             };
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
+            if CL_SUCCESS == status {
                 // Get the information.
                 let count = size / mem::size_of::<size_t>();
                 let mut data: Vec<size_t> = Vec::with_capacity(count);
@@ -503,11 +501,13 @@ pub fn get_kernel_sub_group_info(
                         ptr::null_mut(),
                     )
                 };
-                if CL_SUCCESS != status {
-                    Err(status)
-                } else {
+                if CL_SUCCESS == status {
                     Ok(InfoType::VecSize(data))
+                } else {
+                    Err(status)
                 }
+            } else {
+                Err(status)
             }
         }
 
@@ -525,9 +525,7 @@ pub fn get_kernel_sub_group_info(
                     &mut size,
                 )
             };
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
+            if CL_SUCCESS == status {
                 // Get the information.
                 let count = size / mem::size_of::<u8>();
                 let mut data: Vec<u8> = Vec::with_capacity(count);
@@ -544,11 +542,13 @@ pub fn get_kernel_sub_group_info(
                         ptr::null_mut(),
                     )
                 };
-                if CL_SUCCESS != status {
-                    Err(status)
-                } else {
+                if CL_SUCCESS == status {
                     Ok(InfoType::VecUchar(data))
+                } else {
+                    Err(status)
                 }
+            } else {
+                Err(status)
             }
         }
     }

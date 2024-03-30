@@ -61,10 +61,10 @@ pub unsafe fn get_device_ids_from_dx9_intel(
             ids.as_mut_ptr(),
             ptr::null_mut(),
         );
-        if CL_SUCCESS != status {
-            Err(status)
-        } else {
+        if CL_SUCCESS == status {
             Ok(ids)
+        } else {
+            Err(status)
         }
     } else {
         Ok(Vec::default())
@@ -88,10 +88,10 @@ pub unsafe fn create_from_dx9_media_surface_intel(
         plane,
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(mem)
+    } else {
+        Err(status)
     }
 }
 
@@ -112,10 +112,10 @@ pub unsafe fn enqueue_acquire_dx9_objects_intel(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -136,10 +136,10 @@ pub unsafe fn enqueue_release_dx9_objects_intel(
         event_wait_list,
         &mut event,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(event)
+    } else {
+        Err(status)
     }
 }
 
@@ -178,10 +178,10 @@ pub unsafe fn get_supported_dx9_media_surface_formats_intel(
             ids.as_mut_ptr(),
             ptr::null_mut(),
         );
-        if CL_SUCCESS != status {
-            Err(status)
-        } else {
+        if CL_SUCCESS == status {
             Ok(ids)
+        } else {
+            Err(status)
         }
     } else {
         Ok(Vec::default())

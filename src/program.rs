@@ -112,10 +112,10 @@ pub fn create_program_with_source(
         )
     };
 
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(program)
+    } else {
+        Err(status)
     }
 }
 
@@ -152,10 +152,10 @@ pub unsafe fn create_program_with_binary(
         &mut status,
     );
     binary_status.set_len(binaries_length);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(program)
+    } else {
+        Err(status)
     }
 }
 
@@ -189,10 +189,10 @@ pub unsafe fn create_program_with_builtin_kernels(
         kernel_names.as_ptr(),
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(program)
+    } else {
+        Err(status)
     }
 }
 
@@ -218,10 +218,10 @@ pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_progr
             &mut status,
         )
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(program)
+    } else {
+        Err(status)
     }
 }
 
@@ -238,10 +238,10 @@ pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_progr
 #[inline]
 pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
     let status: cl_int = clRetainProgram(program);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -258,10 +258,10 @@ pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
 #[inline]
 pub unsafe fn release_program(program: cl_program) -> Result<(), cl_int> {
     let status: cl_int = clReleaseProgram(program);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -295,10 +295,10 @@ pub fn build_program(
             user_data,
         )
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -357,10 +357,10 @@ pub fn compile_program(
             user_data,
         )
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -409,10 +409,10 @@ pub unsafe fn link_program(
         user_data,
         &mut status,
     );
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(programme)
+    } else {
+        Err(status)
     }
 }
 
@@ -438,10 +438,10 @@ pub unsafe fn set_program_release_callback(
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = clSetProgramReleaseCallback(program, pfn_notify, user_data);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -470,10 +470,10 @@ pub unsafe fn set_program_specialization_constant(
 ) -> Result<(), cl_int> {
     let status: cl_int =
         clSetProgramSpecializationConstant(program, spec_id, spec_size, spec_value);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -491,10 +491,10 @@ pub unsafe fn set_program_specialization_constant(
 #[inline]
 pub unsafe fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), cl_int> {
     let status: cl_int = clUnloadPlatformCompiler(platform);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -579,10 +579,10 @@ pub fn get_program_info(
                     ptr::null_mut(),
                 )
             };
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
+            if CL_SUCCESS == status {
                 Ok(InfoType::VecVecUchar(binaries))
+            } else {
+                Err(status)
             }
         }
 

@@ -78,9 +78,8 @@ path = "examples/clinfo.rs"
 
 [lints.clippy]
 enum_glob_use = "deny"
+missing_errors_doc = "allow"
 module_name_repetitions = "allow"
 nursery = "deny"
 pedantic = "deny"
-missing_errors_doc = "allow"
-if_not_else = "allow"
 unwrap_used = "deny"

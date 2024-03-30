@@ -63,10 +63,10 @@ pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
             ids.set_len(len);
         };
 
-        if CL_SUCCESS != status {
-            Err(status)
-        } else {
+        if CL_SUCCESS == status {
             Ok(ids)
+        } else {
+            Err(status)
         }
     } else {
         Ok(Vec::default())

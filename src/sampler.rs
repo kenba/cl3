@@ -78,10 +78,10 @@ pub fn create_sampler(
             &mut status,
         )
     };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(sampler)
+    } else {
+        Err(status)
     }
 }
 
@@ -104,10 +104,10 @@ pub fn create_sampler_with_properties(
     let mut status: cl_int = CL_INVALID_VALUE;
     let sampler: cl_sampler =
         unsafe { clCreateSamplerWithProperties(context, properties, &mut status) };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(sampler)
+    } else {
+        Err(status)
     }
 }
 
@@ -124,10 +124,10 @@ pub fn create_sampler_with_properties(
 #[inline]
 pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     let status: cl_int = clRetainSampler(sampler);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -144,10 +144,10 @@ pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
 #[inline]
 pub unsafe fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     let status: cl_int = clReleaseSampler(sampler);
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
+    if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
     }
 }
 
