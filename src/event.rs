@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2024 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -254,7 +254,7 @@ pub fn get_event_profiling_info(
     }
 }
 
-pub fn status_text(status: cl_int) -> &'static str {
+pub const fn status_text(status: cl_int) -> &'static str {
     match status {
         CL_COMPLETE => "CL_COMPLETE",
         CL_RUNNING => "CL_RUNNING",
@@ -271,7 +271,7 @@ pub struct CommandExecutionStatus(pub cl_int);
 /// Implement the From trait
 impl From<cl_int> for CommandExecutionStatus {
     fn from(status: cl_int) -> Self {
-        CommandExecutionStatus(status)
+        Self(status)
     }
 }
 
@@ -282,7 +282,7 @@ impl fmt::Display for CommandExecutionStatus {
     }
 }
 
-pub fn command_type_text(command_type: cl_command_type) -> &'static str {
+pub const fn command_type_text(command_type: cl_command_type) -> &'static str {
     match command_type {
         CL_COMMAND_NDRANGE_KERNEL => "CL_COMMAND_NDRANGE_KERNEL",
         CL_COMMAND_TASK => "CL_COMMAND_TASK",
@@ -341,7 +341,7 @@ pub struct EventCommandType(pub cl_command_type);
 /// Implement the From trait for EventCommandType
 impl From<cl_command_type> for EventCommandType {
     fn from(command_type: cl_command_type) -> Self {
-        EventCommandType(command_type)
+        Self(command_type)
     }
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Via Technology Ltd.
+// Copyright (c) 2020-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -156,26 +156,26 @@ impl From<InfoType> for String {
         let mut a = Vec::<u8>::from(info_type);
 
         // remove all trailing nulls, if any
-        while let Some(0) = a.last() {
+        while a.last() == Some(&0) {
             a.pop();
         }
 
         // convert invalid characters to std::char::REPLACEMENT_CHARACTER
-        String::from_utf8_lossy(&a).into_owned()
+        Self::from_utf8_lossy(&a).into_owned()
     }
 }
 
 impl fmt::Display for InfoType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            InfoType::VecUchar(a) => {
+            Self::VecUchar(a) => {
                 let b = String::from_utf8_lossy(a).into_owned();
                 write!(f, "{}", b)
             }
 
             // Formats a LUID the same way as `clinfo`.
             // See: https://github.com/Oblomov/clinfo/blob/master/src/clinfo.c
-            InfoType::Luid(a) => {
+            Self::Luid(a) => {
                 write!(
                     f,
                     "{:x}{:x}-{:x}{:x}{:x}{:x}{:x}{:x}",
@@ -184,7 +184,7 @@ impl fmt::Display for InfoType {
             }
 
             // Formats a UUID according to RFC4122.
-            InfoType::Uuid(a) => {
+            Self::Uuid(a) => {
                 write!(
                     f,
                     "{:x}{:x}{:x}{:x}-{:x}{:x}-{:x}{:x}-{:x}{:x}-{:x}{:x}{:x}{:x}{:x}{:x}",
@@ -207,7 +207,7 @@ impl fmt::Display for InfoType {
                 )
             }
 
-            InfoType::VecNameVersion(a) => {
+            Self::VecNameVersion(a) => {
                 let mut s = String::default();
                 for b in a.iter() {
                     s.push('\n');
@@ -220,7 +220,7 @@ impl fmt::Display for InfoType {
                 write!(f, "{}", s)
             }
 
-            InfoType::VecImageFormat(a) => {
+            Self::VecImageFormat(a) => {
                 let mut s = String::default();
 
                 for b in a.iter() {
@@ -236,7 +236,7 @@ impl fmt::Display for InfoType {
 
             // Note: underlying type may not be a vector of Strings.
             // If so use Debug trait instead
-            InfoType::VecVecUchar(a) => {
+            Self::VecVecUchar(a) => {
                 let mut s = String::default();
                 for b in a.iter() {
                     s.push('\n');

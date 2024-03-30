@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Via Technology Ltd.
+// Copyright (c) 2020-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ pub use opencl_sys::cl_egl::{CL_EGL_RESOURCE_NOT_ACQUIRED_KHR, CL_INVALID_EGL_OB
 use std::fmt;
 use thiserror::Error;
 
-pub fn error_text(error_code: cl_int) -> &'static str {
+pub const fn error_text(error_code: cl_int) -> &'static str {
     match error_code {
         CL_SUCCESS => "CL_SUCCESS",
         CL_DEVICE_NOT_FOUND => "CL_DEVICE_NOT_FOUND",
@@ -171,7 +171,7 @@ pub struct ClError(pub cl_int);
 /// Implement the From trait
 impl From<cl_int> for ClError {
     fn from(error: cl_int) -> Self {
-        ClError(error)
+        Self(error)
     }
 }
 
@@ -185,7 +185,7 @@ impl From<ClError> for &str {
 /// Implement the From trait for String
 impl From<ClError> for String {
     fn from(error: ClError) -> Self {
-        String::from(error_text(error.0))
+        Self::from(error_text(error.0))
     }
 }
 

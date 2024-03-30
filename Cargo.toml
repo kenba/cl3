@@ -75,3 +75,9 @@ thiserror = "1.0"
 [[example]]
 name = "clinfo"
 path = "examples/clinfo.rs"
+
+[lints.clippy]
+enum_glob_use = "deny"
+module_name_repetitions = "allow"
+nursery = "deny"
+unwrap_used = "deny"

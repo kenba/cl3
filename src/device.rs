@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Via Technology Ltd.
+// Copyright (c) 2020-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -742,7 +742,7 @@ pub const INTEL_DEVICE_VENDOR_ID: cl_uint = 0x8086;
 pub const AMD_ON_APPLE_DEVICE_VENDOR_ID: cl_uint = 0x1021d00;
 
 /// A text representation of an OpenCL vendor id.
-pub fn vendor_id_text(vendor_id: cl_uint) -> &'static str {
+pub const fn vendor_id_text(vendor_id: cl_uint) -> &'static str {
     match vendor_id {
         AMD_DEVICE_VENDOR_ID => "AMD",
         IBM_DEVICE_VENDOR_ID => "IBM",
@@ -763,7 +763,7 @@ pub fn vendor_id_text(vendor_id: cl_uint) -> &'static str {
 
 /// A text representation of an OpenCL device type, see:
 /// [Device Types](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-types-table).
-pub fn device_type_text(dev_type: cl_device_type) -> &'static str {
+pub const fn device_type_text(dev_type: cl_device_type) -> &'static str {
     match dev_type {
         CL_DEVICE_TYPE_DEFAULT => "CL_DEVICE_TYPE_DEFAULT",
         CL_DEVICE_TYPE_CPU => "CL_DEVICE_TYPE_CPU",
