@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL OpenGl Interoperability API.
+//! `OpenCL` `OpenGL` Interoperability API.
 
 #![allow(non_camel_case_types, deprecated)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::missing_safety_doc)]
@@ -44,17 +44,17 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an OpenCL buffer object for a context from an OpenGL buffer.  
-/// Calls clCreateFromGLBuffer to create an OpenCL buffer object.  
+/// Create an `OpenCL` buffer object for a context from an OpenGL buffer.  
+/// Calls clCreateFromGLBuffer to create an `OpenCL` buffer object.  
 ///
-/// * `context` - a valid OpenCL context created from an OpenGL context.
+/// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `bufobj` - the OpenGL buffer.  
 ///
-/// returns a Result containing the new OpenCL buffer object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` buffer object
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub unsafe fn create_from_gl_buffer(
     context: cl_context,
@@ -70,12 +70,12 @@ pub unsafe fn create_from_gl_buffer(
     }
 }
 
-/// Create an OpenCL image object, image array object, or image buffer object
+/// Create an `OpenCL` image object, image array object, or image buffer object
 /// for a context from an OpenGL texture object, texture array object,
 /// texture buffer object, or a single face of an OpenGL cubemap texture object.  
-/// Calls clCreateFromGLTexture to create an OpenCL memory object.  
+/// Calls clCreateFromGLTexture to create an `OpenCL` memory object.  
 ///
-/// * `context` - a valid OpenCL context created from an OpenGL context.
+/// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
@@ -83,8 +83,8 @@ pub unsafe fn create_from_gl_buffer(
 /// * `miplevel ` - used to define the mipmap level.  
 /// * `texture  ` - the name of a GL buffer texture object.  
 ///
-/// returns a Result containing the new OpenCL image object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` image object
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub unsafe fn create_from_gl_texture(
     context: cl_context,
@@ -109,17 +109,17 @@ pub unsafe fn create_from_gl_texture(
     }
 }
 
-/// Create an OpenCL 2D image object from an OpenGL renderbuffer object.  
-/// Calls clCreateFromGLRenderbuffer to create an OpenCL buffer object.  
+/// Create an `OpenCL` 2D image object from an OpenGL renderbuffer object.  
+/// Calls clCreateFromGLRenderbuffer to create an `OpenCL` buffer object.  
 ///
-/// * `context` - a valid OpenCL context created from an OpenGL context.
+/// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `renderbuffer`  - a GL renderbuffer object.  
 ///
-/// returns a Result containing the new OpenCL image object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` image object
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub unsafe fn create_from_gl_render_buffer(
     context: cl_context,
@@ -135,13 +135,13 @@ pub unsafe fn create_from_gl_render_buffer(
     }
 }
 
-/// Query an OpenGL object used to create an OpenCL memory object.  
+/// Query an OpenGL object used to create an `OpenCL` memory object.  
 /// Calls clGetGLObjectInfo to get the object type and name.  
 ///
-/// * `memobj` - a valid OpenCL memory object handle.
+/// * `memobj` - a valid `OpenCL` memory object handle.
 ///
 /// returns a Result containing the OpenGL object type and name
-/// or the error code from the OpenCL C API function.
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn get_gl_object_info(memobj: cl_mem) -> Result<(cl_GLuint, cl_GLuint), cl_int> {
     let mut object_type: cl_uint = CL_GL_OBJECT_BUFFER;
@@ -169,12 +169,12 @@ pub fn get_gl_texture_data(
 /// Get information about the GL texture object associated with a memory object.
 /// Calls clGetGLTextureInfo to get the desired information.
 ///
-/// * `memobj` - the OpenCL memory object.
+/// * `memobj` - the `OpenCL` memory object.
 /// * `param_name` - the type of memory object information being queried, see:
 /// [Texture Info](https://www.khronos.org/registry/OpenCL//sdk/2.2/docs/man/html/clGetGLTextureInfo.html).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_gl_texture_info(
     memobj: cl_mem,
     param_name: cl_gl_texture_info,
@@ -194,17 +194,17 @@ pub fn get_gl_texture_info(
     }
 }
 
-/// Acquire OpenCL memory objects that have been created from OpenGL objects.  
-/// Calls clEnqueueAcquireGLObjects.  
+/// Acquire `OpenCL` memory objects that have been created from `OpenGL` objects.  
+/// Calls `clEnqueueAcquireGLObjects`.  
 ///
-/// * `command_queue` - a valid OpenCL command_queue.
+/// * `command_queue` - a valid `OpenCL` `command_queue`.
 /// * `num_objects` - the number of memory objects to acquire.
 /// * `mem_objects` - the memory objects to acquire.
 /// * `num_events_in_wait_list` - the number of events in the wait list.
 /// * `event_wait_list` - the wait list events.
 ///
-/// returns a Result containing the new OpenCL event
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` event
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub unsafe fn enqueue_acquire_gl_objects(
     command_queue: cl_command_queue,
@@ -229,17 +229,17 @@ pub unsafe fn enqueue_acquire_gl_objects(
     }
 }
 
-/// Release OpenCL memory objects that have been created from OpenGL objects.  
-/// Calls clEnqueueReleaseGLObjects.  
+/// Release `OpenCL` memory objects that have been created from `OpenGL` objects.  
+/// Calls `clEnqueueReleaseGLObjects`.  
 ///
-/// * `command_queue` - a valid OpenCL command_queue.
+/// * `command_queue` - a valid `OpenCL` `command_queue`.
 /// * `num_objects` - the number of memory objects to acquire.
 /// * `mem_objects` - the memory objects to acquire.
 /// * `num_events_in_wait_list` - the number of events in the wait list.
 /// * `event_wait_list` - the wait list events.
 ///
-/// returns a Result containing the new OpenCL event
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` event
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub unsafe fn enqueue_release_gl_objects(
     command_queue: cl_command_queue,
@@ -264,12 +264,12 @@ pub unsafe fn enqueue_release_gl_objects(
     }
 }
 
-/// Create an OpenCL 2D image object from an OpenGL 2D texture object,
+/// Create an `OpenCL` 2D image object from an `OpenGL` 2D texture object,
 /// or a single face of an OpenGL cubemap texture object.  
-/// Calls clCreateFromGLTexture2D to create an OpenCL memory object.  
-/// Deprecated in CL_VERSION_1_2, use create_from_gl_texture.
+/// Calls clCreateFromGLTexture2D to create an `OpenCL` memory object.  
+/// Deprecated in `CL_VERSION_1_2`, use `create_from_gl_texture`.
 ///
-/// * `context` - a valid OpenCL context created from an OpenGL context.
+/// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
@@ -277,8 +277,8 @@ pub unsafe fn enqueue_release_gl_objects(
 /// * `miplevel ` - used to define the mipmap level.  
 /// * `texture  ` - the name of a GL 2D, cubemap or rectangle texture object.  
 ///
-/// returns a Result containing the new OpenCL image object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` image object
+/// or the error code from the `OpenCL` C API function.
 #[cfg_attr(
     any(
         feature = "CL_VERSION_1_2",
@@ -316,11 +316,11 @@ pub unsafe fn create_from_gl_texture_2d(
     }
 }
 
-/// Create an OpenCL 3D image object from an OpenGL 3D texture object.  
-/// Calls clCreateFromGLTexture3D to create an OpenCL memory object.  
-/// Deprecated in CL_VERSION_1_2, use create_from_gl_texture.
+/// Create an `OpenCL` 3D image object from an OpenGL 3D texture object.  
+/// Calls `clCreateFromGLTexture3D` to create an `OpenCL` memory object.  
+/// Deprecated in `CL_VERSION_1_2`, use `create_from_gl_texture`.
 ///
-/// * `context` - a valid OpenCL context created from an OpenGL context.
+/// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
@@ -328,8 +328,8 @@ pub unsafe fn create_from_gl_texture_2d(
 /// * `miplevel ` - used to define the mipmap level.  
 /// * `texture  ` - the name of a GL 2D, cubemap or rectangle texture object.  
 ///
-/// returns a Result containing the new OpenCL image object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` image object
+/// or the error code from the `OpenCL` C API function.
 #[cfg_attr(
     any(
         feature = "CL_VERSION_1_2",
@@ -368,14 +368,14 @@ pub unsafe fn create_from_gl_texture_3d(
 }
 
 /// Get OpenGL context information.
-/// Calls clGetGLContextInfoKHR to get the desired information.
+/// Calls `clGetGLContextInfoKHR` to get the desired information.
 ///
-/// * `properties` - the OpenCL context properties.
+/// * `properties` - the `OpenCL` context properties.
 /// * `param_name` - the type of memory object information being queried, see:
 /// [Context Info](https://www.khronos.org/registry/OpenCL//sdk/2.2/docs/man/html/clGetGLContextInfoKHR.html).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "cl_khr_gl_sharing")]
 pub fn get_gl_context_info_khr(
     properties: *mut cl_context_properties,
@@ -465,14 +465,14 @@ pub fn get_gl_context_info_khr(
 }
 
 /// Create an event object linked to an OpenGL sync object.  
-/// Requires the cl_khr_gl_event extension
-/// Calls clCreateEventFromGLsyncKHR.  
+/// Requires the `cl_khr_gl_event` extension
+/// Calls `clCreateEventFromGLsyncKHR`.  
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `sync` - the sync object in the GL share group associated with context.  
 ///
-/// returns a Result containing the new OpenCL event
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` event
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "cl_khr_gl_event")]
 #[inline]
 pub fn create_event_from_gl_sync_khr(

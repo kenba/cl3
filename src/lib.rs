@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2023 Via Technology Ltd.
+// Copyright (c) 2020-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,51 +22,51 @@
 //!
 //! # Description
 //!
-//! A functional, safe Rust interface to the Khronos OpenCL 3.0
+//! A functional, safe Rust interface to the Khronos `OpenCL 3.0`
 //! [C API](https://github.com/KhronosGroup/OpenCL-Headers/blob/master/CL/cl.h)
-//! based upon the [opencl-sys](https://crates.io/crates/opencl-sys) OpenCL FFI bindings.
+//! based upon the [opencl-sys](https://crates.io/crates/opencl-sys) `OpenCL` FFI bindings.
 //!
 //! [OpenCL 3.0](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html)
-//! is a unified specification that adds little new functionality to previous OpenCL versions.  
-//! It specifies that all **OpenCL 1.2** features are **mandatory**, while all
-//! OpenCL 2.x and 3.0 features are now optional.
+//! is a unified specification that adds little new functionality to previous `OpenCL` versions.  
+//! It specifies that all `OpenCL 1.2` features are **mandatory**, while all
+//! `OpenCL 2.x` and `OpenCL 3.0` features are now optional.
 //!
 //! ## Design
 //!
 //! This crate applies the [adapter pattern](https://en.wikipedia.org/wiki/Adapter_pattern)
-//! to convert OpenCL C API functions into Rust functions that return a
+//! to convert `OpenCL` C API functions into Rust functions that return a
 //! [Result](https://doc.rust-lang.org/std/result/) containing the desired result of
-//! the C function or the OpenCL error code.
+//! the C function or the `OpenCL` error code.
 //! The exception is `svm_free`, which just provides a safe wrapper for the
 //! `clSVMFree` C API function.
 //!
-//! The API for OpenCL versions and extensions are controlled by Rust features such as
-//! "CL_VERSION_2_0" and "cl_khr_gl_sharing". To enable an OpenCL version, the feature
-//! for that version and **all** previous OpenCL versions must be enabled,
-//! e.g. for "CL_VERSION_2_0"; "CL_VERSION_1_1" and "CL_VERSION_1_2" must also be enabled.
+//! The API for `OpenCL` versions and extensions are controlled by Rust features such as
+//! "`CL_VERSION_2_0`" and "`cl_khr_gl_sharing`". To enable an `OpenCL` version, the feature
+//! for that version and **all** previous `OpenCL` versions must be enabled,
+//! e.g. for "`CL_VERSION_2_0`"; "`CL_VERSION_1_1`" and "`CL_VERSION_1_2`" must also be enabled.
 //!
-//! The default features are "CL_VERSION_1_1" and "CL_VERSION_1_2".
+//! The default features are "`CL_VERSION_1_1`" and "`CL_VERSION_1_2`".
 //!
-//! Rust deprecation warnings are given for OpenCL API functions that are
-//! deprecated by an enabled OpenCL version e.g., `clCreateCommandQueue` is
-//! deprecated whenever "CL_VERSION_2_0" is enabled.
+//! Rust deprecation warnings are given for `OpenCL` API functions that are
+//! deprecated by an enabled `OpenCL` version e.g., `clCreateCommandQueue` is
+//! deprecated whenever "`CL_VERSION_2_0`" is enabled.
 //!
-//! Most of the modules are named after their equivalent OpenCL "API" sections in
+//! Most of the modules are named after their equivalent `OpenCL` "API" sections in
 //! [cl.h](https://github.com/KhronosGroup/OpenCL-Headers/blob/master/CL/cl.h).
-//! They contain Rust adapter functions for the OpenCL API C functions defined
+//! They contain Rust adapter functions for the `OpenCL` API C functions defined
 //! in those sections with their associated types and constants. The exceptions are:
 //!
-//! * [error_codes] - contains the OpenCL API error codes from cl.h and a function
+//! * [`error_codes`] - contains the `OpenCL` API error codes from cl.h and a function
 //! (`error_text`) to convert an error code to it's enum name from cl.h.
-//! * [info_type] - contains a Rust enum (`InfoType`) to hold the OpenCL types
-//! that can be returned from OpenCL "Info" functions, e.g. clGetPlatformInfo,
+//! * [`info_type`] - contains a Rust enum (`InfoType`) to hold the `OpenCL` types
+//! that can be returned from `OpenCL` "Info" functions, e.g. clGetPlatformInfo,
 //! clGetDeviceInfo, clGetProgramInfo, etc.
-//! * [macros] - contains Rust macros to call the OpenCL "Info" functions and
+//! * [`macros`] - contains Rust macros to call the `OpenCL` "Info" functions and
 //! return the appropriate `InfoType` in a Rust Result.
 //!
 //! It is vital to call the correct `InfoType` method type when decoding the
 //! result of "Info" functions, since the methods will panic if called with the
-//! wrong type, see [info_type].
+//! wrong type, see [`info_type`].
 //!
 //! # Use
 //!
@@ -74,10 +74,10 @@
 //!
 //! ## License
 //!
-//! Licensed under the Apache License, Version 2.0, as per Khronos Group OpenCL.  
+//! Licensed under the Apache License, Version 2.0, as per Khronos Group `OpenCL`.  
 //! You may obtain a copy of the License at: <http://www.apache.org/licenses/LICENSE-2.0>
 //!
-//! OpenCL and the OpenCL logo are trademarks of Apple Inc. used under license by Khronos.
+//! `OpenCL` and the `OpenCL` logo are trademarks of Apple Inc. used under license by Khronos.
 
 extern crate opencl_sys;
 

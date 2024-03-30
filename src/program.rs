@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL Program Object API.
+//! `OpenCL` Program Object API.
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
@@ -86,14 +86,14 @@ extern "system" {
 pub const CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: cl_program_info = 0x116A;
 pub const CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: cl_program_info = 0x116B;
 
-/// Create an OpenCL program object for a context and load source code into that object.  
-/// Calls clCreateProgramWithSource to create an OpenCL program object.  
+/// Create an `OpenCL` program object for a context and load source code into that object.  
+/// Calls `clCreateProgramWithSource` to create an `OpenCL` program object.  
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `sources` - an array of slices of source code strings.
 ///
-/// returns a Result containing the new OpenCL program object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` program object
+/// or the error code from the `OpenCL` C API function.
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn create_program_with_source(
@@ -119,15 +119,15 @@ pub fn create_program_with_source(
     }
 }
 
-/// Create an OpenCL program object for a context and load binary bits into that object.  
-/// Calls clCreateProgramWithBinary to create an OpenCL program object.  
+/// Create an `OpenCL` program object for a context and load binary bits into that object.  
+/// Calls `clCreateProgramWithBinary` to create an `OpenCL` program object.  
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `devices` - a slice of devices that are in context.
 /// * `binaries` - a slice of program binaries slices.
 ///
-/// returns a Result containing the new OpenCL program object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` program object
+/// or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -159,16 +159,16 @@ pub unsafe fn create_program_with_binary(
     }
 }
 
-/// Create an OpenCL program object for a context and  loads the information
+/// Create an `OpenCL` program object for a context and  loads the information
 /// related to the built-in kernels into that object.  
-/// Calls clCreateProgramWithBuiltInKernels to create an OpenCL program object.  
+/// Calls `clCreateProgramWithBuiltInKernels` to create an `OpenCL` program object.  
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `devices` - a slice of devices that are in context.
 /// * `kernel_names` - a semi-colon separated list of built-in kernel names.
 ///
-/// returns a Result containing the new OpenCL program object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` program object
+/// or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -196,16 +196,16 @@ pub unsafe fn create_program_with_builtin_kernels(
     }
 }
 
-/// Create an OpenCL program object for a context and load code in an intermediate
+/// Create an `OpenCL` program object for a context and load code in an intermediate
 /// language into that object.  
-/// Calls clCreateProgramWithIL to create an OpenCL program object.  
-/// CL_VERSION_2_1
+/// Calls `clCreateProgramWithIL` to create an `OpenCL` program object.  
+/// `CL_VERSION_2_1`
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `il` - a slice of program intermediate language code.
 ///
-/// returns a Result containing the new OpenCL program object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` program object
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
 #[inline]
 pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_program, cl_int> {
@@ -225,16 +225,16 @@ pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_progr
     }
 }
 
-/// Retain an OpenCL program.  
-/// Calls clRetainProgram to increment the program reference count.
+/// Retain an `OpenCL` program.  
+/// Calls `clRetainProgram` to increment the program reference count.
 ///
-/// * `program` - the OpenCL program.
+/// * `program` - the `OpenCL` program.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
     let status: cl_int = clRetainProgram(program);
@@ -245,16 +245,16 @@ pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
     }
 }
 
-/// Release an OpenCL program.  
-/// Calls clReleaseProgram to decrement the program reference count.
+/// Release an `OpenCL` program.  
+/// Calls `clReleaseProgram` to decrement the program reference count.
 ///
-/// * `program` - the OpenCL program.
+/// * `program` - the `OpenCL` program.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_program(program: cl_program) -> Result<(), cl_int> {
     let status: cl_int = clReleaseProgram(program);
@@ -266,16 +266,16 @@ pub unsafe fn release_program(program: cl_program) -> Result<(), cl_int> {
 }
 
 /// Build (compile & link) a program executable.  
-/// Calls clBuildProgram to build an OpenCL program object.  
+/// Calls `clBuildProgram` to build an `OpenCL` program object.  
 ///
-/// * `program` - a valid OpenCL program.
+/// * `program` - a valid `OpenCL` program.
 /// * `devices` - a slice of devices that are in context.
 /// * `options` - the build options in a null-terminated string.
 /// * `pfn_notify` - an optional function pointer to a notification routine.
-/// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
+/// * `user_data` - passed as an argument when `pfn_notify` is called, or `ptr::null_mut()`.
 ///
-/// returns a Result containing the new OpenCL program object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` program object
+/// or the error code from the `OpenCL` C API function.
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn build_program(
@@ -302,21 +302,21 @@ pub fn build_program(
     }
 }
 
-/// Compile a program’s source for the devices the OpenCL context associated
+/// Compile a program’s source for the devices the `OpenCL` context associated
 /// with the program.  
-/// Calls clCompileProgram to compile an OpenCL program object.  
+/// Calls clCompileProgram to compile an `OpenCL` program object.  
 ///
-/// * `program` - a valid OpenCL program.
+/// * `program` - a valid `OpenCL` program.
 /// * `devices` - a slice of devices that are in context.
 /// * `options` - the compilation options in a null-terminated string.
-/// * `input_headers` - a slice of programs that describe headers in the input_headers.
+/// * `input_headers` - a slice of programs that describe headers in the `input_headers`.
 /// * `header_include_names` - an array that has a one to one correspondence with
-/// input_headers.
+/// `input_headers`.
 /// * `pfn_notify` - an optional function pointer to a notification routine.
-/// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
+/// * `user_data` - passed as an argument when `pfn_notify` is called, or `ptr::null_mut()`.
 ///
-/// returns a Result containing the new OpenCL program object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` program object
+/// or the error code from the `OpenCL` C API function.
 ///
 /// # Panics
 ///
@@ -365,18 +365,18 @@ pub fn compile_program(
 }
 
 /// Link a set of compiled program objects and libraries for the devices in the
-/// OpenCL context associated with the program.  
-/// Calls clLinkProgram to link an OpenCL program object.  
+/// `OpenCL` context associated with the program.  
+/// Calls clLinkProgram to link an `OpenCL` program object.  
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `devices` - a slice of devices that are in context.
 /// * `options` - the link options in a null-terminated string.
 /// * `input_programs` - a slice of programs that are to be linked to create the program executable.
 /// * `pfn_notify` - an optional function pointer to a notification routine.
-/// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
+/// * `user_data` - passed as an argument when `pfn_notify` is called, or `ptr::null_mut()`.
 ///
-/// returns a Result containing the new OpenCL program object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` program object
+/// or the error code from the `OpenCL` C API function.
 ///
 /// # Panics
 ///
@@ -419,13 +419,13 @@ pub unsafe fn link_program(
 /// Register a callback function with a program object that is called when the
 /// program object is destroyed.  
 /// Calls clSetProgramReleaseCallback to register a callback function.  
-/// CL_VERSION_2_2
+/// `CL_VERSION_2_2`
 ///
 /// * `program` - the program being deleted.
 /// * `pfn_notify` - function pointer to the notification routine.
-/// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
+/// * `user_data` - passed as an argument when `pfn_notify` is called, or `ptr::null_mut()`.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -446,16 +446,16 @@ pub unsafe fn set_program_release_callback(
 }
 
 /// Set the value of a specialization constant.  
-/// Calls clSetProgramSpecializationConstant.  
-/// CL_VERSION_2_2  
+/// Calls `clSetProgramSpecializationConstant`.  
+/// `CL_VERSION_2_2`  
 ///
 /// * `program` - the program.
 /// * `spec_id` - the specialization constant whose value will be set.
-/// * `spec_size` - size in bytes of the data pointed to by spec_value.
+/// * `spec_size` - size in bytes of the data pointed to by `spec_value`.
 /// * `spec_value` - pointer to the memory location that contains the value
 /// of the specialization constant.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -477,12 +477,12 @@ pub unsafe fn set_program_specialization_constant(
     }
 }
 
-/// Release the resources allocated by the OpenCL compiler for platform.  
+/// Release the resources allocated by the `OpenCL` compiler for platform.  
 /// Calls clUnloadPlatformCompiler.  
 ///
 /// * `platform` - the platform.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -498,7 +498,7 @@ pub unsafe fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), c
     }
 }
 
-/// Get data about an OpenCL program.
+/// Get data about an `OpenCL` program.
 /// Calls clGetProgramInfo to get the desired data about the program.
 pub fn get_program_data(
     program: cl_program,
@@ -510,15 +510,15 @@ pub fn get_program_data(
     get_vector(program, param_name, size)
 }
 
-/// Get specific information about an OpenCL program.  
+/// Get specific information about an `OpenCL` program.  
 /// Calls clGetProgramInfo to get the desired information about the program.
 ///
-/// * `program` - the OpenCL program.
+/// * `program` - the `OpenCL` program.
 /// * `param_name` - the type of program information being queried, see:
 /// [Program Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#program-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_program_info(
     program: cl_program,
     param_name: cl_program_info,
@@ -600,7 +600,7 @@ pub fn get_program_info(
     }
 }
 
-/// Get data about an OpenCL program build.
+/// Get data about an `OpenCL` program build.
 /// Calls clGetProgramBuildInfo to get the desired data about the program build.
 pub fn get_program_build_data(
     program: cl_program,
@@ -613,16 +613,16 @@ pub fn get_program_build_data(
     get_vector(program, device, param_name, size)
 }
 
-/// Get specific information about an OpenCL program build.  
+/// Get specific information about an `OpenCL` program build.  
 /// Calls clGetProgramBuildInfo to get the desired information about the program build.
 ///
-/// * `program` - the OpenCL program.
+/// * `program` - the `OpenCL` program.
 /// * `device` - -the device for which build information is being queried.
 /// * `param_name` - the type of program build information being queried, see:
 /// [Program Build Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#program-build-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_program_build_info(
     program: cl_program,
     device: cl_device_id,

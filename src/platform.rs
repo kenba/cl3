@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Via Technology Ltd.
+// Copyright (c) 2020-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL Platform API.
+//! `OpenCL` Platform API.
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::wildcard_in_or_patterns)]
@@ -42,11 +42,11 @@ use std::ptr;
 /// use cl3::platform::get_platform_ids;
 ///
 /// let platform_ids = get_platform_ids().unwrap();
-/// println!("Number of OpenCL platforms: {}", platform_ids.len());
+/// println!("Number of `OpenCL` platforms: {}", platform_ids.len());
 /// assert!(0 < platform_ids.len());
 /// ```
 /// returns a Result containing a vector of available platform ids
-/// or the error code from the OpenCL C API function.
+/// or the error code from the `OpenCL` C API function.
 pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
     let mut count: cl_uint = 0;
@@ -73,7 +73,7 @@ pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
     }
 }
 
-/// Get data about an OpenCL platform.
+/// Get data about an `OpenCL` platform.
 /// Calls clGetPlatformInfo to get the desired data about the platform.
 pub fn get_platform_data(
     platform: cl_platform_id,
@@ -85,8 +85,9 @@ pub fn get_platform_data(
     get_vector(platform, param_name, size)
 }
 
-/// Get specific information about an OpenCL platform.
-/// Calls clGetPlatformInfo to get the desired information about the platform.
+/// Get specific information about an `OpenCL` platform.
+/// Calls `clGetPlatformInfo` to get the desired information about the platform.
+///
 ///  # Examples
 /// ```
 /// use cl3::platform::{get_platform_ids, get_platform_info, CL_PLATFORM_NAME, CL_PLATFORM_VERSION};
@@ -107,12 +108,12 @@ pub fn get_platform_data(
 /// println!("CL_PLATFORM_VERSION: {}", value);
 /// assert!(!value.is_empty());
 /// ```
-/// * `platform` - the cl_platform_id of the OpenCL platform.
+/// * `platform` - the `cl_platform_id` of the `OpenCL` platform.
 /// * `param_name` - the type of platform information being queried, see
 /// [Platform Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#platform-queries-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_platform_info(
     platform: cl_platform_id,
     param_name: cl_platform_info,

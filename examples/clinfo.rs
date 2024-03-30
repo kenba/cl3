@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2021-2024 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@ use cl3::platform::{
 };
 use cl3::types::{cl_int, cl_uint, cl_ulong};
 
-/// Finds all the OpenCL platforms and devices on a system.
+/// Finds all the `OpenCL` platforms and devices on a system.
 ///
-/// It displays OpenCL platform information from `clGetPlatformInfo` and
-/// OpenCL device information from `clGetDeviceInfo` for all the platforms and
+/// It displays `OpenCL` platform information from `clGetPlatformInfo` and
+/// `OpenCL` device information from `clGetDeviceInfo` for all the platforms and
 /// devices.
 fn main() -> Result<(), cl_int> {
     let platforms = get_platform_ids()?;

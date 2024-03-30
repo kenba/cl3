@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL extensions that don't have external (OpenGL, D3D) dependencies.
+//! `OpenCL` extensions that don't have external (OpenGL, D3D) dependencies.
 //! See: [OpenCL Extension Specification](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_Ext.html)
 
 #![allow(non_camel_case_types)]

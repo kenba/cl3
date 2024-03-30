@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL Device API.
+//! `OpenCL` Device API.
 
 #![allow(non_camel_case_types, non_upper_case_globals)]
 #![allow(
@@ -140,12 +140,12 @@ use std::ptr;
 /// println!("CL_DEVICE_TYPE_GPU count: {}", device_ids.len());
 /// assert!(0 < device_ids.len());
 /// ```
-/// * `platform` - the cl_platform_id of the OpenCL platform.
+/// * `platform` - the `cl_platform_id` of the `OpenCL` platform.
 /// * `device_type` - the type of device, see
 /// [Device Types](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-types-table).
 ///
 /// returns a Result containing a vector of available device ids
-/// or the error code from the OpenCL C API function.
+/// or the error code from the `OpenCL` C API function.
 pub fn get_device_ids(
     platform: cl_platform_id,
     device_type: cl_device_type,
@@ -182,7 +182,7 @@ pub fn get_device_ids(
     }
 }
 
-/// Get data about an OpenCL device.
+/// Get data about an `OpenCL` device.
 /// Calls clGetDeviceInfo to get the desired data about the device.
 pub fn get_device_data(
     device: cl_device_id,
@@ -194,7 +194,7 @@ pub fn get_device_data(
     get_vector(device, param_name, size)
 }
 
-/// Get specific information about an OpenCL device.  
+/// Get specific information about an `OpenCL` device.  
 /// Calls clGetDeviceInfo to get the desired information about the device.
 ///  # Examples
 /// ```
@@ -230,12 +230,12 @@ pub fn get_device_data(
 /// println!("CL_DEVICE_VERSION: {}", value);
 /// assert!(!value.is_empty());
 /// ```
-/// * `device` - the cl_device_id of the OpenCL device.
+/// * `device` - the `cl_device_id` of the `OpenCL` device.
 /// * `param_name` - the type of device information being queried, see
 /// [Device Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-queries-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_device_info(
     device: cl_device_id,
     param_name: cl_device_info,
@@ -495,11 +495,11 @@ pub fn get_device_info(
     }
 }
 
-/// Convert a u8 slice (e.g. from get_device_info) into a cl_amd_device_topology structure.
+/// Convert a u8 slice (e.g. from `get_device_info`) into a `cl_amd_device_topology structure`.
 ///
 /// # Panics
 ///
-/// if bytes.len() != size_of::<cl_amd_device_topology>
+/// `if bytes.len() != size_of::<cl_amd_device_topology>`
 #[must_use]
 pub fn get_amd_device_topology(bytes: &[u8]) -> cl_amd_device_topology {
     let size = bytes.len();
@@ -512,11 +512,11 @@ pub fn get_amd_device_topology(bytes: &[u8]) -> cl_amd_device_topology {
     topology
 }
 
-/// Convert a u8 slice (e.g. from get_device_info) into a cl_device_pci_bus_info_khr structure.
+/// Convert a u8 slice (e.g. from `get_device_info`) into a `cl_device_pci_bus_info_khr structure`.
 ///
 /// # Panics
 ///
-/// if bytes.len() != size_of::<cl_device_pci_bus_info_khr>
+/// `if bytes.len() != size_of::<cl_device_pci_bus_info_khr>`
 #[must_use]
 pub fn get_device_pci_bus_info_khr(bytes: &[u8]) -> cl_device_pci_bus_info_khr {
     let size = bytes.len();
@@ -529,11 +529,11 @@ pub fn get_device_pci_bus_info_khr(bytes: &[u8]) -> cl_device_pci_bus_info_khr {
     pci_bus_info
 }
 
-/// Convert a u8 slice (e.g. from get_device_info) into a cl_device_integer_dot_product_acceleration_properties_khr structure.
+/// Convert a u8 slice (e.g. from `get_device_info`) into a `cl_device_integer_dot_product_acceleration_properties_khr structure`.
 ///
 /// # Panics
 ///
-/// if bytes.len() != size_of::<cl_device_integer_dot_product_acceleration_properties_khr>
+/// if `bytes.len() != size_of::<cl_device_integer_dot_product_acceleration_properties_khr>`
 #[must_use]
 pub fn get_device_integer_dot_product_acceleration_properties_khr(
     bytes: &[u8],
@@ -581,15 +581,15 @@ fn count_sub_devices(
     }
 }
 
-/// Create sub-devices by partitioning an OpenCL device.
-/// Calls clCreateSubDevices to get the partitioned sub-devices.
+/// Create sub-devices by partitioning an `OpenCL` device.
+/// Calls `clCreateSubDevices` to get the partitioned sub-devices.
 ///
-/// * `in_device` - the cl_device_id of the OpenCL device to partition.
-/// * `properties` - the slice of cl_device_partition_property, see
+/// * `in_device` - the `cl_device_id` of the `OpenCL` device to partition.
+/// * `properties` - the slice of `cl_device_partition_property`, see
 /// [Subdevice Partition](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#subdevice-partition-table).
 ///
 /// returns a Result containing a vector of available sub-device ids
-/// or the error code from the OpenCL C API function.
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 #[allow(clippy::cast_possible_truncation)]
@@ -620,17 +620,17 @@ pub fn create_sub_devices(
     }
 }
 
-/// Retain an OpenCL device.  
-/// Calls clRetainDevice to increment the device reference count
+/// Retain an `OpenCL` device.  
+/// Calls `clRetainDevice` to increment the device reference count
 /// if device is a valid sub-device created by a call to clCreateSubDevices.
 ///
-/// * `device` - the cl_device_id of the OpenCL device.
+/// * `device` - the `cl_device_id` of the `OpenCL` device.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
@@ -642,17 +642,17 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-/// Release an OpenCL device.  
-/// Calls clReleaseDevice to decrement the device reference count
+/// Release an `OpenCL` device.  
+/// Calls `clReleaseDevice` to decrement the device reference count
 /// if device is a valid sub-device created by a call to clCreateSubDevices.
 ///
-/// * `device` - the cl_device_id of the OpenCL device.
+/// * `device` - the `cl_device_id` of the `OpenCL` device.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
@@ -664,17 +664,16 @@ pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-// #ifdef CL_VERSION_2_1
-/// Replace the default command queue on an OpenCL device.  
-/// Calls clSetDefaultDeviceCommandQueue to replace the default command queue  
-/// CL_VERSION_2_1
+/// Replace the default command queue on an `OpenCL` device.  
+/// Calls `clSetDefaultDeviceCommandQueue` to replace the default command queue  
+/// `CL_VERSION_2_1`
 ///
-/// * `context` - the OpenCL context used to create command_queue.
-/// * `device` - a valid OpenCL device associated with context.
+/// * `context` - the `OpenCL` context used to create `command_queue`.
+/// * `device` - a valid `OpenCL` device associated with context.
 /// * `command_queue` - a command queue object which replaces the default
 /// device command queue.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
 #[inline]
 pub fn set_default_device_command_queue(
@@ -691,13 +690,13 @@ pub fn set_default_device_command_queue(
 }
 
 /// Query device and host timestamps.  
-/// Calls clGetDeviceAndHostTimer  
-/// CL_VERSION_2_1
+/// Calls `clGetDeviceAndHostTimer`  
+/// `CL_VERSION_2_1`
 ///
-/// * `device` - a valid OpenCL device.
+/// * `device` - a valid `OpenCL` device.
 ///
-/// returns a Result containing device_timestamp and host_timestamp in a 2D array
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing `device_timestamp` and `host_timestamp` in a 2D array
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
 #[inline]
 pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], cl_int> {
@@ -713,13 +712,13 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
 }
 
 /// The current value of the host clock as seen by device.  
-/// Calls clGetHostTimer  
-/// CL_VERSION_2_1
+/// Calls `clGetHostTimer`  
+/// `CL_VERSION_2_1`
 ///
-/// * `device` - a valid OpenCL device.
+/// * `device` - a valid `OpenCL` `device`.
 ///
-/// returns a Result containing host_timestamp
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing `host_timestamp`
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
 #[inline]
 pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
@@ -734,9 +733,9 @@ pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
 // #endif
 
 /// Device Vendor Ids.
-/// The PCie IDs of some OpenCL device vendors as returned by get_device_info,
-/// i.e.: clGetDeviceInfo - CL_DEVICE_VENDOR_ID
-/// They were obtained from the PCIe ID Repository: https://pci-ids.ucw.cz/
+/// The `PCie` IDs of some `OpenCL` device vendors as returned by `get_device_info`,
+/// i.e.: `clGetDeviceInfo` - `CL_DEVICE_VENDOR_ID`
+/// They were obtained from the `PCIe` ID Repository: <https://pci-ids.ucw.cz/>
 pub const AMD_DEVICE_VENDOR_ID: cl_uint = 0x1002;
 pub const IBM_DEVICE_VENDOR_ID: cl_uint = 0x1014;
 pub const APPLE_DEVICE_VENDOR_ID: cl_uint = 0x106b;
@@ -752,7 +751,7 @@ pub const INTEL_DEVICE_VENDOR_ID: cl_uint = 0x8086;
 // Integrated AMD cards on Apple don't have the usual AMD ID
 pub const AMD_ON_APPLE_DEVICE_VENDOR_ID: cl_uint = 0x0102_1d00;
 
-/// A text representation of an OpenCL vendor id.
+/// A text representation of an `OpenCL` vendor id.
 #[must_use]
 pub const fn vendor_id_text(vendor_id: cl_uint) -> &'static str {
     match vendor_id {
@@ -773,7 +772,7 @@ pub const fn vendor_id_text(vendor_id: cl_uint) -> &'static str {
     }
 }
 
-/// A text representation of an OpenCL device type, see:
+/// A text representation of an `OpenCL` device type, see:
 /// [Device Types](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-types-table).
 #[must_use]
 pub const fn device_type_text(dev_type: cl_device_type) -> &'static str {
@@ -1947,7 +1946,7 @@ mod tests {
         let platform_ids = get_platform_ids().unwrap();
         assert!(0 < platform_ids.len());
 
-        // Find an OpenCL device with sub devices
+        // Find an `OpenCL` device with sub devices
 
         let mut device_id = ptr::null_mut();
         let mut has_sub_devices: bool = false;

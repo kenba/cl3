@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL API data types.
+//! `OpenCL` API data types.
 
 #![allow(non_camel_case_types)]
 

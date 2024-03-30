@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL Event Object API.
+//! `OpenCL` Event Object API.
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
@@ -53,12 +53,12 @@ use std::fmt;
 use std::mem;
 use std::ptr;
 
-/// Wait for OpenCL events to complete.  
-/// Calls clWaitForEvents.
+/// Wait for `OpenCL` events to complete.  
+/// Calls `clWaitForEvents`.
 ///
-/// * `events` - a slice of OpenCL events.
+/// * `events` - a slice of `OpenCL` events.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 #[inline]
 #[allow(clippy::cast_possible_truncation)]
 pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
@@ -70,8 +70,8 @@ pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
     }
 }
 
-/// Get data about an OpenCL event.
-/// Calls clGetEventInfo to get the desired data about the event.
+/// Get data about an `OpenCL` event.
+/// Calls `clGetEventInfo` to get the desired data about the event.
 pub fn get_event_data(event: cl_event, param_name: cl_event_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetEventInfo);
     let size = get_size(event, param_name)?;
@@ -79,15 +79,15 @@ pub fn get_event_data(event: cl_event, param_name: cl_event_info) -> Result<Vec<
     get_vector(event, param_name, size)
 }
 
-/// Get specific information about an OpenCL event.  
-/// Calls clGetEventInfo to get the desired information about the event.
+/// Get specific information about an `OpenCL` event.  
+/// Calls `clGetEventInfo` to get the desired information about the event.
 ///
-/// * `event` - the OpenCL event.
+/// * `event` - the `OpenCL` event.
 /// * `param_name` - the type of program information being queried, see:
 /// [Event Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#event-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_event_info(event: cl_event, param_name: cl_event_info) -> Result<InfoType, cl_int> {
     match param_name {
         CL_EVENT_COMMAND_EXECUTION_STATUS => {
@@ -109,13 +109,13 @@ pub fn get_event_info(event: cl_event, param_name: cl_event_info) -> Result<Info
     }
 }
 
-/// Create an OpenCL user event object.  
-/// Calls clCreateUserEvent to create an OpenCL event.  
+/// Create an `OpenCL` user event object.  
+/// Calls `clCreateUserEvent` to create an `OpenCL` event.  
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 ///
-/// returns a Result containing the new OpenCL event object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` event object
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
@@ -127,16 +127,16 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
     }
 }
 
-/// Retain an OpenCL event.  
+/// Retain an `OpenCL` event.  
 /// Calls clRetainEvent to increment the event reference count.
 ///
-/// * `event` - the OpenCL event.
+/// * `event` - the `OpenCL` event.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
     let status: cl_int = clRetainEvent(event);
@@ -147,16 +147,16 @@ pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
     }
 }
 
-/// Release an OpenCL event.  
-/// Calls clReleaseEvent to decrement the event reference count.
+/// Release an `OpenCL` event.  
+/// Calls `clReleaseEvent` to decrement the event reference count.
 ///
-/// * `event` - the OpenCL event.
+/// * `event` - the `OpenCL` event.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
     let status: cl_int = clReleaseEvent(event);
@@ -168,12 +168,12 @@ pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
 }
 
 /// Set the execution status of a user event object.  
-/// Calls clSetUserEventStatus to set the execution status.
+/// Calls `clSetUserEventStatus` to set the execution status.
 ///
-/// * `event` - the OpenCL event.
-/// * `execution_status` - the OpenCL execution_status.
+/// * `event` - the `OpenCL` event.
+/// * `execution_status` - the `OpenCL` `execution_status`.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn set_user_event_status(event: cl_event, execution_status: cl_int) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clSetUserEventStatus(event, execution_status) };
@@ -185,13 +185,13 @@ pub fn set_user_event_status(event: cl_event, execution_status: cl_int) -> Resul
 }
 
 /// Register a user callback function for a specific command execution status,
-/// Calls clSetEventCallback to register a callback function.  
+/// Calls `clSetEventCallback` to register a callback function.  
 ///
-/// * `event` - the OpenCL event.
+/// * `event` - the `OpenCL` event.
 /// * `pfn_notify` - function pointer to the callback function.
-/// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
+/// * `user_data` - passed as an argument when `pfn_notify` is called, or `ptr::null_mut()`.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn set_event_callback(
     event: cl_event,
@@ -214,8 +214,8 @@ pub fn set_event_callback(
     }
 }
 
-/// Get profiling data about an OpenCL event.
-/// Calls clGetEventProfilingInfo to get the desired profiling data about the event.
+/// Get profiling data about an `OpenCL` event.
+/// Calls `clGetEventProfilingInfo` to get the desired profiling data about the event.
 pub fn get_event_profiling_data(
     event: cl_event,
     param_name: cl_profiling_info,
@@ -230,12 +230,12 @@ pub fn get_event_profiling_data(
 /// profiling is enabled.  
 /// Calls clGetEventProfilingInfo to get the desired information.
 ///
-/// * `event` - the OpenCL event.
+/// * `event` - the `OpenCL` event.
 /// * `param_name` - the type of event profiling information being queried, see:
 /// [Event Profiling Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#event-profiling-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_event_profiling_info(
     event: cl_event,
     param_name: cl_profiling_info,
@@ -267,7 +267,7 @@ pub const fn status_text(status: cl_int) -> &'static str {
 }
 
 #[derive(Debug)]
-/// CommandExecutionStatus is a newtype around the OpenCL command execution status
+/// `CommandExecutionStatus` is a newtype around the `OpenCL` command execution status
 pub struct CommandExecutionStatus(pub cl_int);
 
 /// Implement the From trait
@@ -338,17 +338,17 @@ pub const fn command_type_text(command_type: cl_command_type) -> &'static str {
 }
 
 #[derive(Debug)]
-/// EventCommandType is a newtype around the OpenCL cl_command_type
+/// `EventCommandType` is a newtype around the `OpenCL` `cl_command_type`
 pub struct EventCommandType(pub cl_command_type);
 
-/// Implement the From trait for EventCommandType
+/// Implement the From trait for `EventCommandType`
 impl From<cl_command_type> for EventCommandType {
     fn from(command_type: cl_command_type) -> Self {
         Self(command_type)
     }
 }
 
-/// Implement the Display trait for EventCommandType
+/// Implement the Display trait for `EventCommandType`
 impl fmt::Display for EventCommandType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", command_type_text(self.0))

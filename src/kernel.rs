@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL Kernel Object API.
+//! `OpenCL` Kernel Object API.
 
 #![allow(non_camel_case_types)]
 #![allow(
@@ -63,14 +63,14 @@ use std::ffi::CStr;
 use std::mem;
 use std::ptr;
 
-/// Create an OpenCL kernel object for a program with a successfully built executable.  
-/// Calls clCreateKernel to create an OpenCL kernel object.  
+/// Create an `OpenCL` kernel object for a program with a successfully built executable.  
+/// Calls clCreateKernel to create an `OpenCL` kernel object.  
 ///
-/// * `program` - a valid OpenCL program.
+/// * `program` - a valid `OpenCL` program.
 /// * `kernel_name` - a kernel function name in the program.
 ///
-/// returns a Result containing the new OpenCL kernel object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` kernel object
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn create_kernel(program: cl_program, kernel_name: &CStr) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
@@ -93,13 +93,13 @@ fn count_kernels_in_program(program: cl_program) -> Result<cl_uint, cl_int> {
     }
 }
 
-/// Create OpenCL kernel objects for all kernel functions in a program.  
-/// Calls clCreateKernelsInProgram to create OpenCL kernel objects.  
+/// Create `OpenCL` kernel objects for all kernel functions in a program.  
+/// Calls clCreateKernelsInProgram to create `OpenCL` kernel objects.  
 ///
-/// * `program` - a valid OpenCL program.
+/// * `program` - a valid `OpenCL` program.
 ///
-/// returns a Result containing the new OpenCL kernel objects
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` kernel objects
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, cl_int> {
     let count: cl_uint = count_kernels_in_program(program)?;
@@ -120,14 +120,14 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
     }
 }
 
-/// Clone an OpenCL kernel object.  
-/// Calls clCloneKernel to clone an OpenCL kernel object.  
-/// CL_VERSION_2_1
+/// Clone an `OpenCL` kernel object.  
+/// Calls clCloneKernel to clone an `OpenCL` kernel object.  
+/// `CL_VERSION_2_1`
 ///
-/// * `source_kernel` - a valid OpenCL cl_kernel object that will be copied.
+/// * `source_kernel` - a valid `OpenCL` `cl_kernel` object that will be copied.
 ///
-/// returns a Result containing the new OpenCL kernel object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` kernel object
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
 #[inline]
 pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
@@ -140,16 +140,16 @@ pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
     }
 }
 
-/// Retain an OpenCL kernel.  
+/// Retain an `OpenCL` kernel.  
 /// Calls clRetainKernel to increment the kernel reference count.
 ///
-/// * `program` - the OpenCL kernel.
+/// * `program` - the `OpenCL` kernel.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     let status: cl_int = clRetainKernel(kernel);
@@ -160,16 +160,16 @@ pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     }
 }
 
-/// Release an OpenCL kernel.  
+/// Release an `OpenCL` kernel.  
 /// Calls clReleaseKernel to decrement the kernel reference count.
 ///
-/// * `kernel` - the OpenCL kernel.
+/// * `kernel` - the `OpenCL` kernel.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     let status: cl_int = clReleaseKernel(kernel);
@@ -183,11 +183,11 @@ pub unsafe fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
 /// Set the argument value for a specific argument of a kernel.  
 /// Calls clSetKernelArg.  
 ///
-/// * `kernel` - the OpenCL kernel.
+/// * `kernel` - the `OpenCL` kernel.
 /// * `arg_index` - the kernel argument index.
-/// * `arg_ptr` - pointer to the data for the argument at arg_index.
+/// * `arg_ptr` - pointer to the data for the argument at `arg_index`.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -210,11 +210,11 @@ pub unsafe fn set_kernel_arg(
 /// Set set a SVM pointer as the argument value for a specific argument of a kernel.  
 /// Calls clSetKernelArgSVMPointer.  
 ///
-/// * `kernel` - the OpenCL kernel.
+/// * `kernel` - the `OpenCL` kernel.
 /// * `arg_index` - the kernel argument index.
-/// * `arg_ptr` - the SVM pointer to the data for the argument at arg_index.
+/// * `arg_ptr` - the SVM pointer to the data for the argument at `arg_index`.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -237,12 +237,12 @@ pub unsafe fn set_kernel_arg_svm_pointer(
 /// Pass additional information other than argument values to a kernel.  
 /// Calls clSetKernelExecInfo.  
 ///
-/// * `kernel` - the OpenCL kernel.
+/// * `kernel` - the `OpenCL` kernel.
 /// * `param_name` - the information to be passed to kernel, see:
 /// [Kernel Execution Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-exec-info-table).
-/// * `param_ptr` - pointer to the data for the param_name.
+/// * `param_ptr` - pointer to the data for the `param_name`.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -263,7 +263,7 @@ pub unsafe fn set_kernel_exec_info(
     }
 }
 
-/// Get data about an OpenCL kernel.
+/// Get data about an `OpenCL` kernel.
 /// Calls clGetKernelInfo to get the desired data about the kernel.
 pub fn get_kernel_data(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetKernelInfo);
@@ -272,15 +272,15 @@ pub fn get_kernel_data(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<
     get_vector(kernel, param_name, size)
 }
 
-/// Get specific information about an OpenCL kernel.  
+/// Get specific information about an `OpenCL` kernel.  
 /// Calls clGetKernelInfo to get the desired information about the kernel.
 ///
-/// * `kernel` - the OpenCL kernel.
+/// * `kernel` - the `OpenCL` kernel.
 /// * `param_name` - the type of kernel information being queried, see:
 /// [Kernel Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_kernel_info(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<InfoType, cl_int> {
     match param_name {
         CL_KERNEL_NUM_ARGS | CL_KERNEL_REFERENCE_COUNT => {
@@ -298,7 +298,7 @@ pub fn get_kernel_info(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<
     }
 }
 
-/// Get data about arguments of an OpenCL kernel.
+/// Get data about arguments of an `OpenCL` kernel.
 /// Calls clGetKernelArgInfo to get the desired data about arguments of the kernel.
 #[cfg(feature = "CL_VERSION_1_2")]
 pub fn get_kernel_arg_data(
@@ -312,16 +312,16 @@ pub fn get_kernel_arg_data(
     get_vector(kernel, arg_indx, param_name, size)
 }
 
-/// Get specific information about arguments of an OpenCL kernel.  
+/// Get specific information about arguments of an `OpenCL` kernel.  
 /// Calls clGetKernelArgInfo to get the desired information about the kernel.
 ///
-/// * `kernel` - the OpenCL kernel.
+/// * `kernel` - the `OpenCL` kernel.
 /// * `arg_index` - the kernel argument index.
 /// * `param_name` - the type of kernel information being queried, see:
 /// [Kernel Argument Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-argument-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
 pub fn get_kernel_arg_info(
     kernel: cl_kernel,
@@ -349,7 +349,7 @@ pub fn get_kernel_arg_info(
     }
 }
 
-/// Get data about work groups of an OpenCL kernel.
+/// Get data about work groups of an `OpenCL` kernel.
 /// Calls clGetKernelArgInfo to get the desired data about work groups of the kernel.
 pub fn get_kernel_work_group_data(
     kernel: cl_kernel,
@@ -362,16 +362,16 @@ pub fn get_kernel_work_group_data(
     get_vector(kernel, device, param_name, size)
 }
 
-/// Get specific information about work groups of an OpenCL kernel.  
+/// Get specific information about work groups of an `OpenCL` kernel.  
 /// Calls clGetKernelWorkGroupInfo to get the desired information about the kernel.
 ///
-/// * `kernel` - the OpenCL kernel.
+/// * `kernel` - the `OpenCL` kernel.
 /// * `device` - a specific device in the list of devices associated with kernel.
 /// * `param_name` - the type of kernel information being queried, see:
 /// [Kernel Object Device Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-workgroup-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_kernel_work_group_info(
     kernel: cl_kernel,
     device: cl_device_id,
@@ -420,20 +420,20 @@ pub fn get_kernel_work_group_info(
     }
 }
 
-/// Get specific information about sub groups of an OpenCL kernel.  
+/// Get specific information about sub groups of an `OpenCL` kernel.  
 /// Calls clGetKernelSubGroupInfo to get the desired information about the kernel.  
-/// CL_VERSION_2_1
+/// `CL_VERSION_2_1`
 ///
-/// * `kernel` - the OpenCL kernel.
+/// * `kernel` - the `OpenCL` kernel.
 /// * `device` - a specific device in the list of devices associated with kernel.
 /// * `param_name` - the type of kernel information being queried, see:
 /// [Kernel Object Subgroup Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-subgroup-info-table).
-/// * `input_value_size` - the size in bytes of memory pointed to by input_value.
+/// * `input_value_size` - the size in bytes of memory pointed to by `input_value`.
 /// * `input_value` -  pointer to memory where the appropriate parameterization
 /// of the query is passed from.
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
 pub fn get_kernel_sub_group_info(
     kernel: cl_kernel,

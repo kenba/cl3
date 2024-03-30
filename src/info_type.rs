@@ -19,7 +19,7 @@ use opencl_sys::{
 };
 use std::fmt;
 
-/// A Rust enum to handle OpenCL API "Info" function return types.  
+/// A Rust enum to handle `OpenCL` API "Info" function return types.  
 /// Each of the data types may be extracted from the enum using its associated
 /// From trait or `to_*` function.  
 ///
@@ -46,7 +46,7 @@ pub enum InfoType {
     VecVecUchar(Vec<Vec<u8>>),
 }
 
-/// A macro to help create the InfoType From traits.
+/// A macro to help create the `InfoType` From traits.
 macro_rules! match_info_type {
     ($value:expr, $variant:path) => {
         match $value {
@@ -148,8 +148,8 @@ impl From<InfoType> for Vec<Vec<u8>> {
 
 impl From<InfoType> for String {
     /// Get a `Vec<cl_uchar>` aka `Vec<u8>` as a String.
-    /// Note: it uses from_utf8_lossy to convert any invalid characters to
-    /// std::char::REPLACEMENT_CHARACTER.
+    /// Note: it uses `from_utf8_lossy` to convert any invalid characters to
+    /// `std::char::REPLACEMENT_CHARACTER`.
     ///
     /// returns a utf8 String.
     fn from(info_type: InfoType) -> Self {

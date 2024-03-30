@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL API Error Codes.
+//! `OpenCL` API Error Codes.
 
 pub use opencl_sys::{
     cl_int, CL_ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL, CL_BUILD_PROGRAM_FAILURE,
@@ -166,7 +166,7 @@ pub const fn error_text(error_code: cl_int) -> &'static str {
 }
 
 #[derive(Debug, Error)]
-/// ClError is a newtype around the OpenCL cl_int error number
+/// `ClError` is a newtype around the `OpenCL` `cl_int` error number
 pub struct ClError(pub cl_int);
 
 /// Implement the From trait

@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2023 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2024 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL Memory Object API.
+//! `OpenCL` Memory Object API.
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
@@ -61,10 +61,10 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an OpenCL buffer object for a context.  
-/// Calls clCreateBuffer to create an OpenCL buffer object.  
+/// Create an `OpenCL` buffer object for a `context`.  
+/// Calls `clCreateBuffer` to create an `OpenCL` buffer object.  
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
@@ -72,8 +72,8 @@ use std::ptr;
 /// * `host_ptr` - a pointer to the buffer data that may already be allocated
 /// by the application.
 ///
-/// returns a Result containing the new OpenCL buffer object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` buffer object
+/// or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -94,10 +94,10 @@ pub unsafe fn create_buffer(
     }
 }
 
-/// Create an new OpenCL buffer object from an existing buffer object.  
-/// Calls clCreateSubBuffer to create an OpenCL sub-buffer object.  
+/// Create an new `OpenCL` buffer object from an existing buffer object.  
+/// Calls `clCreateSubBuffer` to create an `OpenCL` sub-buffer object.  
 ///
-/// * `buffer` - a valid OpenCL buffer.
+/// * `buffer` - a valid `OpenCL` buffer.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the sub-buffer memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
@@ -105,8 +105,8 @@ pub unsafe fn create_buffer(
 /// buffer object to be created, see:
 /// [SubBuffer Attributes](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#subbuffer-create-info-table).
 ///
-/// returns a Result containing the new OpenCL buffer object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` buffer object
+/// or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -133,10 +133,10 @@ pub unsafe fn create_sub_buffer(
     }
 }
 
-/// Create an OpenCL image object for a context.  
-/// Calls clCreateImage to create an OpenCL image object.  
+/// Create an `OpenCL` image object for a `context`.  
+/// Calls `clCreateImage` to create an `OpenCL` image object.  
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
@@ -147,8 +147,8 @@ pub unsafe fn create_sub_buffer(
 /// * `host_ptr` - a pointer to the image data that may already be allocated
 /// by the application.
 ///
-/// returns a Result containing the new OpenCL image object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` image object
+/// or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -178,11 +178,11 @@ pub unsafe fn create_image(
     }
 }
 
-/// Create an OpenCL pipe object for a context.  
-/// Calls clCreatePipe to create an OpenCL pipe object.  
-/// CL_VERSION_2_0
+/// Create an `OpenCL` pipe object for a context.  
+/// Calls `clCreatePipe` to create an `OpenCL` pipe object.  
+/// `CL_VERSION_2_0`
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
@@ -190,8 +190,8 @@ pub unsafe fn create_image(
 /// * `pipe_max_packets` -the maximum number of packets the pipe can hold.
 /// * `properties` - currently must be NULL.
 ///
-/// returns a Result containing the new OpenCL pipe object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` pipe object
+/// or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -221,11 +221,11 @@ pub unsafe fn create_pipe(
     }
 }
 
-/// Create an OpenCL buffer object for a context.  
-/// Calls clCreateBufferWithProperties to create an OpenCL buffer object.  
-/// CL_VERSION_3_0
+/// Create an `OpenCL` buffer object for a context.  
+/// Calls `clCreateBufferWithProperties` to create an `OpenCL` buffer object.  
+/// `CL_VERSION_3_0`
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `properties` - an optional null terminated list of properties.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
@@ -234,8 +234,8 @@ pub unsafe fn create_pipe(
 /// * `host_ptr` - a pointer to the buffer data that may already be allocated
 /// by the application.
 ///
-/// returns a Result containing the new OpenCL buffer object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` buffer object
+/// or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -259,11 +259,11 @@ pub unsafe fn create_buffer_with_properties(
     }
 }
 
-/// Create an OpenCL image object for a context.  
-/// Calls clCreateImage to create an OpenCL image object.  
-/// CL_VERSION_3_0
+/// Create an `OpenCL` image object for a context.  
+/// Calls `clCreateImage` to create an `OpenCL` image object.  
+/// `CL_VERSION_3_0`
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `properties` - an optional null terminated list of properties.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
@@ -275,8 +275,8 @@ pub unsafe fn create_buffer_with_properties(
 /// * `host_ptr` - a pointer to the image data that may already be allocated
 /// by the application.
 ///
-/// returns a Result containing the new OpenCL image object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` image object
+/// or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -308,16 +308,16 @@ pub unsafe fn create_image_with_properties(
     }
 }
 
-/// Retain an OpenCL memory object.  
-/// Calls clRetainMemObject to increment the memory object reference count.
+/// Retain an `OpenCL` memory object.  
+/// Calls `clRetainMemObject` to increment the memory object reference count.
 ///
-/// * `memobj` - the OpenCL memory object.
+/// * `memobj` - the `OpenCL` memory object.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     let status: cl_int = clRetainMemObject(memobj);
@@ -328,16 +328,16 @@ pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     }
 }
 
-/// Release an OpenCL memory object.  
-/// Calls clReleaseMemObject to decrement the memory object reference count.
+/// Release an `OpenCL` memory object.  
+/// Calls `clReleaseMemObject` to decrement the memory object reference count.
 ///
-/// * `memobj` - the OpenCL memory object.
+/// * `memobj` - the `OpenCL` memory object.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     let status: cl_int = clReleaseMemObject(memobj);
@@ -364,18 +364,18 @@ fn count_supported_image_formats(
     }
 }
 
-/// Get the list of image formats supported by an OpenCL implementation for a
+/// Get the list of image formats supported by an `OpenCL` implementation for a
 /// specified context, image type, and allocation information.  
-/// Calls clGetSupportedImageFormats to get the desired information about the program.
+/// Calls `clGetSupportedImageFormats` to get the desired information about the program.
 ///
-/// * `context` - a valid OpenCL context on which the image object(s) will be created.
+/// * `context` - a valid `OpenCL` context on which the image object(s) will be created.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `image_type` - describes the image type.
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn get_supported_image_formats(
     context: cl_context,
@@ -402,8 +402,8 @@ pub fn get_supported_image_formats(
     }
 }
 
-/// Get data about an OpenCL memory object.
-/// Calls clGetMemObjectInfo to get the desired data about the memory object.
+/// Get data about an `OpenCL` memory object.
+/// Calls `clGetMemObjectInfo` to get the desired data about the memory object.
 pub fn get_mem_object_data(memobj: cl_mem, param_name: cl_mem_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetMemObjectInfo);
     let size = get_size(memobj, param_name)?;
@@ -411,15 +411,15 @@ pub fn get_mem_object_data(memobj: cl_mem, param_name: cl_mem_info) -> Result<Ve
     get_vector(memobj, param_name, size)
 }
 
-/// Get information common to all OpenCL memory objects (buffer and image objects).  
-/// Calls clGetMemObjectInfo to get the desired information about the memory objects.
+/// Get information common to all `OpenCL` memory objects (buffer and image objects).  
+/// Calls `clGetMemObjectInfo` to get the desired information about the memory objects.
 ///
-/// * `memobj` - the OpenCL memory objects.
+/// * `memobj` - the `OpenCL` memory objects.
 /// * `param_name` - the type of memory object information being queried, see:
 /// [Memory Object Info](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#mem-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_mem_object_info(memobj: cl_mem, param_name: cl_mem_info) -> Result<InfoType, cl_int> {
     match param_name {
         CL_MEM_TYPE
@@ -458,8 +458,8 @@ pub fn get_mem_object_info(memobj: cl_mem, param_name: cl_mem_info) -> Result<In
     }
 }
 
-/// Get data about an OpenCL image object.
-/// Calls clGetImageInfo to get the desired data about the image object.
+/// Get data about an `OpenCL` image object.
+/// Calls `clGetImageInfo` to get the desired data about the image object.
 pub fn get_image_data(image: cl_mem, param_name: cl_image_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetImageInfo);
     let size = get_size(image, param_name)?;
@@ -467,15 +467,15 @@ pub fn get_image_data(image: cl_mem, param_name: cl_image_info) -> Result<Vec<u8
     get_vector(image, param_name, size)
 }
 
-/// Get information specific to an OpenCL image object.  
-/// Calls clGetImageInfo to get the desired information about the image object.
+/// Get information specific to an `OpenCL` image object.  
+/// Calls `clGetImageInfo` to get the desired information about the image object.
 ///
-/// * `image` - the OpenCL image object.
+/// * `image` - the `OpenCL` image object.
 /// * `param_name` - the type of memory object information being queried, see:
 /// [Image Object Info](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#image-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_image_info(image: cl_mem, param_name: cl_image_info) -> Result<InfoType, cl_int> {
     match param_name {
         CL_IMAGE_FORMAT => {
@@ -510,8 +510,8 @@ pub fn get_image_info(image: cl_mem, param_name: cl_image_info) -> Result<InfoTy
     }
 }
 
-/// Get data about an OpenCL pipe object.
-/// Calls clGetPipeInfo to get the desired data about the pipe object.
+/// Get data about an `OpenCL` pipe object.
+/// Calls `clGetPipeInfo` to get the desired data about the pipe object.
 #[cfg(feature = "CL_VERSION_2_0")]
 pub fn get_pipe_data(pipe: cl_mem, param_name: cl_pipe_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetPipeInfo);
@@ -520,16 +520,16 @@ pub fn get_pipe_data(pipe: cl_mem, param_name: cl_pipe_info) -> Result<Vec<u8>, 
     get_vector(pipe, param_name, size)
 }
 
-/// Get information specific to an OpenCL pipe object.  
-/// Calls clGetPipeInfo to get the desired information about the pipe object.
-/// CL_VERSION_2_0
+/// Get information specific to an `OpenCL` pipe object.  
+/// Calls `clGetPipeInfo` to get the desired information about the pipe object.
+/// `CL_VERSION_2_0`
 ///
-/// * `pipe` - the OpenCL pipe object.
+/// * `pipe` - the `OpenCL` pipe object.
 /// * `param_name` - the type of pipe object information being queried, see:
 /// [Pipe Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#pipe-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_2_0")]
 pub fn get_pipe_info(pipe: cl_mem, param_name: cl_pipe_info) -> Result<InfoType, cl_int> {
     match param_name {
@@ -549,15 +549,15 @@ pub fn get_pipe_info(pipe: cl_mem, param_name: cl_pipe_info) -> Result<InfoType,
     }
 }
 
-/// Register a callback function with an OpenCL memory object that is called when the
+/// Register a callback function with an `OpenCL` memory object that is called when the
 /// memory object is destroyed.  
-/// Calls clSetMemObjectDestructorCallback.  
+/// Calls `clSetMemObjectDestructorCallback`.  
 ///
-/// * `memobj` - the OpenCL memory object.
+/// * `memobj` - the `OpenCL` memory object.
 /// * `pfn_notify` - callback function to be registered by the application.
-/// * `user_data` - passed as the user_data argument when pfn_notify is called.
+/// * `user_data` - passed as the `user_data` argument when `pfn_notify` is called.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
@@ -577,11 +577,11 @@ pub unsafe fn set_mem_object_destructor_callback(
 }
 
 /// Allocate a shared virtual memory (SVM) buffer that can be shared by the
-/// host and all devices in an OpenCL context.  
-/// Calls clSVMAlloc.  
-/// CL_VERSION_2_0
+/// host and all devices in an `OpenCL` context.  
+/// Calls `clSVMAlloc`.  
+/// `CL_VERSION_2_0`
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information, see:
 /// [SVM Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#svm-flags-table).
 /// * `size` - the size in bytes of the SVM buffer to be allocated.
@@ -589,7 +589,7 @@ pub unsafe fn set_mem_object_destructor_callback(
 /// newly created buffers memory region.
 ///
 /// returns Result containing the address of the SVM buffer
-/// or the error code: CL_INVALID_VALUE if the address is NULL.
+/// or the error code: `CL_INVALID_VALUE` if the address is NULL.
 ///
 /// # Safety
 ///
@@ -610,11 +610,11 @@ pub unsafe fn svm_alloc(
     }
 }
 
-/// Free a shared virtual memory (SVM) buffer allocated using clSVMAlloc.  
-/// Calls clSVMFree.  
-/// CL_VERSION_2_0
+/// Free a shared virtual memory (SVM) buffer allocated using `clSVMAlloc`.  
+/// Calls `clSVMFree`.  
+/// `CL_VERSION_2_0`
 ///
-/// * `context` - the valid OpenCL context used to create the SVM buffer.
+/// * `context` - the valid `OpenCL` context used to create the SVM buffer.
 /// * `svm_pointer` - the value returned by a call to clSVMAlloc.
 ///
 /// # Safety

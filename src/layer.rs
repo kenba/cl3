@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL layer extensions
+//! `OpenCL` layer extensions
 
 pub use opencl_sys::cl_layer::*;
 pub use opencl_sys::*;
@@ -52,7 +52,7 @@ pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
 ///
 /// # Safety
 ///
-/// This is unsafe if target_dispatch is not valid.
+/// This is unsafe if `target_dispatch` is not valid.
 #[allow(clippy::cast_possible_truncation)]
 pub unsafe fn init_layer(
     target_dispatch: &[cl_icd_dispatch],

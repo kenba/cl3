@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL Context API.
+//! `OpenCL` Context API.
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
@@ -37,17 +37,17 @@ use libc::{c_char, c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an OpenCL context.  
-/// Calls clCreateContext to create an OpenCL context.
+/// Create an `OpenCL` context.  
+/// Calls clCreateContext to create an `OpenCL` context.
 ///
-/// * `devices` - a slice of unique devices for an OpenCL platform.
-/// * `properties` - a null terminated list of cl_context_properties, see
+/// * `devices` - a slice of unique devices for an `OpenCL` platform.
+/// * `properties` - a null terminated list of `cl_context_properties`, see
 /// [Context Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#context-properties-table).
 /// * `pfn_notify` - an optional callback function that can be registered by the application.
-/// * `user_data` - passed as the user_data argument when pfn_notify is called.
+/// * `user_data` - passed as the `user_data` argument when `pfn_notify` is called.
 ///
-/// returns a Result containing the new OpenCL context
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` context
+/// or the error code from the `OpenCL` C API function.
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn create_context(
@@ -74,18 +74,18 @@ pub fn create_context(
     }
 }
 
-/// Create an OpenCL context from a specific device type.  
-/// Calls clCreateContextFromType to create an OpenCL context.
+/// Create an `OpenCL` context from a specific device type.  
+/// Calls `clCreateContextFromType` to create an `OpenCL` context.
 ///
-/// * `device_type` - the type of OpenCL device, see:
+/// * `device_type` - the type of `OpenCL` device, see:
 /// [Device Types](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-types-table).
-/// * `properties` - a null terminated list of cl_context_properties, see:
+/// * `properties` - a null terminated list of `cl_context_properties`, see:
 /// [Context Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#context-properties-table).
 /// * `pfn_notify` - an optional callback function that can be registered by the application.
-/// * `user_data` - passed as the user_data argument when pfn_notify is called.
+/// * `user_data` - passed as the `user_data` argument when `pfn_notify` is called.
 ///
-/// returns a Result containing the new OpenCL context
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` context
+/// or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn create_context_from_type(
     device_type: cl_device_type,
@@ -104,16 +104,16 @@ pub fn create_context_from_type(
     }
 }
 
-/// Retain an OpenCL context.  
+/// Retain an `OpenCL` context.  
 /// Calls clRetainContext to increment the context reference count.
 ///
-/// * `context` - the cl_context of the OpenCL context.
+/// * `context` - the `cl_context` of the `OpenCL` context.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
     let status: cl_int = clRetainContext(context);
@@ -124,16 +124,16 @@ pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
     }
 }
 
-/// Release an OpenCL context.  
+/// Release an `OpenCL` context.  
 /// Calls clReleaseContext to decrement the context reference count.
 ///
-/// * `context` - the cl_context of the OpenCL context.
+/// * `context` - the `cl_context` of the `OpenCL` context.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_context(context: cl_context) -> Result<(), cl_int> {
     let status: cl_int = clReleaseContext(context);
@@ -144,8 +144,8 @@ pub unsafe fn release_context(context: cl_context) -> Result<(), cl_int> {
     }
 }
 
-/// Get data about an OpenCL context.
-/// Calls clGetContextInfo to get the desired data about the context.
+/// Get data about an `OpenCL` context.
+/// Calls `clGetContextInfo` to get the desired data about the context.
 pub fn get_context_data(
     context: cl_context,
     param_name: cl_context_info,
@@ -156,15 +156,15 @@ pub fn get_context_data(
     get_vector(context, param_name, size)
 }
 
-/// Get specific information about an OpenCL context.  
-/// Calls clGetContextInfo to get the desired information about the context.
+/// Get specific information about an `OpenCL` context.  
+/// Calls `clGetContextInfo` to get the desired information about the context.
 ///
-/// * `context` - the cl_context of the OpenCL context.
+/// * `context` - the `cl_context` of the `OpenCL` context.
 /// * `param_name` - the type of platform information being queried, see:
 /// [Context Attributes](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#context-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_context_info(
     context: cl_context,
     param_name: cl_context_info,
@@ -187,16 +187,15 @@ pub fn get_context_info(
     }
 }
 
-// #ifdef CL_VERSION_3_0
-/// Register a callback function with a context that is called when the context is destroyed.  
-/// Calls clSetContextDestructorCallback.  
-/// CL_VERSION_3_0
+/// Register a callback function with a context that is called when the `context` is destroyed.  
+/// Calls `clSetContextDestructorCallback`.  
+/// `CL_VERSION_3_0`
 ///
-/// * `context` - the cl_context of the OpenCL context.
+/// * `context` - the `cl_context` of the `OpenCL` context.
 /// * `pfn_notify` - callback function to be registered by the application.
-/// * `user_data` - passed as the user_data argument when pfn_notify is called.
+/// * `user_data` - passed as the `user_data` argument when `pfn_notify` is called.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_3_0")]
 #[inline]
 pub fn set_context_destructor_callback(

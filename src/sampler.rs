@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Via Technology Ltd.
+// Copyright (c) 2020-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! OpenCL Sampler API.
+//! `OpenCL` Sampler API.
 
 #![allow(non_camel_case_types, deprecated)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
@@ -36,19 +36,19 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an OpenCL buffer sampler for a context.  
-/// Calls clCreateSampler to create an OpenCL sampler object.  
-/// Deprecated in CL_VERSION_2_0 by create_sampler_with_properties.
+/// Create an `OpenCL` buffer `sampler` for a context.  
+/// Calls `clCreateSampler` to create an `OpenCL` `sampler` object.  
+/// Deprecated in `CL_VERSION_2_0` by `create_sampler_with_properties`.
 ///
-/// * `context` - a valid OpenCL context.
-/// * `normalized_coords` - same interpretation as CL_SAMPLER_NORMALIZED_COORDS.
-/// * `addressing_mode` - same interpretation as CL_SAMPLER_ADDRESSING_MODE.
-/// * `filter_mode` - same interpretation as  CL_SAMPLER_FILTER_MODE.
+/// * `context` - a valid `OpenCL` context.
+/// * `normalized_coords` - same interpretation as `CL_SAMPLER_NORMALIZED_COORDS`.
+/// * `addressing_mode` - same interpretation as `CL_SAMPLER_ADDRESSING_MODE`.
+/// * `filter_mode` - same interpretation as  `CL_SAMPLER_FILTER_MODE`.
 ///
-/// CL_SAMPLER_NORMALIZED_COORDS, CL_SAMPLER_ADDRESSING_MODE and CL_SAMPLER_FILTER_MODE
+/// `CL_SAMPLER_NORMALIZED_COORDS`, `CL_SAMPLER_ADDRESSING_MODE` and `CL_SAMPLER_FILTER_MODE`
 /// are described in: [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table) table.  
-/// returns a Result containing the new OpenCL sampler object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` `sampler` object
+/// or the error code from the `OpenCL` C API function.
 #[cfg_attr(
     any(
         feature = "CL_VERSION_2_0",
@@ -85,16 +85,16 @@ pub fn create_sampler(
     }
 }
 
-/// Create an OpenCL buffer sampler for a context.  
-/// Calls clCreateSamplerWithProperties to create an OpenCL sampler object.  
-/// CL_VERSION_2_0
+/// Create an `OpenCL` buffer sampler for a context.  
+/// Calls `clCreateSamplerWithProperties` to create an `OpenCL` `sampler` object.  
+/// `CL_VERSION_2_0`
 ///
-/// * `context` - a valid OpenCL context.
+/// * `context` - a valid `OpenCL` context.
 /// * `sampler_properties` - an optional null terminated list of properties, see:
 /// [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table).
 ///
-/// returns a Result containing the new OpenCL sampler object
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the new `OpenCL` `sampler` object
+/// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub fn create_sampler_with_properties(
@@ -111,16 +111,16 @@ pub fn create_sampler_with_properties(
     }
 }
 
-/// Retain an OpenCL sampler.  
-/// Calls clRetainSampler to increment the sampler reference count.
+/// Retain an `OpenCL` sampler.  
+/// Calls `clRetainSampler` to increment the `sampler` reference count.
 ///
-/// * `sampler` - the OpenCL sampler.
+/// * `sampler` - the `OpenCL` sampler.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     let status: cl_int = clRetainSampler(sampler);
@@ -131,16 +131,16 @@ pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     }
 }
 
-/// Release an OpenCL sampler.  
-/// Calls clReleaseMemObject to decrement the sampler reference count.
+/// Release an `OpenCL` sampler.  
+/// Calls `clReleaseMemObject` to decrement the `sampler` reference count.
 ///
-/// * `sampler` - the OpenCL sampler.
+/// * `sampler` - the `OpenCL` sampler.
 ///
-/// returns an empty Result or the error code from the OpenCL C API function.
+/// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
 /// # Safety
 ///
-/// This function is unsafe because it changes the OpenCL object reference count.
+/// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     let status: cl_int = clReleaseSampler(sampler);
@@ -151,8 +151,8 @@ pub unsafe fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     }
 }
 
-/// Get data about an OpenCL sampler object.
-/// Calls clGetDeviceInfo to get the desired data about the sampler object.
+/// Get data about an `OpenCL` sampler object.
+/// Calls `clGetDeviceInfo` to get the desired data about the sampler object.
 pub fn get_sampler_data(
     sampler: cl_sampler,
     param_name: cl_sampler_info,
@@ -163,15 +163,15 @@ pub fn get_sampler_data(
     get_vector(sampler, param_name, size)
 }
 
-/// Get information specific to an OpenCL sampler object.  
-/// Calls clGetImageInfo to get the desired information about the sampler object.
+/// Get information specific to an `OpenCL` sampler object.  
+/// Calls `clGetImageInfo` to get the desired information about the sampler object.
 ///
-/// * `sampler` - the OpenCL sampler object.
+/// * `sampler` - the `OpenCL` sampler object.
 /// * `param_name` - the type of sampler information being queried, see:
 /// [Sampler Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-info-table).
 ///
-/// returns a Result containing the desired information in an InfoType enum
-/// or the error code from the OpenCL C API function.
+/// returns a Result containing the desired information in an `InfoType` enum
+/// or the error code from the `OpenCL` C API function.
 pub fn get_sampler_info(
     sampler: cl_sampler,
     param_name: cl_sampler_info,

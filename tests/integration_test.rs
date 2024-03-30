@@ -73,21 +73,21 @@ fn test_opencl_1_2_example() {
     println!("OpenCL device vendor id: {:X}", u32::from(vendor_id));
 
     /////////////////////////////////////////////////////////////////////
-    // Set up OpenCL compute environment
+    // Set up `OpenCL` compute environment
 
-    // Create OpenCL context from the first device
+    // Create `OpenCL` context from the first device
     let device_ids = [device_id];
     let context = create_context(&device_ids, ptr::null(), None, ptr::null_mut()).unwrap();
 
-    // Create the OpenCL program source
+    // Create the `OpenCL` program source
     let sources = [PROGRAM_SOURCE];
     let program = create_program_with_source(context, &sources).unwrap();
 
-    // Build the OpenCL program for the device
+    // Build the `OpenCL` program for the device
     let build_options = CString::default();
     build_program(program, &device_ids, &build_options, None, ptr::null_mut()).unwrap();
 
-    // Create the OpenCL kernel from the program
+    // Create the `OpenCL` kernel from the program
     let kernel_name = CString::new(KERNEL_NAME).unwrap();
     let kernel = create_kernel(program, &kernel_name).unwrap();
 
@@ -106,7 +106,7 @@ fn test_opencl_1_2_example() {
         sums[i] = 1.0 + 1.0 * i as cl_float;
     }
 
-    // Create OpenCL device buffers for input and output data
+    // Create `OpenCL` device buffers for input and output data
     let x = unsafe {
         create_buffer(
             context,
@@ -135,7 +135,7 @@ fn test_opencl_1_2_example() {
         .unwrap()
     };
 
-    // Blocking write to OpenCL device buffer
+    // Blocking write to `OpenCL` device buffer
     let x_write_event = unsafe {
         enqueue_write_buffer(
             queue,
@@ -149,7 +149,7 @@ fn test_opencl_1_2_example() {
         )
         .unwrap()
     };
-    // Non-blocking write to OpenCL device buffer
+    // Non-blocking write to `OpenCL` device buffer
     let y_write_event = unsafe {
         enqueue_write_buffer(
             queue,
@@ -173,7 +173,7 @@ fn test_opencl_1_2_example() {
     let a: cl_float = 300.0;
 
     unsafe {
-        // Set up the arguments to call the OpenCL kernel function
+        // Set up the arguments to call the `OpenCL` kernel function
         // i.e. the x, y & z buffers and the constant value, a
         set_kernel_arg(
             kernel,
@@ -205,7 +205,7 @@ fn test_opencl_1_2_example() {
         .unwrap();
     }
 
-    // Enqueue the OpenCL kernel for execution
+    // Enqueue the `OpenCL` kernel for execution
     let global_work_sizes: [size_t; 1] = [ARRAY_SIZE];
     let kernel_event = unsafe {
         enqueue_nd_range_kernel(
@@ -226,7 +226,7 @@ fn test_opencl_1_2_example() {
     events.clear();
     events.push(kernel_event);
 
-    // Create a results array to hold the results from the OpenCL device z buffer
+    // Create a results array to hold the results from the `OpenCL` device z buffer
     // and enqueue a read command to read the device buffer into the array
     // after the kernel event completes.
     let results: [cl_float; ARRAY_SIZE] = [0.0; ARRAY_SIZE];
@@ -258,7 +258,7 @@ fn test_opencl_1_2_example() {
     println!("kernel execution duration (ns): {}", duration);
 
     /////////////////////////////////////////////////////////////////////
-    // Release OpenCL objects
+    // Release `OpenCL` objects
 
     unsafe {
         release_event(x_write_event).unwrap();
@@ -269,7 +269,7 @@ fn test_opencl_1_2_example() {
         release_mem_object(y).unwrap();
         release_mem_object(x).unwrap();
 
-        // Release the OpenCL compute environment
+        // Release the `OpenCL` compute environment
         release_kernel(kernel).unwrap();
         release_program(program).unwrap();
         release_command_queue(queue).unwrap();
