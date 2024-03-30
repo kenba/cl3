@@ -37,6 +37,10 @@ use std::ptr;
 ///
 /// returns a Result containing the new OpenCL image object
 /// or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This is unsafe because cl_context is a raw pointer.
 #[cfg(feature = "cl_khr_egl_image")]
 #[inline]
 pub unsafe fn create_from_egl_image(
@@ -67,6 +71,10 @@ pub unsafe fn create_from_egl_image(
 ///
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This is unsafe because command_queue is a raw pointer.
 #[cfg(feature = "cl_khr_egl_image")]
 #[inline]
 pub unsafe fn enqueue_acquire_egl_objects(
@@ -104,6 +112,10 @@ pub unsafe fn enqueue_acquire_egl_objects(
 ///
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This is unsafe because command_queue is a raw pointer.
 #[cfg(feature = "cl_khr_egl_image")]
 #[inline]
 pub unsafe fn enqueue_release_egl_objects(
@@ -139,16 +151,19 @@ pub unsafe fn enqueue_release_egl_objects(
 ///
 /// returns a Result containing the new OpenCL event
 /// or the error code from the OpenCL C API function.
+///
+/// # Safety
+///
+/// This is unsafe because context is a raw pointer.
 #[cfg(feature = "cl_khr_egl_event")]
 #[inline]
-pub fn create_event_from_egl_sync_khr(
+pub unsafe fn create_event_from_egl_sync_khr(
     context: cl_context,
     sync: CLeglSyncKHR,
     display: CLeglDisplayKHR,
 ) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let event: cl_event =
-        unsafe { clCreateEventFromEGLSyncKHR(context, sync, display, &mut status) };
+    let event: cl_event = clCreateEventFromEGLSyncKHR(context, sync, display, &mut status);
     if CL_SUCCESS != status {
         Err(status)
     } else {

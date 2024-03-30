@@ -19,7 +19,8 @@
 #![allow(
     clippy::not_unsafe_ptr_arg_deref,
     clippy::wildcard_in_or_patterns,
-    clippy::missing_safety_doc
+    clippy::missing_safety_doc,
+    clippy::too_many_arguments
 )]
 
 pub use opencl_sys::*;
@@ -527,7 +528,7 @@ pub fn get_command_buffer_info_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer_multi_device")]
-pub unsafe fn get_command_buffer_mutable_dispatch_data(
+pub unsafe fn remap_command_buffer_khr(
     command_buffer: cl_command_buffer_khr,
     automatic: cl_bool,
     num_queues: cl_uint,
@@ -593,6 +594,7 @@ pub unsafe fn set_mem_object_destructor_apple(
 }
 
 #[cfg(feature = "cl_khr_icd")]
+#[allow(clippy::uninit_vec)]
 pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
     let mut count: cl_uint = 0;
@@ -600,24 +602,22 @@ pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
 
     if CL_SUCCESS != status {
         Err(status)
-    } else {
-        if 0 < count {
-            // Get the platform ids.
-            let len = count as usize;
-            let mut ids: Vec<cl_platform_id> = Vec::with_capacity(len);
-            unsafe {
-                ids.set_len(len);
-                status = clIcdGetPlatformIDsKHR(count, ids.as_mut_ptr(), ptr::null_mut());
-            };
+    } else if 0 < count {
+        // Get the platform ids.
+        let len = count as usize;
+        let mut ids: Vec<cl_platform_id> = Vec::with_capacity(len);
+        unsafe {
+            ids.set_len(len);
+            status = clIcdGetPlatformIDsKHR(count, ids.as_mut_ptr(), ptr::null_mut());
+        };
 
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
-                Ok(ids)
-            }
+        if CL_SUCCESS != status {
+            Err(status)
         } else {
-            Ok(Vec::default())
+            Ok(ids)
         }
+    } else {
+        Ok(Vec::default())
     }
 }
 
@@ -1158,7 +1158,7 @@ pub unsafe fn svm_alloc_arm(
     alignment: cl_uint,
 ) -> Result<*mut c_void, cl_int> {
     let ptr = clSVMAllocARM(context, flags, size, alignment);
-    if ptr::null_mut() == ptr {
+    if ptr.is_null() {
         Err(CL_INVALID_VALUE)
     } else {
         Ok(ptr)

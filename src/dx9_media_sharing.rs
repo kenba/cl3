@@ -17,23 +17,12 @@
 //! OpenCL extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
 #![allow(non_camel_case_types)]
+#![allow(clippy::missing_safety_doc)]
 
 pub use opencl_sys::cl_dx9_media_sharing::*;
 pub use opencl_sys::{
     cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint, CL_INVALID_VALUE, CL_SUCCESS,
 };
-
-#[cfg(feature = "cl_intel_dx9_media_sharing")]
-use opencl_sys::cl_dx9_media_sharing::{
-    clCreateFromDX9MediaSurfaceINTEL, clEnqueueAcquireDX9ObjectsINTEL,
-    clEnqueueReleaseDX9ObjectsINTEL, clGetDeviceIDsFromDX9INTEL,
-};
-
-#[cfg(any(
-    feature = "cl_khr_dx9_media_sharing",
-    feature = "cl_intel_dx9_media_sharing"
-))]
-use opencl_sys::cl_dx9_media_sharing::clGetSupportedDX9MediaSurfaceFormatsINTEL;
 
 #[allow(unused_imports)]
 use libc::c_void;
@@ -41,50 +30,44 @@ use libc::c_void;
 use std::ptr;
 
 #[cfg(feature = "cl_intel_dx9_media_sharing")]
-pub fn get_device_ids_from_dx9_intel(
+pub unsafe fn get_device_ids_from_dx9_intel(
     platform: cl_platform_id,
     dx9_device_source: cl_dx9_device_source_intel,
     dx9_object: *mut c_void,
     dx9_device_set: cl_dx9_device_set_intel,
 ) -> Result<Vec<cl_device_id>, cl_int> {
     let mut count: cl_uint = 0;
-    let status: cl_int = unsafe {
-        clGetDeviceIDsFromDX9INTEL(
+    let status: cl_int = clGetDeviceIDsFromDX9INTEL(
+        platform,
+        dx9_device_source,
+        dx9_object,
+        dx9_device_set,
+        0,
+        ptr::null_mut(),
+        &mut count,
+    );
+    if CL_SUCCESS != status {
+        Err(status)
+    } else if 0 < count {
+        // Get the device ids.
+        let len = count as usize;
+        let mut ids: Vec<cl_device_id> = Vec::with_capacity(len);
+        let status: cl_int = clGetDeviceIDsFromDX9INTEL(
             platform,
             dx9_device_source,
             dx9_object,
             dx9_device_set,
-            0,
+            count,
+            ids.as_mut_ptr(),
             ptr::null_mut(),
-            &mut count,
-        )
-    };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
-        if 0 < count {
-            // Get the device ids.
-            let len = count as usize;
-            let mut ids: Vec<cl_device_id> = Vec::with_capacity(len);
-            let status: cl_int = unsafe {
-                clGetDeviceIDsFromDX9INTEL(
-                    platform,
-                    dx9_device_source,
-                    dx9_object,
-                    dx9_device_set,
-                    count,
-                    ids.as_mut_ptr(),
-                    ptr::null_mut(),
-                )
-            };
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
-                Ok(ids)
-            }
+        );
+        if CL_SUCCESS != status {
+            Err(status)
         } else {
-            Ok(Vec::default())
+            Ok(ids)
         }
+    } else {
+        Ok(Vec::default())
     }
 }
 
@@ -164,49 +147,43 @@ pub unsafe fn enqueue_release_dx9_objects_intel(
     feature = "cl_khr_dx9_media_sharing",
     feature = "cl_intel_dx9_media_sharing"
 ))]
-pub fn get_supported_dx9_media_surface_formats_intel(
+pub unsafe fn get_supported_dx9_media_surface_formats_intel(
     context: cl_context,
     flags: cl_mem_flags,
     image_type: cl_mem_object_type,
     plane: cl_uint,
 ) -> Result<Vec<cl_uint>, cl_int> {
     let mut count: cl_uint = 0;
-    let status: cl_int = unsafe {
-        clGetSupportedDX9MediaSurfaceFormatsINTEL(
+    let status: cl_int = clGetSupportedDX9MediaSurfaceFormatsINTEL(
+        context,
+        flags,
+        image_type,
+        plane,
+        0,
+        ptr::null_mut(),
+        &mut count,
+    );
+    if CL_SUCCESS != status {
+        Err(status)
+    } else if 0 < count {
+        // Get the dx9 formats.
+        let len = count as usize;
+        let mut ids: Vec<cl_uint> = Vec::with_capacity(len);
+        let status: cl_int = clGetSupportedDX9MediaSurfaceFormatsINTEL(
             context,
             flags,
             image_type,
             plane,
-            0,
+            count,
+            ids.as_mut_ptr(),
             ptr::null_mut(),
-            &mut count,
-        )
-    };
-    if CL_SUCCESS != status {
-        Err(status)
-    } else {
-        if 0 < count {
-            // Get the dx9 formats.
-            let len = count as usize;
-            let mut ids: Vec<cl_uint> = Vec::with_capacity(len);
-            let status: cl_int = unsafe {
-                clGetSupportedDX9MediaSurfaceFormatsINTEL(
-                    context,
-                    flags,
-                    image_type,
-                    plane,
-                    count,
-                    ids.as_mut_ptr(),
-                    ptr::null_mut(),
-                )
-            };
-            if CL_SUCCESS != status {
-                Err(status)
-            } else {
-                Ok(ids)
-            }
+        );
+        if CL_SUCCESS != status {
+            Err(status)
         } else {
-            Ok(Vec::default())
+            Ok(ids)
         }
+    } else {
+        Ok(Vec::default())
     }
 }

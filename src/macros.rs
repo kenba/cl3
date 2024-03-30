@@ -56,6 +56,7 @@ macro_rules! api_info_value {
     };
 }
 
+#[allow(clippy::uninit_vec)]
 #[macro_export]
 macro_rules! api_info_vector {
     ($func:ident, $ty:tt, $api:ident) => {
@@ -132,6 +133,7 @@ macro_rules! api2_info_value {
     };
 }
 
+#[allow(clippy::uninit_vec)]
 #[macro_export]
 macro_rules! api2_info_vector {
     ($func:ident, $type:tt, $ty:tt, $api:ident) => {

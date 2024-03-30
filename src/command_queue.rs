@@ -15,7 +15,11 @@
 //! OpenCL Command Queue API.
 
 #![allow(non_camel_case_types, deprecated)]
-#![allow(clippy::too_many_arguments, clippy::not_unsafe_ptr_arg_deref, clippy::missing_safety_doc)]
+#![allow(
+    clippy::too_many_arguments,
+    clippy::not_unsafe_ptr_arg_deref,
+    clippy::missing_safety_doc
+)]
 
 pub use opencl_sys::{
     cl_bool, cl_command_queue, cl_command_queue_info, cl_command_queue_properties, cl_context,

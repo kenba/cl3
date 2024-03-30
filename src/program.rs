@@ -127,7 +127,7 @@ pub fn create_program_with_source(
 ///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
-/// 
+///
 /// # Safety
 ///
 /// This is unsafe when a device is not a member of context.
@@ -167,7 +167,7 @@ pub unsafe fn create_program_with_binary(
 ///
 /// returns a Result containing the new OpenCL program object
 /// or the error code from the OpenCL C API function.
-/// 
+///
 /// # Safety
 ///
 /// This is unsafe when a device is not a member of context.
@@ -376,7 +376,7 @@ pub fn compile_program(
 /// # Panics
 ///
 /// Panics if `input_programs.is_empty()`.
-/// 
+///
 /// # Safety
 ///
 /// This is unsafe when a device is not a member of context.
@@ -420,7 +420,7 @@ pub unsafe fn link_program(
 /// * `user_data` - passed as an argument when pfn_notify is called, or ptr::null_mut().
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
-/// 
+///
 /// # Safety
 ///
 /// This function is unsafe because `user_data` must be valid.
@@ -450,7 +450,7 @@ pub unsafe fn set_program_release_callback(
 /// of the specialization constant.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
-/// 
+///
 /// # Safety
 ///
 /// This function is unsafe because `spec_size` and `spec_value` must be valid.
@@ -477,7 +477,7 @@ pub unsafe fn set_program_specialization_constant(
 /// * `platform` - the platform.
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
-/// 
+///
 /// # Safety
 ///
 /// This function is unsafe because the platform compiler is not valid after this call.

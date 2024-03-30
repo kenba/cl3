@@ -22,6 +22,8 @@ use libc::{c_void, size_t};
 #[allow(unused_imports)]
 use std::ptr;
 
+/// Query information about the `OpenCL` layer.
+/// Calls `clGetLayerInfo`.
 pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
     let mut size: size_t = 0;
     let status = unsafe { clGetLayerInfo(param_name, 0, ptr::null_mut(), &mut size) };
@@ -45,6 +47,12 @@ pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
     }
 }
 
+/// Initialise `OpenCL` layer(s).
+/// Calls `clGetLayerInfo`.
+///
+/// # Safety
+///
+/// This is unsafe if target_dispatch is not valid.
 pub unsafe fn init_layer(
     target_dispatch: &[cl_icd_dispatch],
 ) -> Result<&[cl_icd_dispatch], cl_int> {
