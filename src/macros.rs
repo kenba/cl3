@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2024 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ macro_rules! api_info_value {
                     object,
                     param_name,
                     size,
-                    data_ptr as *mut c_void,
+                    data_ptr.cast::<c_void>(),
                     ptr::null_mut(),
                 )
             };
@@ -74,7 +74,7 @@ macro_rules! api_info_vector {
                         object,
                         param_name,
                         size,
-                        data.as_mut_ptr() as *mut c_void,
+                        data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
                     )
                 };
@@ -120,7 +120,7 @@ macro_rules! api2_info_value {
                     idx,
                     param_name,
                     size,
-                    data_ptr as *mut c_void,
+                    data_ptr.cast::<c_void>(),
                     ptr::null_mut(),
                 )
             };
@@ -153,7 +153,7 @@ macro_rules! api2_info_vector {
                         idx,
                         param_name,
                         size,
-                        data.as_mut_ptr() as *mut c_void,
+                        data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
                     )
                 };

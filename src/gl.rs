@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2022 Via Technology Ltd.
+// Copyright (c) 2021-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -390,7 +390,7 @@ pub fn get_gl_context_info_khr(
                     properties,
                     param_name,
                     mem::size_of::<intptr_t>(),
-                    data_ptr as *mut c_void,
+                    data_ptr.cast::<c_void>(),
                     ptr::null_mut(),
                 )
             };
@@ -418,7 +418,7 @@ pub fn get_gl_context_info_khr(
                         properties,
                         param_name,
                         size,
-                        data.as_mut_ptr() as *mut c_void,
+                        data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
                     )
                 };
@@ -448,7 +448,7 @@ pub fn get_gl_context_info_khr(
                         properties,
                         param_name,
                         size,
-                        data.as_mut_ptr() as *mut c_void,
+                        data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
                     )
                 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2023 Via Technology Ltd.
+// Copyright (c) 2021-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ use std::mem;
 use std::ptr;
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub fn create_command_buffer_khr(
     queues: &[cl_command_queue],
     properties: *const cl_command_buffer_properties_khr,
@@ -116,6 +117,7 @@ pub unsafe fn enqueue_command_buffer_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_barrier_with_wait_list_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -139,6 +141,7 @@ pub unsafe fn command_barrier_with_wait_list_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_copy_buffer_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -172,6 +175,7 @@ pub unsafe fn command_copy_buffer_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_copy_buffer_rect_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -213,6 +217,7 @@ pub unsafe fn command_copy_buffer_rect_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_copy_buffer_to_image_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -246,6 +251,7 @@ pub unsafe fn command_copy_buffer_to_image_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_copy_image_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -279,6 +285,7 @@ pub unsafe fn command_copy_image_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_copy_image_to_buffer_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -312,6 +319,7 @@ pub unsafe fn command_copy_image_to_buffer_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_fill_buffer_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -345,6 +353,7 @@ pub unsafe fn command_fill_buffer_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_fill_image_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -376,6 +385,7 @@ pub unsafe fn command_fill_image_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_nd_range_kernel_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -411,6 +421,7 @@ pub unsafe fn command_nd_range_kernel_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_svm_memcpy_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -440,6 +451,7 @@ pub unsafe fn command_svm_memcpy_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn command_svm_mem_fill_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
@@ -627,7 +639,7 @@ pub fn create_program_with_il_khr(context: cl_context, il: &[u8]) -> Result<cl_p
     let program = unsafe {
         clCreateProgramWithILKHR(
             context,
-            il.as_ptr() as *const c_void,
+            il.as_ptr().cast::<c_void>(),
             il.len() as size_t,
             &mut status,
         )
@@ -709,6 +721,7 @@ fn count_sub_devices_ext(
 }
 
 #[cfg(feature = "cl_ext_device_fission")]
+#[allow(clippy::cast_possible_truncation)]
 pub fn create_sub_devices_ext(
     in_device: cl_device_id,
     properties: &[cl_device_partition_property_ext],
@@ -780,7 +793,7 @@ pub fn get_device_image_info_qcom(
             image_format,
             param_name,
             mem::size_of::<cl_uint>(),
-            data_ptr as *mut c_void,
+            data_ptr.cast::<c_void>(),
             ptr::null_mut(),
         )
     };
@@ -893,7 +906,7 @@ pub fn get_kernel_sub_group_info_khr(
                     input_value_size,
                     input_value,
                     mem::size_of::<size_t>(),
-                    data_ptr as *mut c_void,
+                    data_ptr.cast::<c_void>(),
                     ptr::null_mut(),
                 )
             };
@@ -1009,7 +1022,7 @@ pub fn get_semaphore_handle_for_type_khr(
                 device,
                 handle_type,
                 size,
-                data_ptr as *mut c_void,
+                data_ptr.cast::<c_void>(),
                 ptr::null_mut(),
             )
         };
@@ -1506,7 +1519,7 @@ fn mem_alloc_info_intel<T: Default>(
             ptr,
             param_id,
             mem::size_of::<T>(),
-            data_ptr as *mut c_void,
+            data_ptr.cast::<c_void>(),
             ptr::null_mut(),
         )
     };
@@ -1554,7 +1567,7 @@ pub fn get_mem_alloc_info_intel(
                         ptr,
                         param_name,
                         size,
-                        data.as_mut_ptr() as *mut c_void,
+                        data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
                     )
                 };
@@ -1835,7 +1848,7 @@ pub fn get_image_requirements_info_ext(
                 image_desc,
                 param_name,
                 size,
-                data.as_mut_ptr() as *mut c_void,
+                data.as_mut_ptr().cast::<c_void>(),
                 ptr::null_mut(),
             )
         };
@@ -1861,7 +1874,7 @@ pub fn get_icd_loader_info_oclicd(param_name: cl_icdl_info) -> Result<Vec<u8>, c
             clGetICDLoaderInfoOCLICD(
                 param_name,
                 size,
-                data.as_mut_ptr() as *mut c_void,
+                data.as_mut_ptr().cast::<c_void>(),
                 ptr::null_mut(),
             )
         };

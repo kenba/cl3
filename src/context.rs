@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Via Technology Ltd.
+// Copyright (c) 2020-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ use std::ptr;
 ///
 /// returns a Result containing the new OpenCL context
 /// or the error code from the OpenCL C API function.
+#[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn create_context(
     devices: &[cl_device_id],

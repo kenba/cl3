@@ -55,6 +55,7 @@ pub use opencl_sys::cl_egl::{CL_EGL_RESOURCE_NOT_ACQUIRED_KHR, CL_INVALID_EGL_OB
 use std::fmt;
 use thiserror::Error;
 
+#[must_use]
 pub const fn error_text(error_code: cl_int) -> &'static str {
     match error_code {
         CL_SUCCESS => "CL_SUCCESS",

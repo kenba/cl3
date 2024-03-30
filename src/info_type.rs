@@ -170,7 +170,7 @@ impl fmt::Display for InfoType {
         match self {
             Self::VecUchar(a) => {
                 let b = String::from_utf8_lossy(a).into_owned();
-                write!(f, "{}", b)
+                write!(f, "{b}")
             }
 
             // Formats a LUID the same way as `clinfo`.
@@ -209,7 +209,7 @@ impl fmt::Display for InfoType {
 
             Self::VecNameVersion(a) => {
                 let mut s = String::default();
-                for b in a.iter() {
+                for b in a {
                     s.push('\n');
 
                     s.push_str(&b.version.to_string());
@@ -217,13 +217,13 @@ impl fmt::Display for InfoType {
                     s.push_str(&String::from_utf8_lossy(&b.name));
                 }
 
-                write!(f, "{}", s)
+                write!(f, "{s}")
             }
 
             Self::VecImageFormat(a) => {
                 let mut s = String::default();
 
-                for b in a.iter() {
+                for b in a {
                     s.push('\n');
 
                     s.push_str(&b.image_channel_order.to_string());
@@ -231,19 +231,19 @@ impl fmt::Display for InfoType {
                     s.push_str(&b.image_channel_data_type.to_string());
                 }
 
-                write!(f, "{}", s)
+                write!(f, "{s}")
             }
 
             // Note: underlying type may not be a vector of Strings.
             // If so use Debug trait instead
             Self::VecVecUchar(a) => {
                 let mut s = String::default();
-                for b in a.iter() {
+                for b in a {
                     s.push('\n');
                     s.push_str(&String::from_utf8_lossy(b));
                 }
 
-                write!(f, "{}", s)
+                write!(f, "{s}")
             }
 
             _ => panic!("not a Displayable type, use Debug instead"),
@@ -252,58 +252,72 @@ impl fmt::Display for InfoType {
 }
 
 impl InfoType {
+    #[must_use]
     pub fn to_int(self) -> cl_int {
         i32::from(self)
     }
 
+    #[must_use]
     pub fn to_uint(self) -> cl_uint {
         u32::from(self)
     }
 
+    #[must_use]
     pub fn to_ulong(self) -> cl_ulong {
         u64::from(self)
     }
 
+    #[must_use]
     pub fn to_size(self) -> size_t {
         usize::from(self)
     }
 
+    #[must_use]
     pub fn to_ptr(self) -> intptr_t {
         isize::from(self)
     }
 
+    #[must_use]
     pub fn to_luid(self) -> [u8; CL_LUID_SIZE_KHR] {
         self.into()
     }
 
+    #[must_use]
     pub fn to_uuid(self) -> [u8; CL_UUID_SIZE_KHR] {
         self.into()
     }
 
+    #[must_use]
     pub fn to_vec_uchar(self) -> Vec<cl_uchar> {
         Vec::<u8>::from(self)
     }
 
+    #[must_use]
     pub fn to_vec_ulong(self) -> Vec<cl_ulong> {
         Vec::<u64>::from(self)
     }
 
+    #[must_use]
     pub fn to_vec_size(self) -> Vec<size_t> {
         Vec::<usize>::from(self)
     }
 
+    #[must_use]
     pub fn to_vec_intptr(self) -> Vec<intptr_t> {
         Vec::<isize>::from(self)
     }
 
+    #[must_use]
     pub fn to_vec_name_version(self) -> Vec<cl_name_version> {
         Vec::<cl_name_version>::from(self)
     }
 
+    #[must_use]
     pub fn to_vec_image_format(self) -> Vec<cl_image_format> {
         Vec::<cl_image_format>::from(self)
     }
 
+    #[must_use]
     pub fn to_vec_vec_uchar(self) -> Vec<Vec<cl_uchar>> {
         Vec::<Vec<u8>>::from(self)
     }

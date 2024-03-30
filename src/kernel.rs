@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2022 Via Technology Ltd.
+// Copyright (c) 2020-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
 //! OpenCL Kernel Object API.
 
 #![allow(non_camel_case_types)]
-#![allow(clippy::not_unsafe_ptr_arg_deref)]
-#![allow(clippy::wildcard_in_or_patterns)]
+#![allow(
+    clippy::not_unsafe_ptr_arg_deref,
+    clippy::too_many_lines,
+    clippy::wildcard_in_or_patterns
+)]
 
 pub use opencl_sys::{
     cl_device_id, cl_int, cl_kernel, cl_kernel_arg_access_qualifier, cl_kernel_arg_info,
@@ -106,7 +109,7 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
         clCreateKernelsInProgram(
             program,
             count,
-            kernels.as_mut_ptr() as *mut cl_kernel,
+            kernels.as_mut_ptr().cast::<cl_kernel>(),
             ptr::null_mut(),
         )
     };
@@ -456,7 +459,7 @@ pub fn get_kernel_sub_group_info(
                     input_value_size,
                     input_value,
                     size,
-                    data_ptr as *mut c_void,
+                    data_ptr.cast::<c_void>(),
                     ptr::null_mut(),
                 )
             };
@@ -496,7 +499,7 @@ pub fn get_kernel_sub_group_info(
                         input_value_size,
                         input_value,
                         size,
-                        data.as_mut_ptr() as *mut c_void,
+                        data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
                     )
                 };
@@ -537,7 +540,7 @@ pub fn get_kernel_sub_group_info(
                         input_value_size,
                         input_value,
                         size,
-                        data.as_mut_ptr() as *mut c_void,
+                        data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
                     )
                 };

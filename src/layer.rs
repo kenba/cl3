@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Via Technology Ltd.
+// Copyright (c) 2023-2024 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
             clGetLayerInfo(
                 param_name,
                 size,
-                data.as_mut_ptr() as *mut c_void,
+                data.as_mut_ptr().cast::<c_void>(),
                 ptr::null_mut(),
             )
         };
@@ -53,6 +53,7 @@ pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
 /// # Safety
 ///
 /// This is unsafe if target_dispatch is not valid.
+#[allow(clippy::cast_possible_truncation)]
 pub unsafe fn init_layer(
     target_dispatch: &[cl_icd_dispatch],
 ) -> Result<&[cl_icd_dispatch], cl_int> {

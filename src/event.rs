@@ -60,6 +60,7 @@ use std::ptr;
 ///
 /// returns an empty Result or the error code from the OpenCL C API function.
 #[inline]
+#[allow(clippy::cast_possible_truncation)]
 pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
     let status: cl_int = unsafe { clWaitForEvents(events.len() as cl_uint, events.as_ptr()) };
     if CL_SUCCESS != status {
@@ -254,6 +255,7 @@ pub fn get_event_profiling_info(
     }
 }
 
+#[must_use]
 pub const fn status_text(status: cl_int) -> &'static str {
     match status {
         CL_COMPLETE => "CL_COMPLETE",
@@ -282,6 +284,7 @@ impl fmt::Display for CommandExecutionStatus {
     }
 }
 
+#[must_use]
 pub const fn command_type_text(command_type: cl_command_type) -> &'static str {
     match command_type {
         CL_COMMAND_NDRANGE_KERNEL => "CL_COMMAND_NDRANGE_KERNEL",

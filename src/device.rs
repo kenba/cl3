@@ -15,7 +15,11 @@
 //! OpenCL Device API.
 
 #![allow(non_camel_case_types, non_upper_case_globals)]
-#![allow(clippy::wildcard_in_or_patterns, clippy::not_unsafe_ptr_arg_deref)]
+#![allow(
+    clippy::not_unsafe_ptr_arg_deref,
+    clippy::too_many_lines,
+    clippy::wildcard_in_or_patterns
+)]
 
 pub use opencl_sys::{
     cl_amd_device_topology, cl_command_queue, cl_context, cl_device_fp_config, cl_device_id,
@@ -441,7 +445,7 @@ pub fn get_device_info(
                     device,
                     param_name,
                     CL_UUID_SIZE_KHR,
-                    value.as_mut_ptr() as *mut c_void,
+                    value.as_mut_ptr().cast::<c_void>(),
                      ptr::null_mut(),)
                     };
             if CL_SUCCESS != status {
@@ -459,7 +463,7 @@ pub fn get_device_info(
                     device,
                     param_name,
                     CL_LUID_SIZE_KHR,
-                    value.as_mut_ptr() as *mut c_void,
+                    value.as_mut_ptr().cast::<c_void>(),
                     ptr::null_mut(),)
                 };
             if CL_SUCCESS != status {
@@ -492,36 +496,45 @@ pub fn get_device_info(
 }
 
 /// Convert a u8 slice (e.g. from get_device_info) into a cl_amd_device_topology structure.
+///
+/// # Panics
+///
+/// if bytes.len() != size_of::<cl_amd_device_topology>
+#[must_use]
 pub fn get_amd_device_topology(bytes: &[u8]) -> cl_amd_device_topology {
     let size = bytes.len();
     assert_eq!(size, std::mem::size_of::<cl_amd_device_topology>());
     let mut topology = cl_amd_device_topology::default();
     unsafe {
-        std::slice::from_raw_parts_mut(
-            &mut topology as *mut cl_amd_device_topology as *mut u8,
-            size,
-        )
-        .copy_from_slice(bytes);
+        std::slice::from_raw_parts_mut(std::ptr::addr_of_mut!(topology).cast::<u8>(), size)
+            .copy_from_slice(bytes);
     }
     topology
 }
 
 /// Convert a u8 slice (e.g. from get_device_info) into a cl_device_pci_bus_info_khr structure.
+///
+/// # Panics
+///
+/// if bytes.len() != size_of::<cl_device_pci_bus_info_khr>
+#[must_use]
 pub fn get_device_pci_bus_info_khr(bytes: &[u8]) -> cl_device_pci_bus_info_khr {
     let size = bytes.len();
     assert_eq!(size, std::mem::size_of::<cl_device_pci_bus_info_khr>());
     let mut pci_bus_info = cl_device_pci_bus_info_khr::default();
     unsafe {
-        std::slice::from_raw_parts_mut(
-            &mut pci_bus_info as *mut cl_device_pci_bus_info_khr as *mut u8,
-            size,
-        )
-        .copy_from_slice(bytes);
+        std::slice::from_raw_parts_mut(std::ptr::addr_of_mut!(pci_bus_info).cast::<u8>(), size)
+            .copy_from_slice(bytes);
     }
     pci_bus_info
 }
 
 /// Convert a u8 slice (e.g. from get_device_info) into a cl_device_integer_dot_product_acceleration_properties_khr structure.
+///
+/// # Panics
+///
+/// if bytes.len() != size_of::<cl_device_integer_dot_product_acceleration_properties_khr>
+#[must_use]
 pub fn get_device_integer_dot_product_acceleration_properties_khr(
     bytes: &[u8],
 ) -> cl_device_integer_dot_product_acceleration_properties_khr {
@@ -532,11 +545,8 @@ pub fn get_device_integer_dot_product_acceleration_properties_khr(
     );
     let mut value = cl_device_integer_dot_product_acceleration_properties_khr::default();
     unsafe {
-        std::slice::from_raw_parts_mut(
-            &mut value as *mut cl_device_integer_dot_product_acceleration_properties_khr as *mut u8,
-            size,
-        )
-        .copy_from_slice(bytes);
+        std::slice::from_raw_parts_mut(std::ptr::addr_of_mut!(value).cast::<u8>(), size)
+            .copy_from_slice(bytes);
     }
     value
 }
@@ -582,6 +592,7 @@ fn count_sub_devices(
 /// or the error code from the OpenCL C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
+#[allow(clippy::cast_possible_truncation)]
 pub fn create_sub_devices(
     in_device: cl_device_id,
     properties: &[cl_device_partition_property],
@@ -739,9 +750,10 @@ pub const TEXAS_INSTRUMENTS_DEVICE_VENDOR_ID: cl_uint = 0x104c;
 pub const QUALCOMM_DEVICE_VENDOR_ID: cl_uint = 0x168c;
 pub const INTEL_DEVICE_VENDOR_ID: cl_uint = 0x8086;
 // Integrated AMD cards on Apple don't have the usual AMD ID
-pub const AMD_ON_APPLE_DEVICE_VENDOR_ID: cl_uint = 0x1021d00;
+pub const AMD_ON_APPLE_DEVICE_VENDOR_ID: cl_uint = 0x0102_1d00;
 
 /// A text representation of an OpenCL vendor id.
+#[must_use]
 pub const fn vendor_id_text(vendor_id: cl_uint) -> &'static str {
     match vendor_id {
         AMD_DEVICE_VENDOR_ID => "AMD",
@@ -763,6 +775,7 @@ pub const fn vendor_id_text(vendor_id: cl_uint) -> &'static str {
 
 /// A text representation of an OpenCL device type, see:
 /// [Device Types](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-types-table).
+#[must_use]
 pub const fn device_type_text(dev_type: cl_device_type) -> &'static str {
     match dev_type {
         CL_DEVICE_TYPE_DEFAULT => "CL_DEVICE_TYPE_DEFAULT",
