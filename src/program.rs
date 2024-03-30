@@ -30,12 +30,16 @@ pub use opencl_sys::{
 };
 
 use opencl_sys::{
-    clBuildProgram, clCompileProgram, clCreateProgramWithBinary, clCreateProgramWithSource,
-    clGetProgramBuildInfo, clGetProgramInfo, clLinkProgram, clReleaseProgram, clRetainProgram,
+    clBuildProgram, clCompileProgram, clCreateProgramWithBinary, clCreateProgramWithBuiltInKernels,
+    clCreateProgramWithSource, clGetProgramBuildInfo, clGetProgramInfo, clLinkProgram,
+    clReleaseProgram, clRetainProgram, clUnloadPlatformCompiler,
 };
 
 #[cfg(feature = "CL_VERSION_2_1")]
 use opencl_sys::clCreateProgramWithIL;
+
+#[cfg(feature = "CL_VERSION_2_2")]
+use opencl_sys::clSetProgramSpecializationConstant;
 
 use super::info_type::InfoType;
 use super::{
@@ -46,41 +50,6 @@ use libc::{c_char, c_uchar, c_void, intptr_t, size_t};
 use std::ffi::CStr;
 use std::mem;
 use std::ptr;
-
-// clUnloadPlatformCompiler disabled in cl_sys due to platform incompatibility.
-// clCreateProgramWithBuiltInKernels kernel_names mutability incorrect in cl_sys
-// clSetProgramReleaseCallback, clSetProgramSpecializationConstant, are
-// CL_VERSION_2_2 and missing from cl_sys
-#[cfg_attr(not(target_os = "macos"), link(name = "OpenCL"))]
-#[cfg_attr(target_os = "macos", link(name = "OpenCL", kind = "framework"))]
-extern "system" {
-    #[cfg(feature = "CL_VERSION_1_2")]
-    pub fn clUnloadPlatformCompiler(platform: cl_platform_id) -> cl_int;
-
-    #[cfg(feature = "CL_VERSION_1_2")]
-    pub fn clCreateProgramWithBuiltInKernels(
-        context: cl_context,
-        num_devices: cl_uint,
-        device_list: *const cl_device_id,
-        kernel_names: *const c_char,
-        errcode_ret: *mut cl_int,
-    ) -> cl_program;
-
-    #[cfg(feature = "CL_VERSION_2_2")]
-    pub fn clSetProgramReleaseCallback(
-        program: cl_program,
-        pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
-        user_data: *mut c_void,
-    ) -> cl_int;
-
-    #[cfg(feature = "CL_VERSION_2_2")]
-    pub fn clSetProgramSpecializationConstant(
-        program: cl_program,
-        spec_id: cl_uint,
-        spec_size: size_t,
-        spec_value: *const c_void,
-    ) -> cl_int;
-}
 
 // Missing from cl_sys
 pub const CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: cl_program_info = 0x116A;
@@ -411,35 +380,6 @@ pub unsafe fn link_program(
     );
     if CL_SUCCESS == status {
         Ok(programme)
-    } else {
-        Err(status)
-    }
-}
-
-/// Register a callback function with a program object that is called when the
-/// program object is destroyed.  
-/// Calls clSetProgramReleaseCallback to register a callback function.  
-/// `CL_VERSION_2_2`
-///
-/// * `program` - the program being deleted.
-/// * `pfn_notify` - function pointer to the notification routine.
-/// * `user_data` - passed as an argument when `pfn_notify` is called, or `ptr::null_mut()`.
-///
-/// returns an empty Result or the error code from the `OpenCL` C API function.
-///
-/// # Safety
-///
-/// This function is unsafe because `user_data` must be valid.
-#[cfg(feature = "CL_VERSION_2_2")]
-#[inline]
-pub unsafe fn set_program_release_callback(
-    program: cl_program,
-    pfn_notify: Option<extern "C" fn(program: cl_program, user_data: *mut c_void)>,
-    user_data: *mut c_void,
-) -> Result<(), cl_int> {
-    let status: cl_int = clSetProgramReleaseCallback(program, pfn_notify, user_data);
-    if CL_SUCCESS == status {
-        Ok(())
     } else {
         Err(status)
     }
