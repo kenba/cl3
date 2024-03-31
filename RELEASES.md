@@ -1,5 +1,11 @@
 # Releases
 
+## Version 0.10.0 (2024-03-31)
+
+### Bug fixes
+
+Use `opencl-sys` version 0.3 and fix [Clippy Lints](https://rust-lang.github.io/rust-clippy/master/index.html) issues.
+
 ## Version 0.9.5 (2023-12-22)
 
 ### New Features
