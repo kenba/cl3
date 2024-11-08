@@ -35,7 +35,7 @@ use libc::{c_void, size_t};
 use std::mem;
 use std::ptr;
 
-/// Get the available platforms.  
+/// Get the available platforms.
 /// Calls clGetPlatformIDs to get the available platform ids.
 ///  # Examples
 /// ```
@@ -50,7 +50,7 @@ use std::ptr;
 pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
     let mut count: cl_uint = 0;
-    let mut status = unsafe { clGetPlatformIDs(0, ptr::null_mut(), &mut count) };
+    let mut status = unsafe { cl_call!(clGetPlatformIDs(0, ptr::null_mut(), &mut count)) };
 
     if CL_SUCCESS != status {
         Err(status)

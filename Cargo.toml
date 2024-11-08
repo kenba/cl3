@@ -14,8 +14,8 @@ edition = "2021"
 
 [features]
 
-static_link = ["dep:opencl-sys"]
-dynamic_link = ["dep:opencl-dynamic-sys"]
+static_runtime = ["dep:opencl-sys"]
+dynamic_runtime = ["dep:opencl-dynamic-sys"]
 
 CL_VERSION_1_1 = ["opencl-sys/CL_VERSION_1_1"]
 CL_VERSION_1_2 = ["opencl-sys/CL_VERSION_1_2"]
@@ -68,7 +68,7 @@ cl_pocl_content_size = ["opencl-sys/cl_pocl_content_size"]
 cl_loader_layers = ["opencl-sys/cl_loader_layers"]
 
 # Default features:
-default = ["CL_VERSION_1_1", "CL_VERSION_1_2", "static_link"]
+default = ["CL_VERSION_1_1", "CL_VERSION_1_2", "static_runtime"]
 
 [dependencies]
 libc = "0.2"
