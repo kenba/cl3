@@ -23,8 +23,7 @@
     clippy::too_many_arguments
 )]
 
-#[cfg(feature = "static_runtime")]
-pub use opencl_sys::*;
+use crate::{constants::*, types::*};
 
 #[allow(unused_imports)]
 use super::info_type::InfoType;
@@ -73,7 +72,7 @@ pub fn finalize_command_buffer_khr(command_buffer: cl_command_buffer_khr) -> Res
 pub unsafe fn retain_command_buffer_khr(
     command_buffer: cl_command_buffer_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clRetainCommandBufferKHR(command_buffer);
+    let status: cl_int = cl_call!(clRetainCommandBufferKHR(command_buffer));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -85,7 +84,7 @@ pub unsafe fn retain_command_buffer_khr(
 pub unsafe fn release_command_buffer_khr(
     command_buffer: cl_command_buffer_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseCommandBufferKHR(command_buffer);
+    let status: cl_int = cl_call!(clReleaseCommandBufferKHR(command_buffer));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -102,14 +101,14 @@ pub unsafe fn enqueue_command_buffer_khr(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueCommandBufferKHR(
+    let status: cl_int = cl_call!(clEnqueueCommandBufferKHR(
         num_queues,
         queues,
         command_buffer,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -126,14 +125,14 @@ pub unsafe fn command_barrier_with_wait_list_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandBarrierWithWaitListKHR(
+    let status: cl_int = cl_call!(clCommandBarrierWithWaitListKHR(
         command_buffer,
         command_queue,
         sync_point_wait_list.len() as cl_uint,
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -155,7 +154,7 @@ pub unsafe fn command_copy_buffer_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandCopyBufferKHR(
+    let status: cl_int = cl_call!(clCommandCopyBufferKHR(
         command_buffer,
         command_queue,
         src_buffer,
@@ -167,7 +166,7 @@ pub unsafe fn command_copy_buffer_khr(
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -193,7 +192,7 @@ pub unsafe fn command_copy_buffer_rect_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandCopyBufferRectKHR(
+    let status: cl_int = cl_call!(clCommandCopyBufferRectKHR(
         command_buffer,
         command_queue,
         src_buffer,
@@ -209,7 +208,7 @@ pub unsafe fn command_copy_buffer_rect_khr(
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -231,7 +230,7 @@ pub unsafe fn command_copy_buffer_to_image_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandCopyBufferToImageKHR(
+    let status: cl_int = cl_call!(clCommandCopyBufferToImageKHR(
         command_buffer,
         command_queue,
         src_buffer,
@@ -243,7 +242,7 @@ pub unsafe fn command_copy_buffer_to_image_khr(
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -265,7 +264,7 @@ pub unsafe fn command_copy_image_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandCopyImageKHR(
+    let status: cl_int = cl_call!(clCommandCopyImageKHR(
         command_buffer,
         command_queue,
         src_image,
@@ -277,7 +276,7 @@ pub unsafe fn command_copy_image_khr(
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -299,7 +298,7 @@ pub unsafe fn command_copy_image_to_buffer_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandCopyImageToBufferKHR(
+    let status: cl_int = cl_call!(clCommandCopyImageToBufferKHR(
         command_buffer,
         command_queue,
         src_image,
@@ -311,7 +310,7 @@ pub unsafe fn command_copy_image_to_buffer_khr(
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -333,7 +332,7 @@ pub unsafe fn command_fill_buffer_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandFillBufferKHR(
+    let status: cl_int = cl_call!(clCommandFillBufferKHR(
         command_buffer,
         command_queue,
         buffer,
@@ -345,7 +344,7 @@ pub unsafe fn command_fill_buffer_khr(
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -366,7 +365,7 @@ pub unsafe fn command_fill_image_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandFillImageKHR(
+    let status: cl_int = cl_call!(clCommandFillImageKHR(
         command_buffer,
         command_queue,
         image,
@@ -377,7 +376,7 @@ pub unsafe fn command_fill_image_khr(
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -400,7 +399,7 @@ pub unsafe fn command_nd_range_kernel_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandNDRangeKernelKHR(
+    let status: cl_int = cl_call!(clCommandNDRangeKernelKHR(
         command_buffer,
         command_queue,
         properties,
@@ -413,7 +412,7 @@ pub unsafe fn command_nd_range_kernel_khr(
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -433,7 +432,7 @@ pub unsafe fn command_svm_memcpy_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandSVMMemcpyKHR(
+    let status: cl_int = cl_call!(clCommandSVMMemcpyKHR(
         command_buffer,
         command_queue,
         dst_ptr,
@@ -443,7 +442,7 @@ pub unsafe fn command_svm_memcpy_khr(
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -464,7 +463,7 @@ pub unsafe fn command_svm_mem_fill_khr(
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clCommandSVMMemFillKHR(
+    let status: cl_int = cl_call!(clCommandSVMMemFillKHR(
         command_buffer,
         command_queue,
         svm_ptr,
@@ -475,7 +474,7 @@ pub unsafe fn command_svm_mem_fill_khr(
         sync_point_wait_list.as_ptr(),
         sync_point,
         mutable_handle,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -551,7 +550,7 @@ pub unsafe fn remap_command_buffer_khr(
     handles_ret: *mut cl_mutable_command_khr,
 ) -> Result<cl_command_buffer_khr, cl_int> {
     let mut errcode_ret: cl_int = CL_INVALID_VALUE;
-    let cmd_buffer = clRemapCommandBufferKHR(
+    let cmd_buffer = cl_call!(clRemapCommandBufferKHR(
         command_buffer,
         automatic,
         num_queues,
@@ -560,7 +559,7 @@ pub unsafe fn remap_command_buffer_khr(
         handles,
         handles_ret,
         &mut errcode_ret,
-    );
+    ));
     if CL_SUCCESS == errcode_ret {
         Ok(cmd_buffer)
     } else {
@@ -573,7 +572,7 @@ pub unsafe fn update_mutable_commands_khr(
     command_buffer: cl_command_buffer_khr,
     mutable_config: *const cl_mutable_base_config_khr,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clUpdateMutableCommandsKHR(command_buffer, mutable_config);
+    let status: cl_int = cl_call!(clUpdateMutableCommandsKHR(command_buffer, mutable_config));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -598,7 +597,7 @@ pub unsafe fn set_mem_object_destructor_apple(
     pfn_notify: Option<unsafe extern "C" fn(cl_context, *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clSetMemObjectDestructorAPPLE(memobj, pfn_notify, user_data);
+    let status: cl_int = cl_call!(clSetMemObjectDestructorAPPLE(memobj, pfn_notify, user_data));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -621,7 +620,11 @@ pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
         let mut ids: Vec<cl_platform_id> = Vec::with_capacity(len);
         unsafe {
             ids.set_len(len);
-            status = clIcdGetPlatformIDsKHR(count, ids.as_mut_ptr(), ptr::null_mut());
+            status = cl_call!(clIcdGetPlatformIDsKHR(
+                count,
+                ids.as_mut_ptr(),
+                ptr::null_mut()
+            ));
         };
 
         if CL_SUCCESS == status {
@@ -654,7 +657,7 @@ pub fn create_program_with_il_khr(context: cl_context, il: &[u8]) -> Result<cl_p
 
 #[cfg(feature = "cl_khr_terminate_context")]
 pub unsafe fn terminate_context_khr(context: cl_context) -> Result<(), cl_int> {
-    let status = clTerminateContextKHR(context);
+    let status = cl_call!(clTerminateContextKHR(context));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -686,7 +689,7 @@ pub fn create_command_queue_with_properties_khr(
 
 #[cfg(feature = "cl_ext_device_fission")]
 pub unsafe fn release_device_ext(device: cl_device_id) -> Result<(), cl_int> {
-    let status = clReleaseDeviceEXT(device);
+    let status = cl_call!(clReleaseDeviceEXT(device));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -696,7 +699,7 @@ pub unsafe fn release_device_ext(device: cl_device_id) -> Result<(), cl_int> {
 
 #[cfg(feature = "cl_ext_device_fission")]
 pub unsafe fn retain_device_ext(device: cl_device_id) -> Result<(), cl_int> {
-    let status = clRetainDeviceEXT(device);
+    let status = cl_call!(clRetainDeviceEXT(device));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -740,13 +743,13 @@ pub fn create_sub_devices_ext(
     let mut ids: Vec<cl_device_id> = Vec::with_capacity(num_devices as usize);
     let status: cl_int = unsafe {
         ids.set_len(num_devices as usize);
-        clCreateSubDevicesEXT(
+        cl_call!(clCreateSubDevicesEXT(
             in_device,
             properties.as_ptr(),
             num_devices * mem::size_of::<cl_device_id>() as cl_uint,
             ids.as_mut_ptr(),
             ptr::null_mut(),
-        )
+        ))
     };
 
     if CL_SUCCESS == status {
@@ -766,7 +769,7 @@ pub unsafe fn enqueue_migrate_mem_object_ext(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueMigrateMemObjectEXT(
+    let status: cl_int = cl_call!(clEnqueueMigrateMemObjectEXT(
         command_queue,
         num_mem_objects,
         mem_objects,
@@ -774,7 +777,7 @@ pub unsafe fn enqueue_migrate_mem_object_ext(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -820,14 +823,14 @@ pub unsafe fn enqueue_acquire_gralloc_objects_img(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueAcquireGrallocObjectsIMG(
+    let status: cl_int = cl_call!(clEnqueueAcquireGrallocObjectsIMG(
         command_queue,
         num_objects,
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -844,14 +847,14 @@ pub unsafe fn enqueue_release_gralloc_objects_img(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueReleaseGrallocObjectsIMG(
+    let status: cl_int = cl_call!(clEnqueueReleaseGrallocObjectsIMG(
         command_queue,
         num_objects,
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -871,7 +874,7 @@ pub unsafe fn enqueue_generate_mipmap_img(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueGenerateMipmapIMG(
+    let status: cl_int = cl_call!(clEnqueueGenerateMipmapIMG(
         command_queue,
         src_image,
         dst_image,
@@ -881,7 +884,7 @@ pub unsafe fn enqueue_generate_mipmap_img(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -906,7 +909,7 @@ pub fn get_kernel_sub_group_info_khr(
             let mut data: size_t = 0;
             let data_ptr: *mut size_t = &mut data;
             let status = unsafe {
-                clGetKernelSubGroupInfoKHR(
+                cl_call!(clGetKernelSubGroupInfoKHR(
                     kernel,
                     device,
                     param_name,
@@ -915,7 +918,7 @@ pub fn get_kernel_sub_group_info_khr(
                     mem::size_of::<size_t>(),
                     data_ptr.cast::<c_void>(),
                     ptr::null_mut(),
-                )
+                ))
             };
             if CL_SUCCESS == status {
                 Ok(data)
@@ -936,14 +939,14 @@ pub fn get_kernel_suggested_local_work_size_khr(
 ) -> Result<size_t, cl_int> {
     let mut suggested_local_work_size: size_t = 0;
     let status: cl_int = unsafe {
-        clGetKernelSuggestedLocalWorkSizeKHR(
+        cl_call!(clGetKernelSuggestedLocalWorkSizeKHR(
             command_queue,
             kernel,
             work_dim,
             global_work_offset,
             global_work_size,
             &mut suggested_local_work_size,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(suggested_local_work_size)
@@ -961,14 +964,14 @@ pub unsafe fn enqueue_acquire_external_mem_objects_khr(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueAcquireExternalMemObjectsKHR(
+    let status: cl_int = cl_call!(clEnqueueAcquireExternalMemObjectsKHR(
         command_queue,
         num_mem_objects,
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -985,14 +988,14 @@ pub unsafe fn enqueue_release_external_mem_objects_khr(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueReleaseExternalMemObjectsKHR(
+    let status: cl_int = cl_call!(clEnqueueReleaseExternalMemObjectsKHR(
         command_queue,
         num_mem_objects,
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1009,27 +1012,27 @@ pub fn get_semaphore_handle_for_type_khr(
     // Get the size of the information.
     let mut size: size_t = 0;
     let status: cl_int = unsafe {
-        clGetSemaphoreHandleForTypeKHR(
+        cl_call!(clGetSemaphoreHandleForTypeKHR(
             sema_object,
             device,
             handle_type,
             0,
             ptr::null_mut(),
             &mut size,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         let mut data: cl_semaphore_khr = ptr::null_mut();
         let data_ptr: *mut cl_semaphore_khr = &mut data;
         let status: cl_int = unsafe {
-            clGetSemaphoreHandleForTypeKHR(
+            cl_call!(clGetSemaphoreHandleForTypeKHR(
                 sema_object,
                 device,
                 handle_type,
                 size,
                 data_ptr.cast::<c_void>(),
                 ptr::null_mut(),
-            )
+            ))
         };
         if CL_SUCCESS == status {
             Ok(data)
@@ -1047,7 +1050,11 @@ pub unsafe fn reimport_semaphore_sync_fd(
     reimport_props: *mut cl_semaphore_reimport_properties_khr,
     fd: c_int,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clReImportSemaphoreSyncFdKHR(sema_object, reimport_props, fd);
+    let status: cl_int = cl_call!(clReImportSemaphoreSyncFdKHR(
+        sema_object,
+        reimport_props,
+        fd
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1085,7 +1092,7 @@ pub unsafe fn enqueue_wait_semaphores_khr(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueWaitSemaphoresKHR(
+    let status: cl_int = cl_call!(clEnqueueWaitSemaphoresKHR(
         command_queue,
         num_sema_objects,
         sema_objects,
@@ -1093,7 +1100,7 @@ pub unsafe fn enqueue_wait_semaphores_khr(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1111,7 +1118,7 @@ pub unsafe fn enqueue_signal_semaphores_khr(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueSignalSemaphoresKHR(
+    let status: cl_int = cl_call!(clEnqueueSignalSemaphoresKHR(
         command_queue,
         num_sema_objects,
         sema_objects,
@@ -1119,7 +1126,7 @@ pub unsafe fn enqueue_signal_semaphores_khr(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1140,7 +1147,7 @@ pub fn get_semaphore_info_khr(
 
 #[cfg(feature = "cl_khr_semaphore")]
 pub unsafe fn release_semaphore_khr(sema_object: cl_semaphore_khr) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseSemaphoreKHR(sema_object);
+    let status: cl_int = cl_call!(clReleaseSemaphoreKHR(sema_object));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1150,7 +1157,7 @@ pub unsafe fn release_semaphore_khr(sema_object: cl_semaphore_khr) -> Result<(),
 
 #[cfg(feature = "cl_khr_semaphore")]
 pub unsafe fn retain_semaphore_khr(sema_object: cl_semaphore_khr) -> Result<(), cl_int> {
-    let status: cl_int = clRetainSemaphoreKHR(sema_object);
+    let status: cl_int = cl_call!(clRetainSemaphoreKHR(sema_object));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1167,7 +1174,14 @@ pub unsafe fn import_memory_arm(
     size: size_t,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clImportMemoryARM(context, flags, properties, memory, size, &mut status);
+    let mem: cl_mem = cl_call!(clImportMemoryARM(
+        context,
+        flags,
+        properties,
+        memory,
+        size,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -1182,7 +1196,7 @@ pub unsafe fn svm_alloc_arm(
     size: size_t,
     alignment: cl_uint,
 ) -> Result<*mut c_void, cl_int> {
-    let ptr = clSVMAllocARM(context, flags, size, alignment);
+    let ptr = cl_call!(clSVMAllocARM(context, flags, size, alignment));
     if ptr.is_null() {
         Err(CL_INVALID_VALUE)
     } else {
@@ -1191,8 +1205,8 @@ pub unsafe fn svm_alloc_arm(
 }
 
 #[cfg(feature = "cl_arm_shared_virtual_memory")]
-pub unsafe fn svm_free_arm(context: cl_context, svm_pointer: *mut c_void) {
-    clSVMFreeARM(context, svm_pointer);
+pub fn svm_free_arm(context: cl_context, svm_pointer: *mut c_void) {
+    unsafe { cl_call!(clSVMFreeARM(context, svm_pointer)) };
 }
 
 #[cfg(feature = "cl_arm_shared_virtual_memory")]
@@ -1213,7 +1227,7 @@ pub unsafe fn enqueue_svm_free_arm(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueSVMFreeARM(
+    let status: cl_int = cl_call!(clEnqueueSVMFreeARM(
         command_queue,
         num_svm_pointers,
         svm_pointers,
@@ -1222,7 +1236,7 @@ pub unsafe fn enqueue_svm_free_arm(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1241,7 +1255,7 @@ pub unsafe fn enqueue_svm_mem_cpy_arm(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueSVMMemcpyARM(
+    let status: cl_int = cl_call!(clEnqueueSVMMemcpyARM(
         command_queue,
         blocking_copy,
         dst_ptr,
@@ -1250,7 +1264,7 @@ pub unsafe fn enqueue_svm_mem_cpy_arm(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1269,7 +1283,7 @@ pub unsafe fn enqueue_svm_mem_fill_arm(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueSVMMemFillARM(
+    let status: cl_int = cl_call!(clEnqueueSVMMemFillARM(
         command_queue,
         svm_ptr,
         pattern,
@@ -1278,7 +1292,7 @@ pub unsafe fn enqueue_svm_mem_fill_arm(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1297,7 +1311,7 @@ pub unsafe fn enqueue_svm_map_arm(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueSVMMapARM(
+    let status: cl_int = cl_call!(clEnqueueSVMMapARM(
         command_queue,
         blocking_map,
         flags,
@@ -1306,7 +1320,7 @@ pub unsafe fn enqueue_svm_map_arm(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1322,13 +1336,13 @@ pub unsafe fn enqueue_svm_unmap_arm(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueSVMUnmapARM(
+    let status: cl_int = cl_call!(clEnqueueSVMUnmapARM(
         command_queue,
         svm_ptr,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1382,13 +1396,13 @@ pub fn create_accelerator_intel(
 ) -> Result<cl_accelerator_intel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let ptr = unsafe {
-        clCreateAcceleratorINTEL(
+        cl_call!(clCreateAcceleratorINTEL(
             context,
             accelerator_type,
             descriptor_size,
             descriptor,
             &mut status,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(ptr)
@@ -1436,7 +1450,7 @@ pub fn get_accelerator_info_intel(
 
 #[cfg(feature = "cl_intel_accelerator")]
 pub unsafe fn retain_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<(), cl_int> {
-    let status = clRetainAcceleratorINTEL(accelerator);
+    let status = cl_call!(clRetainAcceleratorINTEL(accelerator));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1446,7 +1460,7 @@ pub unsafe fn retain_accelerator_intel(accelerator: cl_accelerator_intel) -> Res
 
 #[cfg(feature = "cl_intel_accelerator")]
 pub unsafe fn release_accelerator_intel(accelerator: cl_accelerator_intel) -> Result<(), cl_int> {
-    let status = clReleaseAcceleratorINTEL(accelerator);
+    let status = cl_call!(clReleaseAcceleratorINTEL(accelerator));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1462,7 +1476,13 @@ pub unsafe fn host_mem_alloc_intel(
     alignment: cl_uint,
 ) -> Result<(), cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    clHostMemAllocINTEL(context, properties, size, alignment, &mut status);
+    cl_call!(clHostMemAllocINTEL(
+        context,
+        properties,
+        size,
+        alignment,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1479,7 +1499,14 @@ pub unsafe fn device_mem_alloc_intel(
     alignment: cl_uint,
 ) -> Result<(), cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    clDeviceMemAllocINTEL(context, device, properties, size, alignment, &mut status);
+    cl_call!(clDeviceMemAllocINTEL(
+        context,
+        device,
+        properties,
+        size,
+        alignment,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1496,7 +1523,14 @@ pub unsafe fn shared_mem_alloc_intel(
     alignment: cl_uint,
 ) -> Result<(), cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    clSharedMemAllocINTEL(context, device, properties, size, alignment, &mut status);
+    cl_call!(clSharedMemAllocINTEL(
+        context,
+        device,
+        properties,
+        size,
+        alignment,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1506,7 +1540,7 @@ pub unsafe fn shared_mem_alloc_intel(
 
 #[cfg(feature = "cl_intel_unified_shared_memory")]
 pub unsafe fn mem_free_intel(context: cl_context, ptr: *mut c_void) -> Result<(), cl_int> {
-    let status = clMemFreeINTEL(context, ptr);
+    let status = cl_call!(clMemFreeINTEL(context, ptr));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1516,7 +1550,7 @@ pub unsafe fn mem_free_intel(context: cl_context, ptr: *mut c_void) -> Result<()
 
 #[cfg(feature = "cl_intel_unified_shared_memory")]
 pub unsafe fn mem_blocking_free_intel(context: cl_context, ptr: *mut c_void) -> Result<(), cl_int> {
-    let status = clMemBlockingFreeINTEL(context, ptr);
+    let status = cl_call!(clMemBlockingFreeINTEL(context, ptr));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1533,14 +1567,14 @@ fn mem_alloc_info_intel<T: Default>(
     let mut data: T = T::default();
     let data_ptr: *mut T = &mut data;
     let status = unsafe {
-        clGetMemAllocInfoINTEL(
+        cl_call!(clGetMemAllocInfoINTEL(
             context,
             ptr,
             param_id,
             mem::size_of::<T>(),
             data_ptr.cast::<c_void>(),
             ptr::null_mut(),
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(data)
@@ -1573,7 +1607,14 @@ pub fn get_mem_alloc_info_intel(
             // get the size
             let mut size: size_t = 0;
             let status = unsafe {
-                clGetMemAllocInfoINTEL(context, ptr, param_name, 0, ptr::null_mut(), &mut size)
+                cl_call!(clGetMemAllocInfoINTEL(
+                    context,
+                    ptr,
+                    param_name,
+                    0,
+                    ptr::null_mut(),
+                    &mut size
+                ))
             };
             if CL_SUCCESS != status {
                 Err(status)
@@ -1581,14 +1622,14 @@ pub fn get_mem_alloc_info_intel(
                 // Get the data.
                 let mut data: Vec<u8> = Vec::with_capacity(size);
                 let status = unsafe {
-                    clGetMemAllocInfoINTEL(
+                    cl_call!(clGetMemAllocInfoINTEL(
                         context,
                         ptr,
                         param_name,
                         size,
                         data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
-                    )
+                    ))
                 };
                 if CL_SUCCESS == status {
                     Ok(InfoType::VecUchar(data))
@@ -1608,7 +1649,7 @@ pub unsafe fn set_kernel_arg_mem_pointer_intel(
     arg_index: cl_uint,
     arg_value: *const c_void,
 ) -> Result<(), cl_int> {
-    let status = clSetKernelArgMemPointerINTEL(kernel, arg_index, arg_value);
+    let status = cl_call!(clSetKernelArgMemPointerINTEL(kernel, arg_index, arg_value));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1626,7 +1667,7 @@ pub unsafe fn enqueue_mem_set_intel(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueMemsetINTEL(
+    let status: cl_int = cl_call!(clEnqueueMemsetINTEL(
         command_queue,
         dst_ptr,
         value,
@@ -1634,7 +1675,7 @@ pub unsafe fn enqueue_mem_set_intel(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1653,7 +1694,7 @@ pub unsafe fn enqueue_mem_fill_intel(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueMemFillINTEL(
+    let status: cl_int = cl_call!(clEnqueueMemFillINTEL(
         command_queue,
         dst_ptr,
         pattern,
@@ -1662,7 +1703,7 @@ pub unsafe fn enqueue_mem_fill_intel(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1681,7 +1722,7 @@ pub unsafe fn enqueue_mem_copy_intel(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueMemcpyINTEL(
+    let status: cl_int = cl_call!(clEnqueueMemcpyINTEL(
         command_queue,
         blocking,
         dst_ptr,
@@ -1690,7 +1731,7 @@ pub unsafe fn enqueue_mem_copy_intel(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1708,7 +1749,7 @@ pub unsafe fn enqueue_migrate_mem_intel(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueMigrateMemINTEL(
+    let status: cl_int = cl_call!(clEnqueueMigrateMemINTEL(
         command_queue,
         ptr,
         size,
@@ -1716,7 +1757,7 @@ pub unsafe fn enqueue_migrate_mem_intel(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1734,7 +1775,7 @@ pub unsafe fn enqueue_mem_advise_intel(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueMemAdviseINTEL(
+    let status: cl_int = cl_call!(clEnqueueMemAdviseINTEL(
         command_queue,
         ptr,
         size,
@@ -1742,7 +1783,7 @@ pub unsafe fn enqueue_mem_advise_intel(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1759,8 +1800,14 @@ pub unsafe fn create_buffer_with_properties_intel(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem =
-        clCreateBufferWithPropertiesINTEL(context, properties, flags, size, host_ptr, &mut status);
+    let mem: cl_mem = cl_call!(clCreateBufferWithPropertiesINTEL(
+        context,
+        properties,
+        flags,
+        size,
+        host_ptr,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -1780,7 +1827,7 @@ pub unsafe fn enqueue_read_host_pipe_intel(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueReadHostPipeINTEL(
+    let status: cl_int = cl_call!(clEnqueueReadHostPipeINTEL(
         command_queue,
         program,
         pipe_symbol,
@@ -1790,7 +1837,7 @@ pub unsafe fn enqueue_read_host_pipe_intel(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1810,7 +1857,7 @@ pub unsafe fn enqueue_write_host_pipe_intel(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueWriteHostPipeINTEL(
+    let status: cl_int = cl_call!(clEnqueueWriteHostPipeINTEL(
         command_queue,
         program,
         pipe_symbol,
@@ -1820,7 +1867,7 @@ pub unsafe fn enqueue_write_host_pipe_intel(
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -1840,7 +1887,7 @@ pub fn get_image_requirements_info_ext(
     // get the size
     let mut size: size_t = mem::size_of::<u8>();
     let status: cl_int = unsafe {
-        clGetImageRequirementsInfoEXT(
+        cl_call!(clGetImageRequirementsInfoEXT(
             context,
             properties,
             flags,
@@ -1850,14 +1897,14 @@ pub fn get_image_requirements_info_ext(
             0,
             ptr::null_mut(),
             &mut size,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         // Get the data.
         let mut data: Vec<u8> = Vec::with_capacity(size);
         let status = unsafe {
             data.set_len(size);
-            clGetImageRequirementsInfoEXT(
+            cl_call!(clGetImageRequirementsInfoEXT(
                 context,
                 properties,
                 flags,
@@ -1867,7 +1914,7 @@ pub fn get_image_requirements_info_ext(
                 size,
                 data.as_mut_ptr().cast::<c_void>(),
                 ptr::null_mut(),
-            )
+            ))
         };
         if CL_SUCCESS == status {
             Ok(data)
@@ -1895,12 +1942,12 @@ pub fn get_icd_loader_info_oclicd(param_name: cl_icdl_info) -> Result<Vec<u8>, c
         // Get the data.
         let mut data: Vec<u8> = Vec::with_capacity(size);
         let status = unsafe {
-            clGetICDLoaderInfoOCLICD(
+            cl_call!(clGetICDLoaderInfoOCLICD(
                 param_name,
                 size,
                 data.as_mut_ptr().cast::<c_void>(),
                 ptr::null_mut(),
-            )
+            ))
         };
         if CL_SUCCESS == status {
             Ok(data)

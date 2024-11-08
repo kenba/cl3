@@ -17,18 +17,7 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
-#[cfg(feature = "static_runtime")]
-pub use opencl_sys::{
-    cl_context, cl_device_id, cl_int, cl_platform_id, cl_program, cl_program_build_info,
-    cl_program_info, cl_uchar, cl_uint, CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE,
-    CL_BUILD_SUCCESS, CL_FALSE, CL_INVALID_VALUE, CL_PROGRAM_BINARIES, CL_PROGRAM_BINARY_SIZES,
-    CL_PROGRAM_BINARY_TYPE, CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT,
-    CL_PROGRAM_BINARY_TYPE_EXECUTABLE, CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_NONE,
-    CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE, CL_PROGRAM_BUILD_LOG, CL_PROGRAM_BUILD_OPTIONS,
-    CL_PROGRAM_BUILD_STATUS, CL_PROGRAM_CONTEXT, CL_PROGRAM_DEVICES, CL_PROGRAM_IL,
-    CL_PROGRAM_KERNEL_NAMES, CL_PROGRAM_NUM_DEVICES, CL_PROGRAM_NUM_KERNELS,
-    CL_PROGRAM_REFERENCE_COUNT, CL_PROGRAM_SOURCE, CL_SUCCESS, CL_TRUE,
-};
+use crate::{constants::*, types::*};
 
 use super::info_type::InfoType;
 use super::{

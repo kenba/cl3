@@ -17,15 +17,7 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::wildcard_in_or_patterns)]
 
-#[cfg(feature = "static_runtime")]
-pub use opencl_sys::{
-    cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong, cl_version,
-    CL_PLATFORM_EXTENSIONS, CL_PLATFORM_EXTENSIONS_WITH_VERSION,
-    CL_PLATFORM_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR, CL_PLATFORM_HOST_TIMER_RESOLUTION,
-    CL_PLATFORM_NAME, CL_PLATFORM_NUMERIC_VERSION, CL_PLATFORM_PROFILE,
-    CL_PLATFORM_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR, CL_PLATFORM_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR,
-    CL_PLATFORM_SEMAPHORE_TYPES_KHR, CL_PLATFORM_VENDOR, CL_PLATFORM_VERSION, CL_SUCCESS,
-};
+use crate::{constants::*, types::*};
 
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};

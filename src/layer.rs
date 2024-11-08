@@ -14,10 +14,7 @@
 
 //! `OpenCL` layer extensions
 
-#[cfg(feature = "static_runtime")]
-pub use opencl_sys::cl_layer::*;
-#[cfg(feature = "static_runtime")]
-pub use opencl_sys::*;
+use crate::{constants::*, runtime::OpenClTypes, types::*};
 
 #[allow(unused_imports)]
 use libc::{c_void, size_t};
@@ -26,7 +23,7 @@ use std::ptr;
 
 /// Query information about the `OpenCL` layer.
 /// Calls `clGetLayerInfo`.
-pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
+pub fn get_layer_data(param_name: OpenClTypes::cl_layer::cl_layer_info) -> Result<Vec<u8>, cl_int> {
     let mut size: size_t = 0;
     let status = unsafe {
         cl_call!(cl_layer::clGetLayerInfo(
@@ -64,16 +61,16 @@ pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
 /// This is unsafe if `target_dispatch` is not valid.
 #[allow(clippy::cast_possible_truncation)]
 pub unsafe fn init_layer(
-    target_dispatch: &[cl_icd_dispatch],
-) -> Result<&[cl_icd_dispatch], cl_int> {
+    target_dispatch: &[OpenClTypes::cl_icd::cl_icd_dispatch],
+) -> Result<&[OpenClTypes::cl_icd::cl_icd_dispatch], cl_int> {
     let mut num_entries_ret: cl_uint = 0;
-    let mut layer_dispatch_ret: *const cl_icd_dispatch = ptr::null();
-    let status = clInitLayer(
+    let mut layer_dispatch_ret: *const OpenClTypes::cl_icd::cl_icd_dispatch = ptr::null();
+    let status = cl_call!(cl_layer::clInitLayer(
         target_dispatch.len() as cl_uint,
         target_dispatch.as_ptr(),
         &mut num_entries_ret,
         &mut layer_dispatch_ret,
-    );
+    ));
     if CL_SUCCESS == status {
         let slice = std::slice::from_raw_parts(layer_dispatch_ret, num_entries_ret as usize);
         Ok(slice)

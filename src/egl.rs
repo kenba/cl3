@@ -14,14 +14,7 @@
 
 //! `OpenCL` `OpenGL` ES Interoperability API.
 
-#[cfg(feature = "static_runtime")]
-pub use opencl_sys::cl_egl::*;
-
-#[cfg(feature = "static_runtime")]
-pub use opencl_sys::{
-    cl_command_queue, cl_context, cl_event, cl_int, cl_mem, cl_mem_flags, cl_uint,
-    CL_INVALID_VALUE, CL_SUCCESS,
-};
+use crate::{constants::*, runtime::OpenClTypes, types::*};
 
 #[allow(unused_imports)]
 use std::ptr;
@@ -47,13 +40,20 @@ use std::ptr;
 #[inline]
 pub unsafe fn create_from_egl_image(
     context: cl_context,
-    display: CLeglDisplayKHR,
-    image: CLeglImageKHR,
+    display: OpenClTypes::cl_egl::CLeglDisplayKHR,
+    image: OpenClTypes::cl_egl::CLeglImageKHR,
     flags: cl_mem_flags,
-    properties: *const cl_egl_image_properties_khr,
+    properties: *const OpenClTypes::cl_egl::cl_egl_image_properties_khr,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromEGLImageKHR(context, display, image, flags, properties, &mut status);
+    let mem = cl_call!(cl_egl::clCreateFromEGLImageKHR(
+        context,
+        display,
+        image,
+        flags,
+        properties,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -87,14 +87,14 @@ pub unsafe fn enqueue_acquire_egl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueAcquireEGLObjectsKHR(
+    let status: cl_int = cl_call!(cl_egl::clEnqueueAcquireEGLObjectsKHR(
         command_queue,
         num_objects,
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -128,14 +128,14 @@ pub unsafe fn enqueue_release_egl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueReleaseEGLObjectsKHR(
+    let status: cl_int = cl_call!(cl_egl::clEnqueueReleaseEGLObjectsKHR(
         command_queue,
         num_objects,
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -161,11 +161,16 @@ pub unsafe fn enqueue_release_egl_objects(
 #[inline]
 pub unsafe fn create_event_from_egl_sync_khr(
     context: cl_context,
-    sync: CLeglSyncKHR,
-    display: CLeglDisplayKHR,
+    sync: OpenClTypes::cl_egl::CLeglSyncKHR,
+    display: OpenClTypes::cl_egl::CLeglDisplayKHR,
 ) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let event: cl_event = clCreateEventFromEGLSyncKHR(context, sync, display, &mut status);
+    let event: cl_event = cl_call!(cl_egl::clCreateEventFromEGLSyncKHR(
+        context,
+        sync,
+        display,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {

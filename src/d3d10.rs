@@ -18,11 +18,7 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-use crate::runtime::{OpenClConstants, OpenClTypes};
-
-pub use OpenClTypes::{cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint};
-
-pub use OpenClConstants::{CL_INVALID_VALUE, CL_SUCCESS};
+use crate::{constants::*, types::*};
 
 #[allow(unused_imports)]
 use libc::c_void;
