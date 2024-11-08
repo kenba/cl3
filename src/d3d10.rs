@@ -18,12 +18,11 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-#[cfg(feature = "static_runtime")]
-pub use opencl_sys::cl_d3d10::*;
-#[cfg(feature = "static_runtime")]
-pub use opencl_sys::{
-    cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint, CL_INVALID_VALUE, CL_SUCCESS,
-};
+use crate::runtime::{OpenClConstants, OpenClTypes};
+
+pub use OpenClTypes::{cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint};
+
+pub use OpenClConstants::{CL_INVALID_VALUE, CL_SUCCESS};
 
 #[allow(unused_imports)]
 use libc::c_void;
@@ -37,28 +36,28 @@ pub unsafe fn get_supported_d3d10_texture_formats_intel(
     image_type: cl_mem_object_type,
 ) -> Result<Vec<cl_uint>, cl_int> {
     let mut count: cl_uint = 0;
-    let status: cl_int = clGetSupportedD3D10TextureFormatsINTEL(
+    let status: cl_int = cl_call!(cl_icd::clGetSupportedD3D10TextureFormatsINTEL(
         context,
         flags,
         image_type,
         0,
         ptr::null_mut(),
         &mut count,
-    );
+    ));
     if CL_SUCCESS != status {
         Err(status)
     } else if 0 < count {
         // Get the d3d11_formats.
         let len = count as usize;
         let mut ids: Vec<cl_uint> = Vec::with_capacity(len);
-        let status: cl_int = clGetSupportedD3D10TextureFormatsINTEL(
+        let status: cl_int = cl_call!(cl_d3d10::clGetSupportedD3D10TextureFormatsINTEL(
             context,
             flags,
             image_type,
             count,
             ids.as_mut_ptr(),
             ptr::null_mut(),
-        );
+        ));
         if CL_SUCCESS == status {
             Ok(ids)
         } else {

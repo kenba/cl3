@@ -533,7 +533,7 @@ pub fn get_kernel_sub_group_info(
                 let mut data: Vec<u8> = Vec::with_capacity(count);
                 let status = unsafe {
                     data.set_len(count);
-                    clGetKernelSubGroupInfo(
+                    cl_call!(clGetKernelSubGroupInfo(
                         kernel,
                         device,
                         param_name,
@@ -542,7 +542,7 @@ pub fn get_kernel_sub_group_info(
                         size,
                         data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
-                    )
+                    ))
                 };
                 if CL_SUCCESS == status {
                     Ok(InfoType::VecUchar(data))

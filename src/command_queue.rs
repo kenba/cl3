@@ -21,15 +21,19 @@
     clippy::missing_safety_doc
 )]
 
-#[cfg(feature = "static_runtime")]
-pub use opencl_sys::{
+use crate::runtime::{OpenClConstants, OpenClTypes};
+
+pub use OpenClTypes::{
     cl_bool, cl_command_queue, cl_command_queue_info, cl_command_queue_properties, cl_context,
     cl_device_id, cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_mem_migration_flags,
-    cl_queue_properties, cl_uint, cl_ulong, CL_BLOCKING, CL_INVALID_VALUE, CL_NON_BLOCKING,
-    CL_QUEUE_CONTEXT, CL_QUEUE_DEVICE, CL_QUEUE_DEVICE_DEFAULT, CL_QUEUE_ON_DEVICE,
-    CL_QUEUE_ON_DEVICE_DEFAULT, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, CL_QUEUE_PROFILING_ENABLE,
-    CL_QUEUE_PROPERTIES, CL_QUEUE_PROPERTIES_ARRAY, CL_QUEUE_REFERENCE_COUNT, CL_QUEUE_SIZE,
-    CL_SUCCESS,
+    cl_queue_properties, cl_uint, cl_ulong,
+};
+
+pub use OpenClConstants::{
+    CL_BLOCKING, CL_INVALID_VALUE, CL_NON_BLOCKING, CL_QUEUE_CONTEXT, CL_QUEUE_DEVICE,
+    CL_QUEUE_DEVICE_DEFAULT, CL_QUEUE_ON_DEVICE, CL_QUEUE_ON_DEVICE_DEFAULT,
+    CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, CL_QUEUE_PROFILING_ENABLE, CL_QUEUE_PROPERTIES,
+    CL_QUEUE_PROPERTIES_ARRAY, CL_QUEUE_REFERENCE_COUNT, CL_QUEUE_SIZE, CL_SUCCESS,
 };
 
 use super::info_type::InfoType;

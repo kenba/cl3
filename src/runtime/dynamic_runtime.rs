@@ -1,3 +1,7 @@
+pub fn is_opencl_runtime_available() -> bool {
+    crate::runtime::load_dynamic_runtime().is_ok()
+}
+
 pub fn load_dynamic_runtime() -> Result<&'static opencl_dynamic_sys::OpenClRuntime, i32> {
     const CL_RUNTIME_LOAD_FAILED: i32 = -2000;
 

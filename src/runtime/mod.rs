@@ -17,6 +17,8 @@
 #[macro_use]
 #[cfg(feature = "static_runtime")]
 mod static_runtime;
+#[cfg(feature = "static_runtime")]
+pub(crate) use static_runtime::{OpenClConstants, OpenClTypes};
 
 #[macro_use]
 #[cfg(feature = "dynamic_runtime")]
