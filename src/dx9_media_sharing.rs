@@ -19,7 +19,7 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::missing_safety_doc)]
 
-use crate::{constants::*, runtime::OpenClTypes, types::*};
+use crate::{constants::*, types::*};
 
 #[allow(unused_imports)]
 use libc::c_void;
@@ -29,9 +29,9 @@ use std::ptr;
 #[cfg(feature = "cl_intel_dx9_media_sharing")]
 pub unsafe fn get_device_ids_from_dx9_intel(
     platform: cl_platform_id,
-    dx9_device_source: OpenClTypes::cl_icd::cl_dx9_device_source_intel,
+    dx9_device_source: cl_dx9_device_source_intel,
     dx9_object: *mut c_void,
-    dx9_device_set: OpenClTypes::cl_icd::cl_dx9_device_set_intel,
+    dx9_device_set: cl_dx9_device_set_intel,
 ) -> Result<Vec<cl_device_id>, cl_int> {
     let mut count: cl_uint = 0;
     let status: cl_int = cl_call!(cl_dx9_media_sharing::clGetDeviceIDsFromDX9INTEL(
@@ -72,8 +72,8 @@ pub unsafe fn get_device_ids_from_dx9_intel(
 pub unsafe fn create_from_dx9_media_surface_intel(
     context: cl_context,
     flags: cl_mem_flags,
-    resource: OpenClTypes::cl_icd::IDirect3DSurface9_ptr,
-    shared_handle: OpenClTypes::cl_icd::HANDLE,
+    resource: IDirect3DSurface9_ptr,
+    shared_handle: HANDLE,
     plane: cl_uint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
