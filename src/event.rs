@@ -17,6 +17,7 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_command_queue, cl_command_type, cl_context, cl_event, cl_event_info, cl_int,
     cl_profiling_info, cl_uint, cl_ulong, CL_COMMAND_ACQUIRE_GL_OBJECTS, CL_COMMAND_BARRIER,
@@ -36,14 +37,10 @@ pub use opencl_sys::{
     CL_PROFILING_COMMAND_SUBMIT, CL_QUEUED, CL_RUNNING, CL_SUBMITTED, CL_SUCCESS,
 };
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::cl_egl::{
     CL_COMMAND_ACQUIRE_EGL_OBJECTS_KHR, CL_COMMAND_EGL_FENCE_SYNC_OBJECT_KHR,
     CL_COMMAND_RELEASE_EGL_OBJECTS_KHR,
-};
-
-use opencl_sys::{
-    clCreateUserEvent, clGetEventInfo, clGetEventProfilingInfo, clReleaseEvent, clRetainEvent,
-    clSetEventCallback, clSetUserEventStatus, clWaitForEvents,
 };
 
 use super::info_type::InfoType;
@@ -62,7 +59,8 @@ use std::ptr;
 #[inline]
 #[allow(clippy::cast_possible_truncation)]
 pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { cl_call!(clWaitForEvents(events.len() as cl_uint, events.as_ptr())) };
+    let status: cl_int =
+        unsafe { cl_call!(clWaitForEvents(events.len() as cl_uint, events.as_ptr())) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -139,7 +137,7 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
-    let status: cl_int = clRetainEvent(event);
+    let status: cl_int = cl_call!(clRetainEvent(event));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -159,7 +157,7 @@ pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseEvent(event);
+    let status: cl_int = cl_call!(clReleaseEvent(event));
     if CL_SUCCESS == status {
         Ok(())
     } else {

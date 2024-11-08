@@ -16,6 +16,7 @@
 
 #![allow(non_camel_case_types)]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_addressing_mode, cl_bitfield, cl_bool, cl_buffer_create_type, cl_buffer_region,
     cl_build_status, cl_channel_order, cl_channel_type, cl_char, cl_command_queue,

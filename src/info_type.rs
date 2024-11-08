@@ -13,15 +13,16 @@
 // limitations under the License.
 
 use libc::{intptr_t, size_t};
+#[cfg(feature = "static_runtime")]
 use opencl_sys::{
     cl_image_format, cl_int, cl_name_version, cl_uchar, cl_uint, cl_ulong, CL_LUID_SIZE_KHR,
     CL_UUID_SIZE_KHR,
 };
 use std::fmt;
 
-/// A Rust enum to handle `OpenCL` API "Info" function return types.  
+/// A Rust enum to handle `OpenCL` API "Info" function return types.
 /// Each of the data types may be extracted from the enum using its associated
-/// From trait or `to_*` function.  
+/// From trait or `to_*` function.
 ///
 /// # Panics
 ///

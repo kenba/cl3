@@ -14,6 +14,7 @@
 
 //! `OpenCL` API Error Codes.
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_int, CL_ACCELERATOR_TYPE_NOT_SUPPORTED_INTEL, CL_BUILD_PROGRAM_FAILURE,
     CL_COMMAND_TERMINATED_ITSELF_WITH_FAILURE_ARM, CL_COMPILER_NOT_AVAILABLE,
@@ -43,15 +44,19 @@ pub use opencl_sys::{
     CL_PLATFORM_NOT_FOUND_KHR, CL_PROFILING_INFO_NOT_AVAILABLE, CL_SUCCESS,
 };
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::cl_d3d11::{
     CL_D3D11_RESOURCE_ALREADY_ACQUIRED_KHR, CL_D3D11_RESOURCE_NOT_ACQUIRED_KHR,
     CL_INVALID_D3D11_DEVICE_KHR, CL_INVALID_D3D11_RESOURCE_KHR,
 };
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::cl_dx9_media_sharing::{
     CL_DX9_MEDIA_SURFACE_ALREADY_ACQUIRED_KHR, CL_DX9_MEDIA_SURFACE_NOT_ACQUIRED_KHR,
     CL_INVALID_DX9_MEDIA_ADAPTER_KHR, CL_INVALID_DX9_MEDIA_SURFACE_KHR,
 };
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::cl_egl::{CL_EGL_RESOURCE_NOT_ACQUIRED_KHR, CL_INVALID_EGL_OBJECT_KHR};
+
 use std::fmt;
 use thiserror::Error;
 

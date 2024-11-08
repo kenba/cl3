@@ -17,6 +17,7 @@
 #![allow(non_camel_case_types, deprecated)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_addressing_mode, cl_bool, cl_context, cl_filter_mode, cl_int, cl_sampler, cl_sampler_info,
     cl_sampler_properties, cl_uint, cl_ulong, CL_INVALID_VALUE, CL_SAMPLER_ADDRESSING_MODE,
@@ -24,11 +25,6 @@ pub use opencl_sys::{
     CL_SAMPLER_MIP_FILTER_MODE, CL_SAMPLER_NORMALIZED_COORDS, CL_SAMPLER_PROPERTIES,
     CL_SAMPLER_REFERENCE_COUNT, CL_SUCCESS,
 };
-
-use opencl_sys::{clCreateSampler, clGetSamplerInfo, clReleaseSampler, clRetainSampler};
-
-#[cfg(feature = "CL_VERSION_2_0")]
-use opencl_sys::clCreateSamplerWithProperties;
 
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
@@ -128,7 +124,7 @@ pub fn create_sampler_with_properties(
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
-    let status: cl_int = clRetainSampler(sampler);
+    let status: cl_int = cl_call!(clRetainSampler(sampler));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -148,7 +144,7 @@ pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseSampler(sampler);
+    let status: cl_int = cl_call!(clReleaseSampler(sampler));
     if CL_SUCCESS == status {
         Ok(())
     } else {

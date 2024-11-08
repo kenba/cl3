@@ -23,6 +23,7 @@
     clippy::too_many_arguments
 )]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::*;
 
 #[allow(unused_imports)]

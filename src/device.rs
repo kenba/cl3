@@ -21,6 +21,7 @@
     clippy::wildcard_in_or_patterns
 )]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_amd_device_topology, cl_command_queue, cl_context, cl_device_fp_config, cl_device_id,
     cl_device_info, cl_device_integer_dot_product_acceleration_properties_khr,
@@ -110,13 +111,6 @@ pub use opencl_sys::{
     CL_VERSION_MINOR_MASK, CL_VERSION_PATCH_BITS, CL_VERSION_PATCH_MASK,
 };
 
-use opencl_sys::{
-    clCreateSubDevices, clGetDeviceIDs, clGetDeviceInfo, clReleaseDevice, clRetainDevice,
-};
-
-#[cfg(feature = "CL_VERSION_2_1")]
-use opencl_sys::{clGetDeviceAndHostTimer, clGetHostTimer, clSetDefaultDeviceCommandQueue};
-
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
 use libc::{c_void, intptr_t, size_t};
@@ -152,8 +146,15 @@ pub fn get_device_ids(
 ) -> Result<Vec<cl_device_id>, cl_int> {
     // Get the number of devices of device_type
     let mut count: cl_uint = 0;
-    let mut status =
-        unsafe { cl_call!(clGetDeviceIDs(platform, device_type, 0, ptr::null_mut(), &mut count)) };
+    let mut status = unsafe {
+        cl_call!(clGetDeviceIDs(
+            platform,
+            device_type,
+            0,
+            ptr::null_mut(),
+            &mut count
+        ))
+    };
 
     if (CL_SUCCESS != status) && (CL_DEVICE_NOT_FOUND != status) {
         Err(status)
@@ -162,13 +163,13 @@ pub fn get_device_ids(
         let len = count as size_t;
         let mut ids: Vec<cl_device_id> = Vec::with_capacity(len);
         unsafe {
-            status = clGetDeviceIDs(
+            status = cl_call!(clGetDeviceIDs(
                 platform,
                 device_type,
                 count,
                 ids.as_mut_ptr(),
                 ptr::null_mut(),
-            );
+            ));
             ids.set_len(len);
         };
 
@@ -572,7 +573,7 @@ fn count_sub_devices(
             0,
             ptr::null_mut(),
             &mut count,
-      )  )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(count)
@@ -604,13 +605,13 @@ pub fn create_sub_devices(
     let mut ids: Vec<cl_device_id> = Vec::with_capacity(num_devices as size_t);
     let status: cl_int = unsafe {
         ids.set_len(num_devices as size_t);
-        clCreateSubDevices(
+        cl_call!(clCreateSubDevices(
             in_device,
             properties.as_ptr(),
             num_devices * mem::size_of::<cl_device_id>() as cl_uint,
             ids.as_mut_ptr(),
             ptr::null_mut(),
-        )
+        ))
     };
 
     if CL_SUCCESS == status {
@@ -634,7 +635,7 @@ pub fn create_sub_devices(
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = clRetainDevice(device);
+    let status: cl_int = cl_call!(clRetainDevice(device));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -656,7 +657,7 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseDevice(device);
+    let status: cl_int = cl_call!(clReleaseDevice(device));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -681,7 +682,13 @@ pub fn set_default_device_command_queue(
     device: cl_device_id,
     command_queue: cl_command_queue,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { cl_call!(clSetDefaultDeviceCommandQueue(context, device, command_queue)) };
+    let status: cl_int = unsafe {
+        cl_call!(clSetDefaultDeviceCommandQueue(
+            context,
+            device,
+            command_queue
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -702,8 +709,13 @@ pub fn set_default_device_command_queue(
 pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], cl_int> {
     let mut device_timestamp: cl_ulong = 0;
     let mut host_timestamp: cl_ulong = 0;
-    let status: cl_int =
-        unsafe { cl_call!(clGetDeviceAndHostTimer(device, &mut device_timestamp, &mut host_timestamp)) };
+    let status: cl_int = unsafe {
+        cl_call!(clGetDeviceAndHostTimer(
+            device,
+            &mut device_timestamp,
+            &mut host_timestamp
+        ))
+    };
     if CL_SUCCESS == status {
         Ok([device_timestamp, host_timestamp])
     } else {

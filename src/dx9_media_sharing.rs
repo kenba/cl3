@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! FFI bindings for `cl_dx9_media_sharing.h`  
-//! `cl_ecl_dx9_media_sharing.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 9.  
+//! FFI bindings for `cl_dx9_media_sharing.h`
+//! `cl_ecl_dx9_media_sharing.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 9.
 //! `OpenCL` extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::missing_safety_doc)]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::cl_dx9_media_sharing::*;
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint, CL_INVALID_VALUE, CL_SUCCESS,
 };

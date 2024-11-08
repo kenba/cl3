@@ -17,6 +17,7 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_context, cl_device_id, cl_int, cl_platform_id, cl_program, cl_program_build_info,
     cl_program_info, cl_uchar, cl_uint, CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE,
@@ -28,18 +29,6 @@ pub use opencl_sys::{
     CL_PROGRAM_KERNEL_NAMES, CL_PROGRAM_NUM_DEVICES, CL_PROGRAM_NUM_KERNELS,
     CL_PROGRAM_REFERENCE_COUNT, CL_PROGRAM_SOURCE, CL_SUCCESS, CL_TRUE,
 };
-
-use opencl_sys::{
-    clBuildProgram, clCompileProgram, clCreateProgramWithBinary, clCreateProgramWithBuiltInKernels,
-    clCreateProgramWithSource, clGetProgramBuildInfo, clGetProgramInfo, clLinkProgram,
-    clReleaseProgram, clRetainProgram, clUnloadPlatformCompiler,
-};
-
-#[cfg(feature = "CL_VERSION_2_1")]
-use opencl_sys::clCreateProgramWithIL;
-
-#[cfg(feature = "CL_VERSION_2_2")]
-use opencl_sys::clSetProgramSpecializationConstant;
 
 use super::info_type::InfoType;
 use super::{
@@ -111,7 +100,7 @@ pub unsafe fn create_program_with_binary(
     let lengths: Vec<size_t> = binaries.iter().map(|bin| bin.len()).collect();
     let mut binary_status: Vec<cl_int> = Vec::with_capacity(binaries_length);
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program: cl_program = clCreateProgramWithBinary(
+    let program: cl_program = cl_call!(clCreateProgramWithBinary(
         context,
         devices.len() as cl_uint,
         devices.as_ptr(),
@@ -119,7 +108,7 @@ pub unsafe fn create_program_with_binary(
         binaries.as_ptr().cast::<*const c_uchar>(),
         binary_status.as_mut_ptr(),
         &mut status,
-    );
+    ));
     binary_status.set_len(binaries_length);
     if CL_SUCCESS == status {
         Ok(program)
@@ -151,13 +140,13 @@ pub unsafe fn create_program_with_builtin_kernels(
     kernel_names: &CStr,
 ) -> Result<cl_program, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program: cl_program = clCreateProgramWithBuiltInKernels(
+    let program: cl_program = cl_call!(clCreateProgramWithBuiltInKernels(
         context,
         devices.len() as cl_uint,
         devices.as_ptr(),
         kernel_names.as_ptr(),
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(program)
     } else {
@@ -206,7 +195,7 @@ pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_progr
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
-    let status: cl_int = clRetainProgram(program);
+    let status: cl_int = cl_call!(clRetainProgram(program));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -226,7 +215,7 @@ pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_program(program: cl_program) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseProgram(program);
+    let status: cl_int = cl_call!(clReleaseProgram(program));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -314,7 +303,7 @@ pub fn compile_program(
         } else {
             header_include_names.as_ptr()
         };
-        clCompileProgram(
+        cl_call!(clCompileProgram(
             program,
             devices.len() as cl_uint,
             devices.as_ptr(),
@@ -324,7 +313,7 @@ pub fn compile_program(
             header_include_names_ptr.cast::<*const c_char>(),
             pfn_notify,
             user_data,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(())
@@ -367,7 +356,7 @@ pub unsafe fn link_program(
 ) -> Result<cl_program, cl_int> {
     assert!(!input_programs.is_empty());
     let mut status: cl_int = CL_INVALID_VALUE;
-    let programme: cl_program = clLinkProgram(
+    let programme: cl_program = cl_call!(clLinkProgram(
         context,
         devices.len() as cl_uint,
         devices.as_ptr(),
@@ -377,7 +366,7 @@ pub unsafe fn link_program(
         pfn_notify,
         user_data,
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(programme)
     } else {
@@ -408,8 +397,9 @@ pub unsafe fn set_program_specialization_constant(
     spec_size: size_t,
     spec_value: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int =
-        clSetProgramSpecializationConstant(program, spec_id, spec_size, spec_value);
+    let status: cl_int = cl_call!(clSetProgramSpecializationConstant(
+        program, spec_id, spec_size, spec_value
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -430,7 +420,7 @@ pub unsafe fn set_program_specialization_constant(
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), cl_int> {
-    let status: cl_int = clUnloadPlatformCompiler(platform);
+    let status: cl_int = cl_call!(clUnloadPlatformCompiler(platform));
     if CL_SUCCESS == status {
         Ok(())
     } else {

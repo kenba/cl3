@@ -17,6 +17,7 @@
 #![allow(non_camel_case_types, deprecated)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::missing_safety_doc)]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_GLenum, cl_GLint, cl_GLsync, cl_GLuint, cl_command_queue, cl_context, cl_context_properties,
     cl_event, cl_gl_context_info, cl_gl_object_type, cl_gl_platform_info, cl_gl_texture_info,
@@ -27,14 +28,6 @@ pub use opencl_sys::{
     CL_GL_OBJECT_TEXTURE1D, CL_GL_OBJECT_TEXTURE1D_ARRAY, CL_GL_OBJECT_TEXTURE2D,
     CL_GL_OBJECT_TEXTURE2D_ARRAY, CL_GL_OBJECT_TEXTURE3D, CL_GL_OBJECT_TEXTURE_BUFFER,
     CL_GL_TEXTURE_TARGET, CL_INVALID_VALUE, CL_KHR_GL_SHARING, CL_SUCCESS, CL_WGL_HDC_KHR,
-};
-
-#[allow(unused_imports)]
-use opencl_sys::{
-    clCreateEventFromGLsyncKHR, clCreateFromGLBuffer, clCreateFromGLRenderbuffer,
-    clCreateFromGLTexture, clCreateFromGLTexture2D, clCreateFromGLTexture3D,
-    clEnqueueAcquireGLObjects, clEnqueueReleaseGLObjects, clGetGLContextInfoKHR, clGetGLObjectInfo,
-    clGetGLTextureInfo,
 };
 
 use super::info_type::InfoType;
@@ -62,7 +55,7 @@ pub unsafe fn create_from_gl_buffer(
     bufobj: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromGLBuffer(context, flags, bufobj, &mut status);
+    let mem = cl_call!(clCreateFromGLBuffer(context, flags, bufobj, &mut status));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -94,14 +87,14 @@ pub unsafe fn create_from_gl_texture(
     texture: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromGLTexture(
+    let mem = cl_call!(clCreateFromGLTexture(
         context,
         flags,
         texture_target,
         miplevel,
         texture,
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -127,7 +120,12 @@ pub unsafe fn create_from_gl_render_buffer(
     renderbuffer: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromGLRenderbuffer(context, flags, renderbuffer, &mut status);
+    let mem = cl_call!(clCreateFromGLRenderbuffer(
+        context,
+        flags,
+        renderbuffer,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -220,14 +218,14 @@ pub unsafe fn enqueue_acquire_gl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueAcquireGLObjects(
+    let status: cl_int = cl_call!(clEnqueueAcquireGLObjects(
         command_queue,
         num_objects,
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -255,14 +253,14 @@ pub unsafe fn enqueue_release_gl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueReleaseGLObjects(
+    let status: cl_int = cl_call!(clEnqueueReleaseGLObjects(
         command_queue,
         num_objects,
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -307,14 +305,14 @@ pub unsafe fn create_from_gl_texture_2d(
     texture: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromGLTexture2D(
+    let mem = cl_call!(clCreateFromGLTexture2D(
         context,
         flags,
         texture_target,
         miplevel,
         texture,
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -358,14 +356,14 @@ pub unsafe fn create_from_gl_texture_3d(
     texture: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromGLTexture3D(
+    let mem = cl_call!(clCreateFromGLTexture3D(
         context,
         flags,
         texture_target,
         miplevel,
         texture,
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {

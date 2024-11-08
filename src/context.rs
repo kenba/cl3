@@ -17,19 +17,13 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_context, cl_context_info, cl_context_properties, cl_device_id, cl_device_type, cl_int,
     cl_uint, CL_CONTEXT_DEVICES, CL_CONTEXT_INTEROP_USER_SYNC, CL_CONTEXT_NUM_DEVICES,
     CL_CONTEXT_PLATFORM, CL_CONTEXT_PROPERTIES, CL_CONTEXT_REFERENCE_COUNT, CL_INVALID_VALUE,
     CL_SUCCESS,
 };
-
-use opencl_sys::{
-    clCreateContext, clCreateContextFromType, clGetContextInfo, clReleaseContext, clRetainContext,
-};
-
-#[cfg(feature = "CL_VERSION_3_0")]
-use opencl_sys::clSetContextDestructorCallback;
 
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
@@ -122,7 +116,7 @@ pub fn create_context_from_type(
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
-    let status: cl_int = clRetainContext(context);
+    let status: cl_int = cl_call!(clRetainContext(context));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -142,7 +136,7 @@ pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_context(context: cl_context) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseContext(context);
+    let status: cl_int = cl_call!(clReleaseContext(context));
     if CL_SUCCESS == status {
         Ok(())
     } else {

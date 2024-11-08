@@ -14,7 +14,9 @@
 
 //! `OpenCL` layer extensions
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::cl_layer::*;
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::*;
 
 #[allow(unused_imports)]

@@ -14,27 +14,12 @@
 
 //! `OpenCL` Runtime.
 
+#[macro_use]
+#[cfg(feature = "static_runtime")]
+mod static_runtime;
+
+#[macro_use]
 #[cfg(feature = "dynamic_runtime")]
-pub(crate) mod dynamic;
-
-pub fn is_opencl_runtime_available() -> bool {
-    if cfg!(feature = "static_runtime") {
-        true
-    } else if cfg!(feature = "dynamic_runtime") {
-        crate::runtime::dynamic::load_runtime().is_ok()
-    } else {
-        false
-    }
-}
-
-macro_rules! cl_call {
-    ($func:ident($($arg:expr),* $(,)?)) => {{
-        if cfg!(feature = "static_runtime") {
-            opencl_sys::$func($($arg),*)
-        } else if cfg!(feature = "dynamic_runtime") {
-            crate::runtime::dynamic::load_runtime()?.$func($($arg),*)
-        } else {
-            $func($($arg),*)
-        }
-    }}
-}
+pub(crate) mod dynamic_runtime;
+#[cfg(feature = "dynamic_runtime")]
+pub use dynamic_runtime::is_opencl_runtime_available;

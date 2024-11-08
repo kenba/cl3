@@ -17,6 +17,7 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_buffer_create_type, cl_buffer_region, cl_context, cl_image_desc, cl_image_format,
     cl_image_info, cl_int, cl_mem, cl_mem_flags, cl_mem_info, cl_mem_object_type,
@@ -42,18 +43,6 @@ pub use opencl_sys::{
     CL_UNORM_INT16, CL_UNORM_INT8, CL_UNORM_INT_101010, CL_UNORM_INT_101010_2, CL_UNORM_SHORT_555,
     CL_UNORM_SHORT_565, CL_UNSIGNED_INT16, CL_UNSIGNED_INT32, CL_UNSIGNED_INT8,
 };
-
-use opencl_sys::{
-    clCreateBuffer, clCreateImage, clCreateSubBuffer, clGetImageInfo, clGetMemObjectInfo,
-    clGetSupportedImageFormats, clReleaseMemObject, clRetainMemObject,
-    clSetMemObjectDestructorCallback,
-};
-
-#[cfg(feature = "CL_VERSION_2_0")]
-use opencl_sys::{clCreatePipe, clGetPipeInfo, clSVMAlloc, clSVMFree};
-
-#[cfg(feature = "CL_VERSION_3_0")]
-use opencl_sys::{clCreateBufferWithProperties, clCreateImageWithProperties};
 
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
@@ -86,7 +75,7 @@ pub unsafe fn create_buffer(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clCreateBuffer(context, flags, size, host_ptr, &mut status);
+    let mem: cl_mem = cl_call!(clCreateBuffer(context, flags, size, host_ptr, &mut status));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -119,13 +108,13 @@ pub unsafe fn create_sub_buffer(
     buffer_create_info: *const c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clCreateSubBuffer(
+    let mem: cl_mem = cl_call!(clCreateSubBuffer(
         buffer,
         flags,
         buffer_create_type,
         buffer_create_info,
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -163,14 +152,14 @@ pub unsafe fn create_image(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clCreateImage(
+    let mem: cl_mem = cl_call!(clCreateImage(
         context,
         flags,
         image_format,
         image_desc,
         host_ptr,
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -206,14 +195,14 @@ pub unsafe fn create_pipe(
     // properties: *const cl_pipe_properties,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clCreatePipe(
+    let mem: cl_mem = cl_call!(clCreatePipe(
         context,
         flags,
         pipe_packet_size,
         pipe_max_packets,
         ptr::null(),
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -250,8 +239,14 @@ pub unsafe fn create_buffer_with_properties(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem =
-        clCreateBufferWithProperties(context, properties, flags, size, host_ptr, &mut status);
+    let mem: cl_mem = cl_call!(clCreateBufferWithProperties(
+        context,
+        properties,
+        flags,
+        size,
+        host_ptr,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -292,7 +287,7 @@ pub unsafe fn create_image_with_properties(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clCreateImageWithProperties(
+    let mem: cl_mem = cl_call!(clCreateImageWithProperties(
         context,
         properties,
         flags,
@@ -300,7 +295,7 @@ pub unsafe fn create_image_with_properties(
         image_desc,
         host_ptr,
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -320,7 +315,7 @@ pub unsafe fn create_image_with_properties(
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
-    let status: cl_int = clRetainMemObject(memobj);
+    let status: cl_int = cl_call!(clRetainMemObject(memobj));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -340,7 +335,7 @@ pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseMemObject(memobj);
+    let status: cl_int = cl_call!(clReleaseMemObject(memobj));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -393,14 +388,14 @@ pub fn get_supported_image_formats(
     let mut image_formats: Vec<cl_image_format> = Vec::with_capacity(count as usize);
     let status: cl_int = unsafe {
         image_formats.set_len(count as usize);
-        clGetSupportedImageFormats(
+        cl_call!(clGetSupportedImageFormats(
             context,
             flags,
             image_type,
             count,
             image_formats.as_mut_ptr(),
             ptr::null_mut(),
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(image_formats)
@@ -575,7 +570,11 @@ pub unsafe fn set_mem_object_destructor_callback(
     pfn_notify: extern "C" fn(cl_mem, *mut c_void),
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clSetMemObjectDestructorCallback(memobj, Some(pfn_notify), user_data);
+    let status: cl_int = cl_call!(clSetMemObjectDestructorCallback(
+        memobj,
+        Some(pfn_notify),
+        user_data
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -609,7 +608,7 @@ pub unsafe fn svm_alloc(
     size: size_t,
     alignment: cl_uint,
 ) -> Result<*mut c_void, cl_int> {
-    let ptr = clSVMAlloc(context, flags, size, alignment);
+    let ptr = cl_call!(clSVMAlloc(context, flags, size, alignment));
     if ptr.is_null() {
         Err(CL_INVALID_VALUE)
     } else {
@@ -630,5 +629,5 @@ pub unsafe fn svm_alloc(
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
 pub unsafe fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
-    clSVMFree(context, svm_pointer);
+    cl_call!(clSVMFree(context, svm_pointer));
 }

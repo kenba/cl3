@@ -21,6 +21,7 @@
     clippy::wildcard_in_or_patterns
 )]
 
+#[cfg(feature = "static_runtime")]
 pub use opencl_sys::{
     cl_device_id, cl_int, cl_kernel, cl_kernel_arg_access_qualifier, cl_kernel_arg_info,
     cl_kernel_exec_info, cl_kernel_info, cl_kernel_sub_group_info, cl_kernel_work_group_info,
@@ -41,17 +42,6 @@ pub use opencl_sys::{
     CL_KERNEL_REFERENCE_COUNT, CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE, CL_KERNEL_WORK_GROUP_SIZE,
     CL_SUCCESS,
 };
-
-use opencl_sys::{
-    clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
-    clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel, clSetKernelArg,
-};
-
-#[cfg(feature = "CL_VERSION_2_0")]
-use opencl_sys::{clSetKernelArgSVMPointer, clSetKernelExecInfo};
-
-#[cfg(feature = "CL_VERSION_2_1")]
-use opencl_sys::{clCloneKernel, clGetKernelSubGroupInfo};
 
 use super::info_type::InfoType;
 use super::{
@@ -113,12 +103,12 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
     let mut kernels: Vec<cl_kernel> = Vec::with_capacity(count as size_t);
     let status: cl_int = unsafe {
         kernels.set_len(count as size_t);
-        clCreateKernelsInProgram(
+        cl_call!(clCreateKernelsInProgram(
             program,
             count,
             kernels.as_mut_ptr().cast::<cl_kernel>(),
             ptr::null_mut(),
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(kernels)
@@ -159,7 +149,7 @@ pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
-    let status: cl_int = clRetainKernel(kernel);
+    let status: cl_int = cl_call!(clRetainKernel(kernel));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -179,7 +169,7 @@ pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseKernel(kernel);
+    let status: cl_int = cl_call!(clReleaseKernel(kernel));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -206,7 +196,7 @@ pub unsafe fn set_kernel_arg(
     arg_size: size_t,
     arg_value: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clSetKernelArg(kernel, arg_index, arg_size, arg_value);
+    let status: cl_int = cl_call!(clSetKernelArg(kernel, arg_index, arg_size, arg_value));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -233,7 +223,7 @@ pub unsafe fn set_kernel_arg_svm_pointer(
     arg_index: cl_uint,
     arg_ptr: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clSetKernelArgSVMPointer(kernel, arg_index, arg_ptr);
+    let status: cl_int = cl_call!(clSetKernelArgSVMPointer(kernel, arg_index, arg_ptr));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -262,7 +252,12 @@ pub unsafe fn set_kernel_exec_info(
     param_value_size: size_t,
     param_value: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clSetKernelExecInfo(kernel, param_name, param_value_size, param_value);
+    let status: cl_int = cl_call!(clSetKernelExecInfo(
+        kernel,
+        param_name,
+        param_value_size,
+        param_value
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -497,7 +492,7 @@ pub fn get_kernel_sub_group_info(
                 let mut data: Vec<size_t> = Vec::with_capacity(count);
                 let status = unsafe {
                     data.set_len(count);
-                    clGetKernelSubGroupInfo(
+                    cl_call!(clGetKernelSubGroupInfo(
                         kernel,
                         device,
                         param_name,
@@ -506,7 +501,7 @@ pub fn get_kernel_sub_group_info(
                         size,
                         data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
-                    )
+                    ))
                 };
                 if CL_SUCCESS == status {
                     Ok(InfoType::VecSize(data))

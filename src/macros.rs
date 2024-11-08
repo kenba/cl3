@@ -20,7 +20,8 @@ macro_rules! api_info_size {
         fn $func(object: *mut c_void, param_name: cl_uint) -> Result<size_t, cl_int> {
             // Get the size of the information.
             let mut size: size_t = 0;
-            let status = unsafe { cl_call!($api(object, param_name, 0, ptr::null_mut(), &mut size)) };
+            let status =
+                unsafe { cl_call!($api(object, param_name, 0, ptr::null_mut(), &mut size)) };
             if CL_SUCCESS != status {
                 Err(status)
             } else {
@@ -96,7 +97,8 @@ macro_rules! api2_info_size {
         fn $func(object: *mut c_void, idx: $type, param_name: cl_uint) -> Result<size_t, cl_int> {
             // Get the size of the information.
             let mut size: size_t = 0;
-            let status = unsafe { cl_call!($api(object, idx, param_name, 0, ptr::null_mut(), &mut size)) };
+            let status =
+                unsafe { cl_call!($api(object, idx, param_name, 0, ptr::null_mut(), &mut size)) };
             if CL_SUCCESS != status {
                 Err(status)
             } else {
