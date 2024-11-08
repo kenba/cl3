@@ -15,18 +15,24 @@
 //! `OpenCL` Runtime.
 
 #[cfg(feature = "dynamic_runtime")]
-pub fn load_dynamic_runtime() -> Result<&'static opencl_dynamic_sys::OpenClRuntime, i32> {
-    const CL_RUNTIME_LOAD_FAILED: i32 = -2000;
+pub(crate) mod dynamic;
 
-    opencl_dynamic_sys::load_library().as_ref().map_err(|_| CL_RUNTIME_LOAD_FAILED)
+pub fn is_opencl_runtime_available() -> bool {
+    if cfg!(feature = "static_runtime") {
+        true
+    } else if cfg!(feature = "dynamic_runtime") {
+        crate::runtime::dynamic::load_runtime().is_ok()
+    } else {
+        false
+    }
 }
 
 macro_rules! cl_call {
-    ($func:ident($($arg:expr),*)) => {{
+    ($func:ident($($arg:expr),* $(,)?)) => {{
         if cfg!(feature = "static_runtime") {
             opencl_sys::$func($($arg),*)
         } else if cfg!(feature = "dynamic_runtime") {
-            crate::runtime::load_dynamic_runtime()?.$func($($arg),*)
+            crate::runtime::dynamic::load_runtime()?.$func($($arg),*)
         } else {
             $func($($arg),*)
         }

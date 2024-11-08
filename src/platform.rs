@@ -59,7 +59,7 @@ pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
         let len = count as usize;
         let mut ids: Vec<cl_platform_id> = Vec::with_capacity(len);
         unsafe {
-            status = clGetPlatformIDs(count, ids.as_mut_ptr(), ptr::null_mut());
+            status = cl_call!(clGetPlatformIDs(count, ids.as_mut_ptr(), ptr::null_mut()));
             ids.set_len(len);
         };
 
