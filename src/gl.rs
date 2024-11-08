@@ -44,25 +44,25 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an `OpenCL` buffer object for a context from an OpenGL buffer.  
-/// Calls clCreateFromGLBuffer to create an `OpenCL` buffer object.  
+/// Create an `OpenCL` buffer object for a context from an OpenGL buffer.
+/// Calls clCreateFromGLBuffer to create an `OpenCL` buffer object.
 ///
 /// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
-/// * `bufobj` - the OpenGL buffer.  
+/// * `bufobj` - the OpenGL buffer.
 ///
 /// returns a Result containing the new `OpenCL` buffer object
 /// or the error code from the `OpenCL` C API function.
 #[inline]
-pub unsafe fn create_from_gl_buffer(
+pub fn create_from_gl_buffer(
     context: cl_context,
     flags: cl_mem_flags,
     bufobj: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromGLBuffer(context, flags, bufobj, &mut status);
+    let mem = unsafe { clCreateFromGLBuffer(context, flags, bufobj, &mut status) };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -72,21 +72,21 @@ pub unsafe fn create_from_gl_buffer(
 
 /// Create an `OpenCL` image object, image array object, or image buffer object
 /// for a context from an OpenGL texture object, texture array object,
-/// texture buffer object, or a single face of an OpenGL cubemap texture object.  
-/// Calls clCreateFromGLTexture to create an `OpenCL` memory object.  
+/// texture buffer object, or a single face of an OpenGL cubemap texture object.
+/// Calls clCreateFromGLTexture to create an `OpenCL` memory object.
 ///
 /// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
-/// * `texture_target` - used to define the image type of texture.  
-/// * `miplevel ` - used to define the mipmap level.  
-/// * `texture  ` - the name of a GL buffer texture object.  
+/// * `texture_target` - used to define the image type of texture.
+/// * `miplevel ` - used to define the mipmap level.
+/// * `texture  ` - the name of a GL buffer texture object.
 ///
 /// returns a Result containing the new `OpenCL` image object
 /// or the error code from the `OpenCL` C API function.
 #[inline]
-pub unsafe fn create_from_gl_texture(
+pub fn create_from_gl_texture(
     context: cl_context,
     flags: cl_mem_flags,
     texture_target: cl_GLenum,
@@ -94,14 +94,16 @@ pub unsafe fn create_from_gl_texture(
     texture: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromGLTexture(
-        context,
-        flags,
-        texture_target,
-        miplevel,
-        texture,
-        &mut status,
-    );
+    let mem = unsafe {
+        clCreateFromGLTexture(
+            context,
+            flags,
+            texture_target,
+            miplevel,
+            texture,
+            &mut status,
+        )
+    };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -109,25 +111,25 @@ pub unsafe fn create_from_gl_texture(
     }
 }
 
-/// Create an `OpenCL` 2D image object from an OpenGL renderbuffer object.  
-/// Calls clCreateFromGLRenderbuffer to create an `OpenCL` buffer object.  
+/// Create an `OpenCL` 2D image object from an OpenGL renderbuffer object.
+/// Calls clCreateFromGLRenderbuffer to create an `OpenCL` buffer object.
 ///
 /// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
-/// * `renderbuffer`  - a GL renderbuffer object.  
+/// * `renderbuffer`  - a GL renderbuffer object.
 ///
 /// returns a Result containing the new `OpenCL` image object
 /// or the error code from the `OpenCL` C API function.
 #[inline]
-pub unsafe fn create_from_gl_render_buffer(
+pub fn create_from_gl_render_buffer(
     context: cl_context,
     flags: cl_mem_flags,
     renderbuffer: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromGLRenderbuffer(context, flags, renderbuffer, &mut status);
+    let mem = unsafe { clCreateFromGLRenderbuffer(context, flags, renderbuffer, &mut status) };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -135,8 +137,8 @@ pub unsafe fn create_from_gl_render_buffer(
     }
 }
 
-/// Query an OpenGL object used to create an `OpenCL` memory object.  
-/// Calls clGetGLObjectInfo to get the object type and name.  
+/// Query an OpenGL object used to create an `OpenCL` memory object.
+/// Calls clGetGLObjectInfo to get the object type and name.
 ///
 /// * `memobj` - a valid `OpenCL` memory object handle.
 ///
@@ -194,8 +196,8 @@ pub fn get_gl_texture_info(
     }
 }
 
-/// Acquire `OpenCL` memory objects that have been created from `OpenGL` objects.  
-/// Calls `clEnqueueAcquireGLObjects`.  
+/// Acquire `OpenCL` memory objects that have been created from `OpenGL` objects.
+/// Calls `clEnqueueAcquireGLObjects`.
 ///
 /// * `command_queue` - a valid `OpenCL` `command_queue`.
 /// * `num_objects` - the number of memory objects to acquire.
@@ -206,7 +208,7 @@ pub fn get_gl_texture_info(
 /// returns a Result containing the new `OpenCL` event
 /// or the error code from the `OpenCL` C API function.
 #[inline]
-pub unsafe fn enqueue_acquire_gl_objects(
+pub fn enqueue_acquire_gl_objects(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -214,14 +216,16 @@ pub unsafe fn enqueue_acquire_gl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueAcquireGLObjects(
-        command_queue,
-        num_objects,
-        mem_objects,
-        num_events_in_wait_list,
-        event_wait_list,
-        &mut event,
-    );
+    let status: cl_int = unsafe {
+        clEnqueueAcquireGLObjects(
+            command_queue,
+            num_objects,
+            mem_objects,
+            num_events_in_wait_list,
+            event_wait_list,
+            &mut event,
+        )
+    };
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -229,8 +233,8 @@ pub unsafe fn enqueue_acquire_gl_objects(
     }
 }
 
-/// Release `OpenCL` memory objects that have been created from `OpenGL` objects.  
-/// Calls `clEnqueueReleaseGLObjects`.  
+/// Release `OpenCL` memory objects that have been created from `OpenGL` objects.
+/// Calls `clEnqueueReleaseGLObjects`.
 ///
 /// * `command_queue` - a valid `OpenCL` `command_queue`.
 /// * `num_objects` - the number of memory objects to acquire.
@@ -241,7 +245,7 @@ pub unsafe fn enqueue_acquire_gl_objects(
 /// returns a Result containing the new `OpenCL` event
 /// or the error code from the `OpenCL` C API function.
 #[inline]
-pub unsafe fn enqueue_release_gl_objects(
+pub fn enqueue_release_gl_objects(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -249,14 +253,16 @@ pub unsafe fn enqueue_release_gl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueReleaseGLObjects(
-        command_queue,
-        num_objects,
-        mem_objects,
-        num_events_in_wait_list,
-        event_wait_list,
-        &mut event,
-    );
+    let status: cl_int = unsafe {
+        clEnqueueReleaseGLObjects(
+            command_queue,
+            num_objects,
+            mem_objects,
+            num_events_in_wait_list,
+            event_wait_list,
+            &mut event,
+        )
+    };
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -265,17 +271,17 @@ pub unsafe fn enqueue_release_gl_objects(
 }
 
 /// Create an `OpenCL` 2D image object from an `OpenGL` 2D texture object,
-/// or a single face of an OpenGL cubemap texture object.  
-/// Calls clCreateFromGLTexture2D to create an `OpenCL` memory object.  
+/// or a single face of an OpenGL cubemap texture object.
+/// Calls clCreateFromGLTexture2D to create an `OpenCL` memory object.
 /// Deprecated in `CL_VERSION_1_2`, use `create_from_gl_texture`.
 ///
 /// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
-/// * `texture_target` - used to define the image type of texture.  
-/// * `miplevel ` - used to define the mipmap level.  
-/// * `texture  ` - the name of a GL 2D, cubemap or rectangle texture object.  
+/// * `texture_target` - used to define the image type of texture.
+/// * `miplevel ` - used to define the mipmap level.
+/// * `texture  ` - the name of a GL 2D, cubemap or rectangle texture object.
 ///
 /// returns a Result containing the new `OpenCL` image object
 /// or the error code from the `OpenCL` C API function.
@@ -293,7 +299,7 @@ pub unsafe fn enqueue_release_gl_objects(
     )
 )]
 #[inline]
-pub unsafe fn create_from_gl_texture_2d(
+pub fn create_from_gl_texture_2d(
     context: cl_context,
     flags: cl_mem_flags,
     texture_target: cl_GLenum,
@@ -301,14 +307,16 @@ pub unsafe fn create_from_gl_texture_2d(
     texture: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromGLTexture2D(
-        context,
-        flags,
-        texture_target,
-        miplevel,
-        texture,
-        &mut status,
-    );
+    let mem = unsafe {
+        clCreateFromGLTexture2D(
+            context,
+            flags,
+            texture_target,
+            miplevel,
+            texture,
+            &mut status,
+        )
+    };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -316,17 +324,17 @@ pub unsafe fn create_from_gl_texture_2d(
     }
 }
 
-/// Create an `OpenCL` 3D image object from an OpenGL 3D texture object.  
-/// Calls `clCreateFromGLTexture3D` to create an `OpenCL` memory object.  
+/// Create an `OpenCL` 3D image object from an OpenGL 3D texture object.
+/// Calls `clCreateFromGLTexture3D` to create an `OpenCL` memory object.
 /// Deprecated in `CL_VERSION_1_2`, use `create_from_gl_texture`.
 ///
 /// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
 /// about the image memory object being created, see:
 /// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
-/// * `texture_target` - used to define the image type of texture.  
-/// * `miplevel ` - used to define the mipmap level.  
-/// * `texture  ` - the name of a GL 2D, cubemap or rectangle texture object.  
+/// * `texture_target` - used to define the image type of texture.
+/// * `miplevel ` - used to define the mipmap level.
+/// * `texture  ` - the name of a GL 2D, cubemap or rectangle texture object.
 ///
 /// returns a Result containing the new `OpenCL` image object
 /// or the error code from the `OpenCL` C API function.
@@ -344,7 +352,7 @@ pub unsafe fn create_from_gl_texture_2d(
     )
 )]
 #[inline]
-pub unsafe fn create_from_gl_texture_3d(
+pub fn create_from_gl_texture_3d(
     context: cl_context,
     flags: cl_mem_flags,
     texture_target: cl_GLenum,
@@ -352,14 +360,16 @@ pub unsafe fn create_from_gl_texture_3d(
     texture: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromGLTexture3D(
-        context,
-        flags,
-        texture_target,
-        miplevel,
-        texture,
-        &mut status,
-    );
+    let mem = unsafe {
+        clCreateFromGLTexture3D(
+            context,
+            flags,
+            texture_target,
+            miplevel,
+            texture,
+            &mut status,
+        )
+    };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -464,12 +474,12 @@ pub fn get_gl_context_info_khr(
     }
 }
 
-/// Create an event object linked to an OpenGL sync object.  
+/// Create an event object linked to an OpenGL sync object.
 /// Requires the `cl_khr_gl_event` extension
-/// Calls `clCreateEventFromGLsyncKHR`.  
+/// Calls `clCreateEventFromGLsyncKHR`.
 ///
 /// * `context` - a valid `OpenCL` context.
-/// * `sync` - the sync object in the GL share group associated with context.  
+/// * `sync` - the sync object in the GL share group associated with context.
 ///
 /// returns a Result containing the new `OpenCL` event
 /// or the error code from the `OpenCL` C API function.

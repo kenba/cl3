@@ -53,7 +53,7 @@ use std::fmt;
 use std::mem;
 use std::ptr;
 
-/// Wait for `OpenCL` events to complete.  
+/// Wait for `OpenCL` events to complete.
 /// Calls `clWaitForEvents`.
 ///
 /// * `events` - a slice of `OpenCL` events.
@@ -79,7 +79,7 @@ pub fn get_event_data(event: cl_event, param_name: cl_event_info) -> Result<Vec<
     get_vector(event, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` event.  
+/// Get specific information about an `OpenCL` event.
 /// Calls `clGetEventInfo` to get the desired information about the event.
 ///
 /// * `event` - the `OpenCL` event.
@@ -109,8 +109,8 @@ pub fn get_event_info(event: cl_event, param_name: cl_event_info) -> Result<Info
     }
 }
 
-/// Create an `OpenCL` user event object.  
-/// Calls `clCreateUserEvent` to create an `OpenCL` event.  
+/// Create an `OpenCL` user event object.
+/// Calls `clCreateUserEvent` to create an `OpenCL` event.
 ///
 /// * `context` - a valid `OpenCL` context.
 ///
@@ -127,7 +127,7 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
     }
 }
 
-/// Retain an `OpenCL` event.  
+/// Retain an `OpenCL` event.
 /// Calls clRetainEvent to increment the event reference count.
 ///
 /// * `event` - the `OpenCL` event.
@@ -138,8 +138,8 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
-pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
-    let status: cl_int = clRetainEvent(event);
+pub fn retain_event(event: cl_event) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clRetainEvent(event) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -147,7 +147,7 @@ pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` event.  
+/// Release an `OpenCL` event.
 /// Calls `clReleaseEvent` to decrement the event reference count.
 ///
 /// * `event` - the `OpenCL` event.
@@ -158,8 +158,8 @@ pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
-pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseEvent(event);
+pub fn release_event(event: cl_event) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clReleaseEvent(event) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -167,7 +167,7 @@ pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
     }
 }
 
-/// Set the execution status of a user event object.  
+/// Set the execution status of a user event object.
 /// Calls `clSetUserEventStatus` to set the execution status.
 ///
 /// * `event` - the `OpenCL` event.
@@ -185,7 +185,7 @@ pub fn set_user_event_status(event: cl_event, execution_status: cl_int) -> Resul
 }
 
 /// Register a user callback function for a specific command execution status,
-/// Calls `clSetEventCallback` to register a callback function.  
+/// Calls `clSetEventCallback` to register a callback function.
 ///
 /// * `event` - the `OpenCL` event.
 /// * `pfn_notify` - function pointer to the callback function.
@@ -227,7 +227,7 @@ pub fn get_event_profiling_data(
 }
 
 /// Get profiling information for a command associated with an event when
-/// profiling is enabled.  
+/// profiling is enabled.
 /// Calls clGetEventProfilingInfo to get the desired information.
 ///
 /// * `event` - the `OpenCL` event.

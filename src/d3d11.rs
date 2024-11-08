@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! FFI bindings for `cl_d3d11.h`  
-//! `cl_d3d11.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 11.  
+//! FFI bindings for `cl_d3d11.h`
+//! `cl_d3d11.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 11.
 //! `OpenCL` extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
 #![allow(clippy::missing_safety_doc)]
@@ -29,37 +29,41 @@ use libc::c_void;
 use std::ptr;
 
 #[cfg(feature = "cl_khr_d3d11_sharing")]
-pub unsafe fn get_supported_d3d11_texture_formats_intel(
+pub fn get_supported_d3d11_texture_formats_intel(
     context: cl_context,
     flags: cl_mem_flags,
     image_type: cl_mem_object_type,
     plane: cl_uint,
 ) -> Result<Vec<cl_uint>, cl_int> {
     let mut count: cl_uint = 0;
-    let status: cl_int = clGetSupportedD3D11TextureFormatsINTEL(
-        context,
-        flags,
-        image_type,
-        plane,
-        0,
-        ptr::null_mut(),
-        &mut count,
-    );
+    let status: cl_int = unsafe {
+        clGetSupportedD3D11TextureFormatsINTEL(
+            context,
+            flags,
+            image_type,
+            plane,
+            0,
+            ptr::null_mut(),
+            &mut count,
+        )
+    };
     if CL_SUCCESS != status {
         Err(status)
     } else if 0 < count {
         // Get the d3d11_formats.
         let len = count as usize;
         let mut ids: Vec<cl_uint> = Vec::with_capacity(len);
-        let status: cl_int = clGetSupportedD3D11TextureFormatsINTEL(
-            context,
-            flags,
-            image_type,
-            plane,
-            count,
-            ids.as_mut_ptr(),
-            ptr::null_mut(),
-        );
+        let status: cl_int = unsafe {
+            clGetSupportedD3D11TextureFormatsINTEL(
+                context,
+                flags,
+                image_type,
+                plane,
+                count,
+                ids.as_mut_ptr(),
+                ptr::null_mut(),
+            )
+        };
         if CL_SUCCESS == status {
             Ok(ids)
         } else {

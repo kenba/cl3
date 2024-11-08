@@ -123,7 +123,7 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Get the list of available devices of the given type on a platform.  
+/// Get the list of available devices of the given type on a platform.
 /// Calls clGetDeviceIDs to get the available device ids on the platform.
 ///  # Examples
 /// ```
@@ -194,7 +194,7 @@ pub fn get_device_data(
     get_vector(device, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` device.  
+/// Get specific information about an `OpenCL` device.
 /// Calls clGetDeviceInfo to get the desired information about the device.
 ///  # Examples
 /// ```
@@ -620,7 +620,7 @@ pub fn create_sub_devices(
     }
 }
 
-/// Retain an `OpenCL` device.  
+/// Retain an `OpenCL` device.
 /// Calls `clRetainDevice` to increment the device reference count
 /// if device is a valid sub-device created by a call to clCreateSubDevices.
 ///
@@ -633,8 +633,8 @@ pub fn create_sub_devices(
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = clRetainDevice(device);
+pub fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clRetainDevice(device) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -642,7 +642,7 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` device.  
+/// Release an `OpenCL` device.
 /// Calls `clReleaseDevice` to decrement the device reference count
 /// if device is a valid sub-device created by a call to clCreateSubDevices.
 ///
@@ -655,8 +655,8 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseDevice(device);
+pub fn release_device(device: cl_device_id) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clReleaseDevice(device) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -664,8 +664,8 @@ pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-/// Replace the default command queue on an `OpenCL` device.  
-/// Calls `clSetDefaultDeviceCommandQueue` to replace the default command queue  
+/// Replace the default command queue on an `OpenCL` device.
+/// Calls `clSetDefaultDeviceCommandQueue` to replace the default command queue
 /// `CL_VERSION_2_1`
 ///
 /// * `context` - the `OpenCL` context used to create `command_queue`.
@@ -689,8 +689,8 @@ pub fn set_default_device_command_queue(
     }
 }
 
-/// Query device and host timestamps.  
-/// Calls `clGetDeviceAndHostTimer`  
+/// Query device and host timestamps.
+/// Calls `clGetDeviceAndHostTimer`
 /// `CL_VERSION_2_1`
 ///
 /// * `device` - a valid `OpenCL` device.
@@ -711,8 +711,8 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
     }
 }
 
-/// The current value of the host clock as seen by device.  
-/// Calls `clGetHostTimer`  
+/// The current value of the host clock as seen by device.
+/// Calls `clGetHostTimer`
 /// `CL_VERSION_2_1`
 ///
 /// * `device` - a valid `OpenCL` `device`.
@@ -1974,7 +1974,7 @@ mod tests {
             assert!(0 < sub_devices.len());
 
             for device in sub_devices {
-                unsafe { release_device(device).unwrap() };
+                release_device(device).unwrap();
             }
         } else {
             println!("OpenCL device capable of sub division not found");

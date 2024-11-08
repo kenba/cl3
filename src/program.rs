@@ -55,8 +55,8 @@ use std::ptr;
 pub const CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT: cl_program_info = 0x116A;
 pub const CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: cl_program_info = 0x116B;
 
-/// Create an `OpenCL` program object for a context and load source code into that object.  
-/// Calls `clCreateProgramWithSource` to create an `OpenCL` program object.  
+/// Create an `OpenCL` program object for a context and load source code into that object.
+/// Calls `clCreateProgramWithSource` to create an `OpenCL` program object.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `sources` - an array of slices of source code strings.
@@ -88,8 +88,8 @@ pub fn create_program_with_source(
     }
 }
 
-/// Create an `OpenCL` program object for a context and load binary bits into that object.  
-/// Calls `clCreateProgramWithBinary` to create an `OpenCL` program object.  
+/// Create an `OpenCL` program object for a context and load binary bits into that object.
+/// Calls `clCreateProgramWithBinary` to create an `OpenCL` program object.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `devices` - a slice of devices that are in context.
@@ -102,7 +102,7 @@ pub fn create_program_with_source(
 ///
 /// This is unsafe when a device is not a member of context.
 #[allow(clippy::cast_possible_truncation)]
-pub unsafe fn create_program_with_binary(
+pub fn create_program_with_binary(
     context: cl_context,
     devices: &[cl_device_id],
     binaries: &[&[u8]],
@@ -111,16 +111,17 @@ pub unsafe fn create_program_with_binary(
     let lengths: Vec<size_t> = binaries.iter().map(|bin| bin.len()).collect();
     let mut binary_status: Vec<cl_int> = Vec::with_capacity(binaries_length);
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program: cl_program = clCreateProgramWithBinary(
-        context,
-        devices.len() as cl_uint,
-        devices.as_ptr(),
-        lengths.as_ptr(),
-        binaries.as_ptr().cast::<*const c_uchar>(),
-        binary_status.as_mut_ptr(),
-        &mut status,
-    );
-    binary_status.set_len(binaries_length);
+    let program: cl_program = unsafe {
+        clCreateProgramWithBinary(
+            context,
+            devices.len() as cl_uint,
+            devices.as_ptr(),
+            lengths.as_ptr(),
+            binaries.as_ptr().cast::<*const c_uchar>(),
+            binary_status.as_mut_ptr(),
+            &mut status,
+        )
+    };
     if CL_SUCCESS == status {
         Ok(program)
     } else {
@@ -129,8 +130,8 @@ pub unsafe fn create_program_with_binary(
 }
 
 /// Create an `OpenCL` program object for a context and  loads the information
-/// related to the built-in kernels into that object.  
-/// Calls `clCreateProgramWithBuiltInKernels` to create an `OpenCL` program object.  
+/// related to the built-in kernels into that object.
+/// Calls `clCreateProgramWithBuiltInKernels` to create an `OpenCL` program object.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `devices` - a slice of devices that are in context.
@@ -145,19 +146,21 @@ pub unsafe fn create_program_with_binary(
 #[cfg(feature = "CL_VERSION_1_2")]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
-pub unsafe fn create_program_with_builtin_kernels(
+pub fn create_program_with_builtin_kernels(
     context: cl_context,
     devices: &[cl_device_id],
     kernel_names: &CStr,
 ) -> Result<cl_program, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let program: cl_program = clCreateProgramWithBuiltInKernels(
-        context,
-        devices.len() as cl_uint,
-        devices.as_ptr(),
-        kernel_names.as_ptr(),
-        &mut status,
-    );
+    let program: cl_program = unsafe {
+        clCreateProgramWithBuiltInKernels(
+            context,
+            devices.len() as cl_uint,
+            devices.as_ptr(),
+            kernel_names.as_ptr(),
+            &mut status,
+        )
+    };
     if CL_SUCCESS == status {
         Ok(program)
     } else {
@@ -166,8 +169,8 @@ pub unsafe fn create_program_with_builtin_kernels(
 }
 
 /// Create an `OpenCL` program object for a context and load code in an intermediate
-/// language into that object.  
-/// Calls `clCreateProgramWithIL` to create an `OpenCL` program object.  
+/// language into that object.
+/// Calls `clCreateProgramWithIL` to create an `OpenCL` program object.
 /// `CL_VERSION_2_1`
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -194,7 +197,7 @@ pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_progr
     }
 }
 
-/// Retain an `OpenCL` program.  
+/// Retain an `OpenCL` program.
 /// Calls `clRetainProgram` to increment the program reference count.
 ///
 /// * `program` - the `OpenCL` program.
@@ -205,8 +208,8 @@ pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_progr
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
-pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
-    let status: cl_int = clRetainProgram(program);
+pub fn retain_program(program: cl_program) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clRetainProgram(program) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -214,7 +217,7 @@ pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` program.  
+/// Release an `OpenCL` program.
 /// Calls `clReleaseProgram` to decrement the program reference count.
 ///
 /// * `program` - the `OpenCL` program.
@@ -225,8 +228,8 @@ pub unsafe fn retain_program(program: cl_program) -> Result<(), cl_int> {
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
-pub unsafe fn release_program(program: cl_program) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseProgram(program);
+pub fn release_program(program: cl_program) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clReleaseProgram(program) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -234,8 +237,8 @@ pub unsafe fn release_program(program: cl_program) -> Result<(), cl_int> {
     }
 }
 
-/// Build (compile & link) a program executable.  
-/// Calls `clBuildProgram` to build an `OpenCL` program object.  
+/// Build (compile & link) a program executable.
+/// Calls `clBuildProgram` to build an `OpenCL` program object.
 ///
 /// * `program` - a valid `OpenCL` program.
 /// * `devices` - a slice of devices that are in context.
@@ -272,8 +275,8 @@ pub fn build_program(
 }
 
 /// Compile a program’s source for the devices the `OpenCL` context associated
-/// with the program.  
-/// Calls clCompileProgram to compile an `OpenCL` program object.  
+/// with the program.
+/// Calls clCompileProgram to compile an `OpenCL` program object.
 ///
 /// * `program` - a valid `OpenCL` program.
 /// * `devices` - a slice of devices that are in context.
@@ -334,8 +337,8 @@ pub fn compile_program(
 }
 
 /// Link a set of compiled program objects and libraries for the devices in the
-/// `OpenCL` context associated with the program.  
-/// Calls clLinkProgram to link an `OpenCL` program object.  
+/// `OpenCL` context associated with the program.
+/// Calls clLinkProgram to link an `OpenCL` program object.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `devices` - a slice of devices that are in context.
@@ -357,7 +360,7 @@ pub fn compile_program(
 #[cfg(feature = "CL_VERSION_1_2")]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
-pub unsafe fn link_program(
+pub fn link_program(
     context: cl_context,
     devices: &[cl_device_id],
     options: &CStr,
@@ -367,17 +370,19 @@ pub unsafe fn link_program(
 ) -> Result<cl_program, cl_int> {
     assert!(!input_programs.is_empty());
     let mut status: cl_int = CL_INVALID_VALUE;
-    let programme: cl_program = clLinkProgram(
-        context,
-        devices.len() as cl_uint,
-        devices.as_ptr(),
-        options.as_ptr(),
-        input_programs.len() as cl_uint,
-        input_programs.as_ptr(),
-        pfn_notify,
-        user_data,
-        &mut status,
-    );
+    let programme: cl_program = unsafe {
+        clLinkProgram(
+            context,
+            devices.len() as cl_uint,
+            devices.as_ptr(),
+            options.as_ptr(),
+            input_programs.len() as cl_uint,
+            input_programs.as_ptr(),
+            pfn_notify,
+            user_data,
+            &mut status,
+        )
+    };
     if CL_SUCCESS == status {
         Ok(programme)
     } else {
@@ -385,9 +390,9 @@ pub unsafe fn link_program(
     }
 }
 
-/// Set the value of a specialization constant.  
-/// Calls `clSetProgramSpecializationConstant`.  
-/// `CL_VERSION_2_2`  
+/// Set the value of a specialization constant.
+/// Calls `clSetProgramSpecializationConstant`.
+/// `CL_VERSION_2_2`
 ///
 /// * `program` - the program.
 /// * `spec_id` - the specialization constant whose value will be set.
@@ -402,14 +407,14 @@ pub unsafe fn link_program(
 /// This function is unsafe because `spec_size` and `spec_value` must be valid.
 #[cfg(feature = "CL_VERSION_2_2")]
 #[inline]
-pub unsafe fn set_program_specialization_constant(
+pub fn set_program_specialization_constant(
     program: cl_program,
     spec_id: cl_uint,
     spec_size: size_t,
     spec_value: *const c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int =
-        clSetProgramSpecializationConstant(program, spec_id, spec_size, spec_value);
+        unsafe { clSetProgramSpecializationConstant(program, spec_id, spec_size, spec_value) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -417,8 +422,8 @@ pub unsafe fn set_program_specialization_constant(
     }
 }
 
-/// Release the resources allocated by the `OpenCL` compiler for platform.  
-/// Calls clUnloadPlatformCompiler.  
+/// Release the resources allocated by the `OpenCL` compiler for platform.
+/// Calls clUnloadPlatformCompiler.
 ///
 /// * `platform` - the platform.
 ///
@@ -429,8 +434,8 @@ pub unsafe fn set_program_specialization_constant(
 /// This function is unsafe because the platform compiler is not valid after this call.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub unsafe fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), cl_int> {
-    let status: cl_int = clUnloadPlatformCompiler(platform);
+pub fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { clUnloadPlatformCompiler(platform) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -450,7 +455,7 @@ pub fn get_program_data(
     get_vector(program, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` program.  
+/// Get specific information about an `OpenCL` program.
 /// Calls clGetProgramInfo to get the desired information about the program.
 ///
 /// * `program` - the `OpenCL` program.
@@ -553,7 +558,7 @@ pub fn get_program_build_data(
     get_vector(program, device, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` program build.  
+/// Get specific information about an `OpenCL` program build.
 /// Calls clGetProgramBuildInfo to get the desired information about the program build.
 ///
 /// * `program` - the `OpenCL` program.
@@ -780,14 +785,12 @@ mod tests {
         };
 
         #[cfg(feature = "CL_VERSION_1_2")]
-        if let Err(e) = unsafe { unload_platform_compiler(platform_id) } {
+        if let Err(e) = unload_platform_compiler(platform_id) {
             println!("OpenCL error, clUnloadPlatformCompiler: {}", error_text(e));
         }
 
-        unsafe {
-            release_program(program).unwrap();
-            release_context(context).unwrap()
-        };
+        release_program(program).unwrap();
+        release_context(context).unwrap();
     }
 
     #[test]
@@ -843,21 +846,17 @@ mod tests {
         .unwrap();
 
         let programs = [program];
-        unsafe {
-            link_program(
-                context,
-                &device_ids,
-                &no_options,
-                &programs,
-                None,
-                ptr::null_mut(),
-            )
-            .unwrap()
-        };
+        link_program(
+            context,
+            &device_ids,
+            &no_options,
+            &programs,
+            None,
+            ptr::null_mut(),
+        )
+        .unwrap();
 
-        unsafe {
-            release_program(program).unwrap();
-            release_context(context).unwrap();
-        }
+        release_program(program).unwrap();
+        release_context(context).unwrap();
     }
 }
