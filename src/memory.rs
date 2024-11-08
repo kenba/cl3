@@ -43,14 +43,15 @@ use std::ptr;
 ///
 /// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[inline]
-pub unsafe fn create_buffer(
+pub fn create_buffer(
     context: cl_context,
     flags: cl_mem_flags,
     size: size_t,
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = cl_call!(clCreateBuffer(context, flags, size, host_ptr, &mut status));
+    let mem: cl_mem =
+        unsafe { cl_call!(clCreateBuffer(context, flags, size, host_ptr, &mut status)) };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -76,20 +77,22 @@ pub unsafe fn create_buffer(
 ///
 /// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[inline]
-pub unsafe fn create_sub_buffer(
+pub fn create_sub_buffer(
     buffer: cl_mem,
     flags: cl_mem_flags,
     buffer_create_type: cl_buffer_create_type,
     buffer_create_info: *const c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = cl_call!(clCreateSubBuffer(
-        buffer,
-        flags,
-        buffer_create_type,
-        buffer_create_info,
-        &mut status,
-    ));
+    let mem: cl_mem = unsafe {
+        cl_call!(clCreateSubBuffer(
+            buffer,
+            flags,
+            buffer_create_type,
+            buffer_create_info,
+            &mut status,
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -119,7 +122,7 @@ pub unsafe fn create_sub_buffer(
 /// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub unsafe fn create_image(
+pub fn create_image(
     context: cl_context,
     flags: cl_mem_flags,
     image_format: *const cl_image_format,
@@ -127,14 +130,16 @@ pub unsafe fn create_image(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = cl_call!(clCreateImage(
-        context,
-        flags,
-        image_format,
-        image_desc,
-        host_ptr,
-        &mut status,
-    ));
+    let mem: cl_mem = unsafe {
+        cl_call!(clCreateImage(
+            context,
+            flags,
+            image_format,
+            image_desc,
+            host_ptr,
+            &mut status,
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -162,7 +167,7 @@ pub unsafe fn create_image(
 /// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
-pub unsafe fn create_pipe(
+pub fn create_pipe(
     context: cl_context,
     flags: cl_mem_flags,
     pipe_packet_size: cl_uint,
@@ -170,14 +175,16 @@ pub unsafe fn create_pipe(
     // properties: *const cl_pipe_properties,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = cl_call!(clCreatePipe(
-        context,
-        flags,
-        pipe_packet_size,
-        pipe_max_packets,
-        ptr::null(),
-        &mut status,
-    ));
+    let mem: cl_mem = unsafe {
+        cl_call!(clCreatePipe(
+            context,
+            flags,
+            pipe_packet_size,
+            pipe_max_packets,
+            ptr::null(),
+            &mut status,
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -206,7 +213,7 @@ pub unsafe fn create_pipe(
 /// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[cfg(feature = "CL_VERSION_3_0")]
 #[inline]
-pub unsafe fn create_buffer_with_properties(
+pub fn create_buffer_with_properties(
     context: cl_context,
     properties: *const cl_mem_properties,
     flags: cl_mem_flags,
@@ -214,14 +221,16 @@ pub unsafe fn create_buffer_with_properties(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = cl_call!(clCreateBufferWithProperties(
-        context,
-        properties,
-        flags,
-        size,
-        host_ptr,
-        &mut status
-    ));
+    let mem: cl_mem = unsafe {
+        cl_call!(clCreateBufferWithProperties(
+            context,
+            properties,
+            flags,
+            size,
+            host_ptr,
+            &mut status
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -253,7 +262,7 @@ pub unsafe fn create_buffer_with_properties(
 /// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[inline]
 #[cfg(feature = "CL_VERSION_3_0")]
-pub unsafe fn create_image_with_properties(
+pub fn create_image_with_properties(
     context: cl_context,
     properties: *const cl_mem_properties,
     flags: cl_mem_flags,
@@ -262,15 +271,17 @@ pub unsafe fn create_image_with_properties(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = cl_call!(clCreateImageWithProperties(
-        context,
-        properties,
-        flags,
-        image_format,
-        image_desc,
-        host_ptr,
-        &mut status,
-    ));
+    let mem: cl_mem = unsafe {
+        cl_call!(clCreateImageWithProperties(
+            context,
+            properties,
+            flags,
+            image_format,
+            image_desc,
+            host_ptr,
+            &mut status,
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -289,8 +300,8 @@ pub unsafe fn create_image_with_properties(
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
-pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
-    let status: cl_int = cl_call!(clRetainMemObject(memobj));
+pub fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { cl_call!(clRetainMemObject(memobj)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -309,8 +320,8 @@ pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
-pub unsafe fn release_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
-    let status: cl_int = cl_call!(clReleaseMemObject(memobj));
+pub fn release_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { cl_call!(clReleaseMemObject(memobj)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -540,16 +551,18 @@ pub fn get_pipe_info(pipe: cl_mem, param_name: cl_pipe_info) -> Result<InfoType,
 ///
 /// This function is unsafe because `user_data` must be valid.
 #[inline]
-pub unsafe fn set_mem_object_destructor_callback(
+pub fn set_mem_object_destructor_callback(
     memobj: cl_mem,
     pfn_notify: extern "C" fn(cl_mem, *mut c_void),
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = cl_call!(clSetMemObjectDestructorCallback(
-        memobj,
-        Some(pfn_notify),
-        user_data
-    ));
+    let status: cl_int = unsafe {
+        cl_call!(clSetMemObjectDestructorCallback(
+            memobj,
+            Some(pfn_notify),
+            user_data
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -577,13 +590,13 @@ pub unsafe fn set_mem_object_destructor_callback(
 /// This function is unsafe because `flags` must be valid.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
-pub unsafe fn svm_alloc(
+pub fn svm_alloc(
     context: cl_context,
     flags: cl_svm_mem_flags,
     size: size_t,
     alignment: cl_uint,
 ) -> Result<*mut c_void, cl_int> {
-    let ptr = cl_call!(clSVMAlloc(context, flags, size, alignment));
+    let ptr = unsafe { cl_call!(clSVMAlloc(context, flags, size, alignment)) };
     if ptr.is_null() {
         Err(CL_INVALID_VALUE)
     } else {
@@ -603,6 +616,6 @@ pub unsafe fn svm_alloc(
 /// This function is unsafe because `svm_pointer` is no longer valid after it is called.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
-pub unsafe fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
-    cl_call!(clSVMFree(context, svm_pointer));
+pub fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
+    unsafe { cl_call!(clSVMFree(context, svm_pointer)) };
 }

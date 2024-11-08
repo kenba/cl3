@@ -112,8 +112,8 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
-pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
-    let status: cl_int = cl_call!(clRetainEvent(event));
+pub fn retain_event(event: cl_event) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { cl_call!(clRetainEvent(event)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -132,8 +132,8 @@ pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
-pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
-    let status: cl_int = cl_call!(clReleaseEvent(event));
+pub fn release_event(event: cl_event) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { cl_call!(clReleaseEvent(event)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {

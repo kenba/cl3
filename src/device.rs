@@ -546,8 +546,8 @@ pub fn create_sub_devices(
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = cl_call!(clRetainDevice(device));
+pub fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { cl_call!(clRetainDevice(device)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -568,8 +568,8 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
-pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = cl_call!(clReleaseDevice(device));
+pub fn release_device(device: cl_device_id) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { cl_call!(clReleaseDevice(device)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {

@@ -38,7 +38,7 @@ use std::ptr;
 /// This is unsafe because `cl_context` is a raw pointer.
 #[cfg(feature = "cl_khr_egl_image")]
 #[inline]
-pub unsafe fn create_from_egl_image(
+pub fn create_from_egl_image(
     context: cl_context,
     display: CLeglDisplayKHR,
     image: CLeglImageKHR,
@@ -46,14 +46,16 @@ pub unsafe fn create_from_egl_image(
     properties: *const cl_egl_image_properties_khr,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = cl_call!(cl_egl::clCreateFromEGLImageKHR(
-        context,
-        display,
-        image,
-        flags,
-        properties,
-        &mut status
-    ));
+    let mem = unsafe {
+        cl_call!(cl_egl::clCreateFromEGLImageKHR(
+            context,
+            display,
+            image,
+            flags,
+            properties,
+            &mut status
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -79,7 +81,7 @@ pub unsafe fn create_from_egl_image(
 /// This is unsafe because `command_queue` is a raw pointer.
 #[cfg(feature = "cl_khr_egl_image")]
 #[inline]
-pub unsafe fn enqueue_acquire_egl_objects(
+pub fn enqueue_acquire_egl_objects(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -87,14 +89,16 @@ pub unsafe fn enqueue_acquire_egl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = cl_call!(cl_egl::clEnqueueAcquireEGLObjectsKHR(
-        command_queue,
-        num_objects,
-        mem_objects,
-        num_events_in_wait_list,
-        event_wait_list,
-        &mut event,
-    ));
+    let status: cl_int = unsafe {
+        cl_call!(cl_egl::clEnqueueAcquireEGLObjectsKHR(
+            command_queue,
+            num_objects,
+            mem_objects,
+            num_events_in_wait_list,
+            event_wait_list,
+            &mut event,
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -120,7 +124,7 @@ pub unsafe fn enqueue_acquire_egl_objects(
 /// This is unsafe because `command_queue` is a raw pointer.
 #[cfg(feature = "cl_khr_egl_image")]
 #[inline]
-pub unsafe fn enqueue_release_egl_objects(
+pub fn enqueue_release_egl_objects(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
     mem_objects: *const cl_mem,
@@ -128,14 +132,16 @@ pub unsafe fn enqueue_release_egl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = cl_call!(cl_egl::clEnqueueReleaseEGLObjectsKHR(
-        command_queue,
-        num_objects,
-        mem_objects,
-        num_events_in_wait_list,
-        event_wait_list,
-        &mut event,
-    ));
+    let status: cl_int = unsafe {
+        cl_call!(cl_egl::clEnqueueReleaseEGLObjectsKHR(
+            command_queue,
+            num_objects,
+            mem_objects,
+            num_events_in_wait_list,
+            event_wait_list,
+            &mut event,
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -159,18 +165,20 @@ pub unsafe fn enqueue_release_egl_objects(
 /// This is unsafe because context is a raw pointer.
 #[cfg(feature = "cl_khr_egl_event")]
 #[inline]
-pub unsafe fn create_event_from_egl_sync_khr(
+pub fn create_event_from_egl_sync_khr(
     context: cl_context,
     sync: CLeglSyncKHR,
     display: CLeglDisplayKHR,
 ) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let event: cl_event = cl_call!(cl_egl::clCreateEventFromEGLSyncKHR(
-        context,
-        sync,
-        display,
-        &mut status
-    ));
+    let event: cl_event = unsafe {
+        cl_call!(cl_egl::clCreateEventFromEGLSyncKHR(
+            context,
+            sync,
+            display,
+            &mut status
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(event)
     } else {

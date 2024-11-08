@@ -109,8 +109,8 @@ pub fn create_context_from_type(
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
-pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
-    let status: cl_int = cl_call!(clRetainContext(context));
+pub fn retain_context(context: cl_context) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { cl_call!(clRetainContext(context)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -129,8 +129,8 @@ pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
-pub unsafe fn release_context(context: cl_context) -> Result<(), cl_int> {
-    let status: cl_int = cl_call!(clReleaseContext(context));
+pub fn release_context(context: cl_context) -> Result<(), cl_int> {
+    let status: cl_int = unsafe { cl_call!(clReleaseContext(context)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
