@@ -57,8 +57,8 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an `OpenCL` host or device command-queue on a specific device.  
-/// Calls `clCreateCommandQueue` to create an `OpenCL` context.  
+/// Create an `OpenCL` host or device command-queue on a specific device.
+/// Calls `clCreateCommandQueue` to create an `OpenCL` context.
 /// Deprecated in `CL_VERSION_2_0` by `create_command_queue_with_properties`.
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -99,8 +99,8 @@ pub unsafe fn create_command_queue(
     }
 }
 
-/// Create an `OpenCL` host or device command-queue on a specific device.  
-/// Calls clCreateCommandQueueWithProperties to create an `OpenCL` context.  
+/// Create an `OpenCL` host or device command-queue on a specific device.
+/// Calls clCreateCommandQueueWithProperties to create an `OpenCL` context.
 /// `CL_VERSION_2_0` onwards.
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -131,7 +131,7 @@ pub unsafe fn create_command_queue_with_properties(
     }
 }
 
-/// Retain an `OpenCL` command-queue.  
+/// Retain an `OpenCL` command-queue.
 /// Calls clRetainCommandQueue to increment the command-queue reference count.
 ///
 /// * `command_queue` - the `OpenCL` command-queue.
@@ -151,7 +151,7 @@ pub unsafe fn retain_command_queue(command_queue: cl_command_queue) -> Result<()
     }
 }
 
-/// Release an `OpenCL` command-queue.  
+/// Release an `OpenCL` command-queue.
 /// Calls clReleaseCommandQueue to decrement the command-queue reference count.
 ///
 ///  * `command_queue` - the `OpenCL` command-queue.
@@ -183,7 +183,7 @@ pub fn get_command_queue_data(
     get_vector(command_queue, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` command-queue.  
+/// Get specific information about an `OpenCL` command-queue.
 /// Calls `clGetCommandQueueInfo` to get the desired information about the command-queue.
 ///
 /// * `command_queue` - the `OpenCL` command-queue.
@@ -235,15 +235,15 @@ pub fn get_command_queue_info(
     }
 }
 
-/// Flush commands to a device.  
-/// Calls clFlush to flush an `OpenCL` command-queue.  
+/// Flush commands to a device.
+/// Calls clFlush to flush an `OpenCL` command-queue.
 ///
 /// * `command_queue` - the `OpenCL` command-queue.
 ///
 /// returns an empty Result or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn flush(command_queue: cl_command_queue) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clFlush(command_queue) };
+    let status: cl_int = unsafe { cl_call!(clFlush(command_queue)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -251,7 +251,7 @@ pub fn flush(command_queue: cl_command_queue) -> Result<(), cl_int> {
     }
 }
 
-/// Wait for completion of commands on a device.  
+/// Wait for completion of commands on a device.
 /// Calls clFinish and blocks until all previously queued commands have completed.
 ///
 /// * `command_queue` - the `OpenCL` command-queue.
@@ -259,7 +259,7 @@ pub fn flush(command_queue: cl_command_queue) -> Result<(), cl_int> {
 /// returns an empty Result or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn finish(command_queue: cl_command_queue) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clFinish(command_queue) };
+    let status: cl_int = unsafe { cl_call!(clFinish(command_queue)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -695,7 +695,7 @@ pub unsafe fn enqueue_copy_buffer_to_image(
     }
 }
 
-/// Note: returns event NOT pointer for consistency with other enqueue functions.  
+/// Note: returns event NOT pointer for consistency with other enqueue functions.
 /// The buffer pointer is returned in the `buffer_ptr` mutable reference.
 #[inline]
 pub unsafe fn enqueue_map_buffer(
@@ -730,7 +730,7 @@ pub unsafe fn enqueue_map_buffer(
     }
 }
 
-/// Note: returns event NOT pointer for consistency with other enqueue functions.  
+/// Note: returns event NOT pointer for consistency with other enqueue functions.
 /// The image pointer is returned in the `image_ptr` mutable reference.
 #[inline]
 pub unsafe fn enqueue_map_image(

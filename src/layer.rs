@@ -26,16 +26,16 @@ use std::ptr;
 /// Calls `clGetLayerInfo`.
 pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
     let mut size: size_t = 0;
-    let status = unsafe { clGetLayerInfo(param_name, 0, ptr::null_mut(), &mut size) };
+    let status = unsafe { cl_call!(clGetLayerInfo(param_name, 0, ptr::null_mut(), &mut size)) };
     if CL_SUCCESS == status {
         let mut data: Vec<u8> = Vec::with_capacity(size);
         let status = unsafe {
-            clGetLayerInfo(
+            cl_call!(clGetLayerInfo(
                 param_name,
                 size,
                 data.as_mut_ptr().cast::<c_void>(),
                 ptr::null_mut(),
-            )
+            ))
         };
         if CL_SUCCESS == status {
             Ok(data)

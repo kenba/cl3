@@ -37,7 +37,7 @@ use libc::{c_char, c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an `OpenCL` context.  
+/// Create an `OpenCL` context.
 /// Calls clCreateContext to create an `OpenCL` context.
 ///
 /// * `devices` - a slice of unique devices for an `OpenCL` platform.
@@ -58,14 +58,14 @@ pub fn create_context(
 ) -> Result<cl_context, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let context = unsafe {
-        clCreateContext(
+        cl_call!(clCreateContext(
             properties,
             devices.len() as cl_uint,
             devices.as_ptr(),
             pfn_notify,
             user_data,
             &mut status,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(context)
@@ -74,7 +74,7 @@ pub fn create_context(
     }
 }
 
-/// Create an `OpenCL` context from a specific device type.  
+/// Create an `OpenCL` context from a specific device type.
 /// Calls `clCreateContextFromType` to create an `OpenCL` context.
 ///
 /// * `device_type` - the type of `OpenCL` device, see:
@@ -95,7 +95,13 @@ pub fn create_context_from_type(
 ) -> Result<cl_context, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let context = unsafe {
-        clCreateContextFromType(properties, device_type, pfn_notify, user_data, &mut status)
+        cl_call!(clCreateContextFromType(
+            properties,
+            device_type,
+            pfn_notify,
+            user_data,
+            &mut status
+        ))
     };
     if CL_SUCCESS == status {
         Ok(context)
@@ -104,7 +110,7 @@ pub fn create_context_from_type(
     }
 }
 
-/// Retain an `OpenCL` context.  
+/// Retain an `OpenCL` context.
 /// Calls clRetainContext to increment the context reference count.
 ///
 /// * `context` - the `cl_context` of the `OpenCL` context.
@@ -124,7 +130,7 @@ pub unsafe fn retain_context(context: cl_context) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` context.  
+/// Release an `OpenCL` context.
 /// Calls clReleaseContext to decrement the context reference count.
 ///
 /// * `context` - the `cl_context` of the `OpenCL` context.
@@ -156,7 +162,7 @@ pub fn get_context_data(
     get_vector(context, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` context.  
+/// Get specific information about an `OpenCL` context.
 /// Calls `clGetContextInfo` to get the desired information about the context.
 ///
 /// * `context` - the `cl_context` of the `OpenCL` context.
@@ -187,8 +193,8 @@ pub fn get_context_info(
     }
 }
 
-/// Register a callback function with a context that is called when the `context` is destroyed.  
-/// Calls `clSetContextDestructorCallback`.  
+/// Register a callback function with a context that is called when the `context` is destroyed.
+/// Calls `clSetContextDestructorCallback`.
 /// `CL_VERSION_3_0`
 ///
 /// * `context` - the `cl_context` of the `OpenCL` context.
@@ -203,7 +209,11 @@ pub fn set_context_destructor_callback(
     pfn_notify: Option<unsafe extern "C" fn(cl_context, *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clSetContextDestructorCallback(context, pfn_notify, user_data) };
+    let status: cl_int = unsafe {
+        cl_call!(clSetContextDestructorCallback(
+            context, pfn_notify, user_data
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(())
     } else {

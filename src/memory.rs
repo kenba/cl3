@@ -61,8 +61,8 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an `OpenCL` buffer object for a `context`.  
-/// Calls `clCreateBuffer` to create an `OpenCL` buffer object.  
+/// Create an `OpenCL` buffer object for a `context`.
+/// Calls `clCreateBuffer` to create an `OpenCL` buffer object.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information
@@ -94,8 +94,8 @@ pub unsafe fn create_buffer(
     }
 }
 
-/// Create an new `OpenCL` buffer object from an existing buffer object.  
-/// Calls `clCreateSubBuffer` to create an `OpenCL` sub-buffer object.  
+/// Create an new `OpenCL` buffer object from an existing buffer object.
+/// Calls `clCreateSubBuffer` to create an `OpenCL` sub-buffer object.
 ///
 /// * `buffer` - a valid `OpenCL` buffer.
 /// * `flags` - a bit-field used to specify allocation and usage information
@@ -133,8 +133,8 @@ pub unsafe fn create_sub_buffer(
     }
 }
 
-/// Create an `OpenCL` image object for a `context`.  
-/// Calls `clCreateImage` to create an `OpenCL` image object.  
+/// Create an `OpenCL` image object for a `context`.
+/// Calls `clCreateImage` to create an `OpenCL` image object.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information
@@ -178,8 +178,8 @@ pub unsafe fn create_image(
     }
 }
 
-/// Create an `OpenCL` pipe object for a context.  
-/// Calls `clCreatePipe` to create an `OpenCL` pipe object.  
+/// Create an `OpenCL` pipe object for a context.
+/// Calls `clCreatePipe` to create an `OpenCL` pipe object.
 /// `CL_VERSION_2_0`
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -221,8 +221,8 @@ pub unsafe fn create_pipe(
     }
 }
 
-/// Create an `OpenCL` buffer object for a context.  
-/// Calls `clCreateBufferWithProperties` to create an `OpenCL` buffer object.  
+/// Create an `OpenCL` buffer object for a context.
+/// Calls `clCreateBufferWithProperties` to create an `OpenCL` buffer object.
 /// `CL_VERSION_3_0`
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -259,8 +259,8 @@ pub unsafe fn create_buffer_with_properties(
     }
 }
 
-/// Create an `OpenCL` image object for a context.  
-/// Calls `clCreateImage` to create an `OpenCL` image object.  
+/// Create an `OpenCL` image object for a context.
+/// Calls `clCreateImage` to create an `OpenCL` image object.
 /// `CL_VERSION_3_0`
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -308,7 +308,7 @@ pub unsafe fn create_image_with_properties(
     }
 }
 
-/// Retain an `OpenCL` memory object.  
+/// Retain an `OpenCL` memory object.
 /// Calls `clRetainMemObject` to increment the memory object reference count.
 ///
 /// * `memobj` - the `OpenCL` memory object.
@@ -328,7 +328,7 @@ pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` memory object.  
+/// Release an `OpenCL` memory object.
 /// Calls `clReleaseMemObject` to decrement the memory object reference count.
 ///
 /// * `memobj` - the `OpenCL` memory object.
@@ -355,7 +355,14 @@ fn count_supported_image_formats(
 ) -> Result<cl_uint, cl_int> {
     let mut count: cl_uint = 0;
     let status: cl_int = unsafe {
-        clGetSupportedImageFormats(context, flags, image_type, 0, ptr::null_mut(), &mut count)
+        cl_call!(clGetSupportedImageFormats(
+            context,
+            flags,
+            image_type,
+            0,
+            ptr::null_mut(),
+            &mut count
+        ))
     };
     if CL_SUCCESS == status {
         Ok(count)
@@ -365,7 +372,7 @@ fn count_supported_image_formats(
 }
 
 /// Get the list of image formats supported by an `OpenCL` implementation for a
-/// specified context, image type, and allocation information.  
+/// specified context, image type, and allocation information.
 /// Calls `clGetSupportedImageFormats` to get the desired information about the program.
 ///
 /// * `context` - a valid `OpenCL` context on which the image object(s) will be created.
@@ -411,7 +418,7 @@ pub fn get_mem_object_data(memobj: cl_mem, param_name: cl_mem_info) -> Result<Ve
     get_vector(memobj, param_name, size)
 }
 
-/// Get information common to all `OpenCL` memory objects (buffer and image objects).  
+/// Get information common to all `OpenCL` memory objects (buffer and image objects).
 /// Calls `clGetMemObjectInfo` to get the desired information about the memory objects.
 ///
 /// * `memobj` - the `OpenCL` memory objects.
@@ -467,7 +474,7 @@ pub fn get_image_data(image: cl_mem, param_name: cl_image_info) -> Result<Vec<u8
     get_vector(image, param_name, size)
 }
 
-/// Get information specific to an `OpenCL` image object.  
+/// Get information specific to an `OpenCL` image object.
 /// Calls `clGetImageInfo` to get the desired information about the image object.
 ///
 /// * `image` - the `OpenCL` image object.
@@ -520,7 +527,7 @@ pub fn get_pipe_data(pipe: cl_mem, param_name: cl_pipe_info) -> Result<Vec<u8>, 
     get_vector(pipe, param_name, size)
 }
 
-/// Get information specific to an `OpenCL` pipe object.  
+/// Get information specific to an `OpenCL` pipe object.
 /// Calls `clGetPipeInfo` to get the desired information about the pipe object.
 /// `CL_VERSION_2_0`
 ///
@@ -550,8 +557,8 @@ pub fn get_pipe_info(pipe: cl_mem, param_name: cl_pipe_info) -> Result<InfoType,
 }
 
 /// Register a callback function with an `OpenCL` memory object that is called when the
-/// memory object is destroyed.  
-/// Calls `clSetMemObjectDestructorCallback`.  
+/// memory object is destroyed.
+/// Calls `clSetMemObjectDestructorCallback`.
 ///
 /// * `memobj` - the `OpenCL` memory object.
 /// * `pfn_notify` - callback function to be registered by the application.
@@ -577,8 +584,8 @@ pub unsafe fn set_mem_object_destructor_callback(
 }
 
 /// Allocate a shared virtual memory (SVM) buffer that can be shared by the
-/// host and all devices in an `OpenCL` context.  
-/// Calls `clSVMAlloc`.  
+/// host and all devices in an `OpenCL` context.
+/// Calls `clSVMAlloc`.
 /// `CL_VERSION_2_0`
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -610,8 +617,8 @@ pub unsafe fn svm_alloc(
     }
 }
 
-/// Free a shared virtual memory (SVM) buffer allocated using `clSVMAlloc`.  
-/// Calls `clSVMFree`.  
+/// Free a shared virtual memory (SVM) buffer allocated using `clSVMAlloc`.
+/// Calls `clSVMFree`.
 /// `CL_VERSION_2_0`
 ///
 /// * `context` - the valid `OpenCL` context used to create the SVM buffer.

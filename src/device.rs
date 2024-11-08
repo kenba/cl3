@@ -123,7 +123,7 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Get the list of available devices of the given type on a platform.  
+/// Get the list of available devices of the given type on a platform.
 /// Calls clGetDeviceIDs to get the available device ids on the platform.
 ///  # Examples
 /// ```
@@ -153,7 +153,7 @@ pub fn get_device_ids(
     // Get the number of devices of device_type
     let mut count: cl_uint = 0;
     let mut status =
-        unsafe { clGetDeviceIDs(platform, device_type, 0, ptr::null_mut(), &mut count) };
+        unsafe { cl_call!(clGetDeviceIDs(platform, device_type, 0, ptr::null_mut(), &mut count)) };
 
     if (CL_SUCCESS != status) && (CL_DEVICE_NOT_FOUND != status) {
         Err(status)
@@ -194,7 +194,7 @@ pub fn get_device_data(
     get_vector(device, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` device.  
+/// Get specific information about an `OpenCL` device.
 /// Calls clGetDeviceInfo to get the desired information about the device.
 ///  # Examples
 /// ```
@@ -441,12 +441,12 @@ pub fn get_device_info(
         => {
             let mut value: [u8; CL_UUID_SIZE_KHR] = [0; CL_UUID_SIZE_KHR];
             let status = unsafe {
-                clGetDeviceInfo(
+                cl_call!(clGetDeviceInfo(
                     device,
                     param_name,
                     CL_UUID_SIZE_KHR,
                     value.as_mut_ptr().cast::<c_void>(),
-                     ptr::null_mut(),)
+                     ptr::null_mut(),))
                     };
             if CL_SUCCESS == status {
                 Ok(InfoType::Uuid(value))
@@ -459,12 +459,12 @@ pub fn get_device_info(
         => {
             let mut value: [u8; CL_LUID_SIZE_KHR] = [0; CL_LUID_SIZE_KHR];
             let status = unsafe {
-                clGetDeviceInfo(
+                cl_call!(clGetDeviceInfo(
                     device,
                     param_name,
                     CL_LUID_SIZE_KHR,
                     value.as_mut_ptr().cast::<c_void>(),
-                    ptr::null_mut(),)
+                    ptr::null_mut(),))
                 };
             if CL_SUCCESS == status {
                 Ok(InfoType::Luid(value))
@@ -566,13 +566,13 @@ fn count_sub_devices(
 ) -> Result<cl_uint, cl_int> {
     let mut count: cl_uint = 0;
     let status: cl_int = unsafe {
-        clCreateSubDevices(
+        cl_call!(clCreateSubDevices(
             in_device,
             properties.as_ptr(),
             0,
             ptr::null_mut(),
             &mut count,
-        )
+      )  )
     };
     if CL_SUCCESS == status {
         Ok(count)
@@ -620,7 +620,7 @@ pub fn create_sub_devices(
     }
 }
 
-/// Retain an `OpenCL` device.  
+/// Retain an `OpenCL` device.
 /// Calls `clRetainDevice` to increment the device reference count
 /// if device is a valid sub-device created by a call to clCreateSubDevices.
 ///
@@ -642,7 +642,7 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` device.  
+/// Release an `OpenCL` device.
 /// Calls `clReleaseDevice` to decrement the device reference count
 /// if device is a valid sub-device created by a call to clCreateSubDevices.
 ///
@@ -664,8 +664,8 @@ pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-/// Replace the default command queue on an `OpenCL` device.  
-/// Calls `clSetDefaultDeviceCommandQueue` to replace the default command queue  
+/// Replace the default command queue on an `OpenCL` device.
+/// Calls `clSetDefaultDeviceCommandQueue` to replace the default command queue
 /// `CL_VERSION_2_1`
 ///
 /// * `context` - the `OpenCL` context used to create `command_queue`.
@@ -681,7 +681,7 @@ pub fn set_default_device_command_queue(
     device: cl_device_id,
     command_queue: cl_command_queue,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clSetDefaultDeviceCommandQueue(context, device, command_queue) };
+    let status: cl_int = unsafe { cl_call!(clSetDefaultDeviceCommandQueue(context, device, command_queue)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -689,8 +689,8 @@ pub fn set_default_device_command_queue(
     }
 }
 
-/// Query device and host timestamps.  
-/// Calls `clGetDeviceAndHostTimer`  
+/// Query device and host timestamps.
+/// Calls `clGetDeviceAndHostTimer`
 /// `CL_VERSION_2_1`
 ///
 /// * `device` - a valid `OpenCL` device.
@@ -703,7 +703,7 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
     let mut device_timestamp: cl_ulong = 0;
     let mut host_timestamp: cl_ulong = 0;
     let status: cl_int =
-        unsafe { clGetDeviceAndHostTimer(device, &mut device_timestamp, &mut host_timestamp) };
+        unsafe { cl_call!(clGetDeviceAndHostTimer(device, &mut device_timestamp, &mut host_timestamp)) };
     if CL_SUCCESS == status {
         Ok([device_timestamp, host_timestamp])
     } else {
@@ -711,8 +711,8 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
     }
 }
 
-/// The current value of the host clock as seen by device.  
-/// Calls `clGetHostTimer`  
+/// The current value of the host clock as seen by device.
+/// Calls `clGetHostTimer`
 /// `CL_VERSION_2_1`
 ///
 /// * `device` - a valid `OpenCL` `device`.
@@ -723,7 +723,7 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
 #[inline]
 pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
     let mut host_timestamp: cl_ulong = 0;
-    let status: cl_int = unsafe { clGetHostTimer(device, &mut host_timestamp) };
+    let status: cl_int = unsafe { cl_call!(clGetHostTimer(device, &mut host_timestamp)) };
     if CL_SUCCESS == status {
         Ok(host_timestamp)
     } else {

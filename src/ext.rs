@@ -44,12 +44,12 @@ pub fn create_command_buffer_khr(
 ) -> Result<cl_command_buffer_khr, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let buffer = unsafe {
-        clCreateCommandBufferKHR(
+        cl_call!(clCreateCommandBufferKHR(
             queues.len() as cl_uint,
             queues.as_ptr(),
             properties,
             &mut status,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(buffer)
@@ -60,7 +60,7 @@ pub fn create_command_buffer_khr(
 
 #[cfg(feature = "cl_khr_command_buffer")]
 pub fn finalize_command_buffer_khr(command_buffer: cl_command_buffer_khr) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clFinalizeCommandBufferKHR(command_buffer) };
+    let status: cl_int = unsafe { cl_call!(clFinalizeCommandBufferKHR(command_buffer)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -610,7 +610,7 @@ pub unsafe fn set_mem_object_destructor_apple(
 pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
     let mut count: cl_uint = 0;
-    let mut status = unsafe { clIcdGetPlatformIDsKHR(0, ptr::null_mut(), &mut count) };
+    let mut status = unsafe { cl_call!(clIcdGetPlatformIDsKHR(0, ptr::null_mut(), &mut count)) };
 
     if CL_SUCCESS != status {
         Err(status)
@@ -637,12 +637,12 @@ pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
 pub fn create_program_with_il_khr(context: cl_context, il: &[u8]) -> Result<cl_program, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let program = unsafe {
-        clCreateProgramWithILKHR(
+        cl_call!(clCreateProgramWithILKHR(
             context,
             il.as_ptr().cast::<c_void>(),
             il.len() as size_t,
             &mut status,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(program)
@@ -668,8 +668,14 @@ pub fn create_command_queue_with_properties_khr(
     properties: *const cl_queue_properties_khr,
 ) -> Result<cl_command_queue, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let queue: cl_command_queue =
-        unsafe { clCreateCommandQueueWithPropertiesKHR(context, device, properties, &mut status) };
+    let queue: cl_command_queue = unsafe {
+        cl_call!(clCreateCommandQueueWithPropertiesKHR(
+            context,
+            device,
+            properties,
+            &mut status
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(queue)
     } else {
@@ -705,13 +711,13 @@ fn count_sub_devices_ext(
 ) -> Result<cl_uint, cl_int> {
     let mut count: cl_uint = 0;
     let status: cl_int = unsafe {
-        clCreateSubDevicesEXT(
+        cl_call!(clCreateSubDevicesEXT(
             in_device,
             properties.as_ptr(),
             0,
             ptr::null_mut(),
             &mut count,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(count)
@@ -786,7 +792,7 @@ pub fn get_device_image_info_qcom(
     let mut data: cl_uint = 0;
     let data_ptr: *mut cl_uint = &mut data;
     let status = unsafe {
-        clGetDeviceImageInfoQCOM(
+        cl_call!(clGetDeviceImageInfoQCOM(
             device,
             image_width,
             image_height,
@@ -795,7 +801,7 @@ pub fn get_device_image_info_qcom(
             mem::size_of::<cl_uint>(),
             data_ptr.cast::<c_void>(),
             ptr::null_mut(),
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(data)
@@ -1054,8 +1060,13 @@ pub fn create_semaphore_with_properties_khr(
     sema_props: *const cl_semaphore_properties_khr,
 ) -> Result<cl_semaphore_khr, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let semaphore: cl_semaphore_khr =
-        unsafe { clCreateSemaphoreWithPropertiesKHR(context, sema_props, &mut status) };
+    let semaphore: cl_semaphore_khr = unsafe {
+        cl_call!(clCreateSemaphoreWithPropertiesKHR(
+            context,
+            sema_props,
+            &mut status
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(semaphore)
     } else {
@@ -1330,7 +1341,8 @@ pub fn set_kernel_arg_svm_pointer(
     arg_index: cl_uint,
     arg_ptr: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clSetKernelArgSVMPointerARM(kernel, arg_index, arg_ptr) };
+    let status: cl_int =
+        unsafe { cl_call!(clSetKernelArgSVMPointerARM(kernel, arg_index, arg_ptr)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1345,8 +1357,14 @@ pub fn set_kernel_exec_info_arm(
     param_value_size: size_t,
     param_value: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int =
-        unsafe { clSetKernelExecInfoARM(kernel, param_name, param_value_size, param_value) };
+    let status: cl_int = unsafe {
+        cl_call!(clSetKernelExecInfoARM(
+            kernel,
+            param_name,
+            param_value_size,
+            param_value
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1864,7 +1882,14 @@ pub fn get_image_requirements_info_ext(
 pub fn get_icd_loader_info_oclicd(param_name: cl_icdl_info) -> Result<Vec<u8>, cl_int> {
     // get the size
     let mut size: size_t = 0;
-    let status = unsafe { clGetICDLoaderInfoOCLICD(param_name, 0, ptr::null_mut(), &mut size) };
+    let status = unsafe {
+        cl_call!(clGetICDLoaderInfoOCLICD(
+            param_name,
+            0,
+            ptr::null_mut(),
+            &mut size
+        ))
+    };
     if CL_SUCCESS == status {
         // Get the data.
         let mut data: Vec<u8> = Vec::with_capacity(size);
@@ -1891,7 +1916,7 @@ pub fn set_content_size_buffer_pocl(
     buffer: cl_mem,
     content_size_buffer: cl_mem,
 ) -> Result<(), cl_int> {
-    let status = unsafe { clSetContentSizeBufferPoCL(buffer, content_size_buffer) };
+    let status = unsafe { cl_call!(clSetContentSizeBufferPoCL(buffer, content_size_buffer)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
