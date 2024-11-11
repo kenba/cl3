@@ -37,8 +37,9 @@ use std::ptr;
 /// Calls clGetDeviceIDs to get the available device ids on the platform.
 ///  # Examples
 /// ```
+/// use cl3::constants::CL_DEVICE_TYPE_GPU;
 /// use cl3::platform::get_platform_ids;
-/// use cl3::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
+/// use cl3::device::get_device_ids;
 ///
 /// let platform_ids = get_platform_ids().unwrap();
 /// assert!(0 < platform_ids.len());
@@ -115,9 +116,10 @@ pub fn get_device_data(
 /// Calls clGetDeviceInfo to get the desired information about the device.
 ///  # Examples
 /// ```
+/// use cl3::constants::{CL_DEVICE_TYPE, CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR, CL_DEVICE_VERSION};
 /// use cl3::platform::get_platform_ids;
-/// use cl3::device::{get_device_ids, get_device_info, CL_DEVICE_TYPE, CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR, CL_DEVICE_VERSION};
-/// use opencl_sys::cl_ulong;
+/// use cl3::device::{get_device_ids, get_device_info};
+/// use cl3::types::cl_ulong;
 ///
 /// let platform_ids = get_platform_ids().unwrap();
 /// assert!(0 < platform_ids.len());
@@ -1773,7 +1775,11 @@ mod tests {
         let platform_ids = get_platform_ids().unwrap();
 
         // Choose the platform with the most compliant GPU
-        let platform_id = platform_ids[1];
+        let platform_id = if platform_ids.len() > 1 {
+            platform_ids[1]
+        } else {
+            platform_ids[0]
+        };
 
         let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
         println!("CL_DEVICE_TYPE_GPU count: {}", device_ids.len());
@@ -1782,7 +1788,13 @@ mod tests {
         let device_id = device_ids[0];
 
         // CL_VERSION_3_0
-        let value = get_device_info(device_id, CL_DEVICE_NUMERIC_VERSION).unwrap();
+        let value = if let Ok(value) = get_device_info(device_id, CL_DEVICE_NUMERIC_VERSION) {
+            value
+        } else {
+            println!("OpenCL device doesn't support OpenCL 3.0 API");
+            return;
+        };
+
         let value = cl_uint::from(value);
         println!("CL_DEVICE_NUMERIC_VERSION: {}", value);
         assert!(0 < value);

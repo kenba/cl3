@@ -19,21 +19,21 @@ extern crate cl3;
 
 use cl3::command_queue::{
     create_command_queue, enqueue_nd_range_kernel, enqueue_read_buffer, enqueue_write_buffer,
-    finish, release_command_queue, CL_QUEUE_PROFILING_ENABLE,
+    finish, release_command_queue,
+};
+use cl3::constants::{
+    CL_BLOCKING, CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR, CL_DEVICE_VENDOR_ID, CL_MEM_READ_ONLY,
+    CL_MEM_WRITE_ONLY, CL_NON_BLOCKING, CL_PLATFORM_NAME, CL_PROFILING_COMMAND_END,
+    CL_PROFILING_COMMAND_START, CL_QUEUE_PROFILING_ENABLE,
 };
 use cl3::context::{create_context, release_context};
-use cl3::device::{
-    get_device_ids, get_device_info, CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR, CL_DEVICE_VENDOR_ID,
-};
-use cl3::event::{
-    get_event_profiling_info, release_event, wait_for_events, CL_PROFILING_COMMAND_END,
-    CL_PROFILING_COMMAND_START,
-};
+use cl3::device::{get_device_ids, get_device_info};
+use cl3::event::{get_event_profiling_info, release_event, wait_for_events};
 use cl3::kernel::{create_kernel, release_kernel, set_kernel_arg};
-use cl3::memory::{create_buffer, release_mem_object, CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY};
-use cl3::platform::{get_platform_ids, get_platform_info, CL_PLATFORM_NAME};
+use cl3::memory::{create_buffer, release_mem_object};
+use cl3::platform::{get_platform_ids, get_platform_info};
 use cl3::program::{build_program, create_program_with_source, release_program};
-use cl3::types::{cl_event, cl_float, cl_mem, CL_BLOCKING, CL_NON_BLOCKING};
+use cl3::types::{cl_event, cl_float, cl_mem};
 use libc::{c_void, size_t};
 use std::ffi::CString;
 use std::mem;
@@ -92,8 +92,7 @@ fn test_opencl_1_2_example() {
     let kernel = create_kernel(program, &kernel_name).unwrap();
 
     // Create a command_queue for the device
-    let queue =
-        unsafe { create_command_queue(context, device_id, CL_QUEUE_PROFILING_ENABLE).unwrap() };
+    let queue = create_command_queue(context, device_id, CL_QUEUE_PROFILING_ENABLE).unwrap();
 
     /////////////////////////////////////////////////////////////////////
     // Process some data
@@ -107,62 +106,52 @@ fn test_opencl_1_2_example() {
     }
 
     // Create `OpenCL` device buffers for input and output data
-    let x = unsafe {
-        create_buffer(
-            context,
-            CL_MEM_WRITE_ONLY,
-            ARRAY_SIZE * mem::size_of::<cl_float>(),
-            ptr::null_mut(),
-        )
-        .unwrap()
-    };
-    let y = unsafe {
-        create_buffer(
-            context,
-            CL_MEM_WRITE_ONLY,
-            ARRAY_SIZE * mem::size_of::<cl_float>(),
-            ptr::null_mut(),
-        )
-        .unwrap()
-    };
-    let z = unsafe {
-        create_buffer(
-            context,
-            CL_MEM_READ_ONLY,
-            ARRAY_SIZE * mem::size_of::<cl_float>(),
-            ptr::null_mut(),
-        )
-        .unwrap()
-    };
+    let x = create_buffer(
+        context,
+        CL_MEM_WRITE_ONLY,
+        ARRAY_SIZE * mem::size_of::<cl_float>(),
+        ptr::null_mut(),
+    )
+    .unwrap();
+    let y = create_buffer(
+        context,
+        CL_MEM_WRITE_ONLY,
+        ARRAY_SIZE * mem::size_of::<cl_float>(),
+        ptr::null_mut(),
+    )
+    .unwrap();
+    let z = create_buffer(
+        context,
+        CL_MEM_READ_ONLY,
+        ARRAY_SIZE * mem::size_of::<cl_float>(),
+        ptr::null_mut(),
+    )
+    .unwrap();
 
     // Blocking write to `OpenCL` device buffer
-    let x_write_event = unsafe {
-        enqueue_write_buffer(
-            queue,
-            x,
-            CL_BLOCKING,
-            0,
-            ones.len() * mem::size_of::<cl_float>(),
-            ones.as_ptr() as cl_mem,
-            0,
-            ptr::null(),
-        )
-        .unwrap()
-    };
+    let x_write_event = enqueue_write_buffer(
+        queue,
+        x,
+        CL_BLOCKING,
+        0,
+        ones.len() * mem::size_of::<cl_float>(),
+        ones.as_ptr() as cl_mem,
+        0,
+        ptr::null(),
+    )
+    .unwrap();
     // Non-blocking write to `OpenCL` device buffer
-    let y_write_event = unsafe {
-        enqueue_write_buffer(
-            queue,
-            y,
-            CL_NON_BLOCKING,
-            0,
-            sums.len() * mem::size_of::<cl_float>(),
-            sums.as_ptr() as cl_mem,
-            0,
-            ptr::null(),
-        )
-        .unwrap()
-    };
+    let y_write_event = enqueue_write_buffer(
+        queue,
+        y,
+        CL_NON_BLOCKING,
+        0,
+        sums.len() * mem::size_of::<cl_float>(),
+        sums.as_ptr() as cl_mem,
+        0,
+        ptr::null(),
+    )
+    .unwrap();
 
     // wait for y_write_event
     let mut events: Vec<cl_event> = Vec::default();
@@ -172,54 +161,50 @@ fn test_opencl_1_2_example() {
     // a value for the kernel function
     let a: cl_float = 300.0;
 
-    unsafe {
-        // Set up the arguments to call the `OpenCL` kernel function
-        // i.e. the x, y & z buffers and the constant value, a
-        set_kernel_arg(
-            kernel,
-            0,
-            mem::size_of::<cl_mem>(),
-            &z as *const _ as *const c_void,
-        )
-        .unwrap();
-        set_kernel_arg(
-            kernel,
-            1,
-            mem::size_of::<cl_mem>(),
-            &x as *const _ as *const c_void,
-        )
-        .unwrap();
-        set_kernel_arg(
-            kernel,
-            2,
-            mem::size_of::<cl_mem>(),
-            &y as *const _ as *const c_void,
-        )
-        .unwrap();
-        set_kernel_arg(
-            kernel,
-            3,
-            mem::size_of::<cl_float>(),
-            &a as *const _ as *const c_void,
-        )
-        .unwrap();
-    }
+    // Set up the arguments to call the `OpenCL` kernel function
+    // i.e. the x, y & z buffers and the constant value, a
+    set_kernel_arg(
+        kernel,
+        0,
+        mem::size_of::<cl_mem>(),
+        &z as *const _ as *const c_void,
+    )
+    .unwrap();
+    set_kernel_arg(
+        kernel,
+        1,
+        mem::size_of::<cl_mem>(),
+        &x as *const _ as *const c_void,
+    )
+    .unwrap();
+    set_kernel_arg(
+        kernel,
+        2,
+        mem::size_of::<cl_mem>(),
+        &y as *const _ as *const c_void,
+    )
+    .unwrap();
+    set_kernel_arg(
+        kernel,
+        3,
+        mem::size_of::<cl_float>(),
+        &a as *const _ as *const c_void,
+    )
+    .unwrap();
 
     // Enqueue the `OpenCL` kernel for execution
     let global_work_sizes: [size_t; 1] = [ARRAY_SIZE];
-    let kernel_event = unsafe {
-        enqueue_nd_range_kernel(
-            queue,
-            kernel,
-            1,
-            ptr::null(),
-            global_work_sizes.as_ptr(),
-            ptr::null(),
-            0,
-            ptr::null(),
-        )
-        .unwrap()
-    };
+    let kernel_event = enqueue_nd_range_kernel(
+        queue,
+        kernel,
+        1,
+        ptr::null(),
+        global_work_sizes.as_ptr(),
+        ptr::null(),
+        0,
+        ptr::null(),
+    )
+    .unwrap();
 
     // Push the kernel_event to the events wait list so that enqueue_read_buffer
     // can wait on it
@@ -230,19 +215,17 @@ fn test_opencl_1_2_example() {
     // and enqueue a read command to read the device buffer into the array
     // after the kernel event completes.
     let results: [cl_float; ARRAY_SIZE] = [0.0; ARRAY_SIZE];
-    let read_event = unsafe {
-        enqueue_read_buffer(
-            queue,
-            z,
-            CL_NON_BLOCKING,
-            0,
-            results.len() * mem::size_of::<cl_float>(),
-            results.as_ptr() as cl_mem,
-            1,
-            events.as_ptr(),
-        )
-        .unwrap()
-    };
+    let read_event = enqueue_read_buffer(
+        queue,
+        z,
+        CL_NON_BLOCKING,
+        0,
+        results.len() * mem::size_of::<cl_float>(),
+        results.as_ptr() as cl_mem,
+        1,
+        events.as_ptr(),
+    )
+    .unwrap();
     events.clear();
 
     // Block until all commands on the queue (i.e. the read_event) have completed
@@ -260,19 +243,17 @@ fn test_opencl_1_2_example() {
     /////////////////////////////////////////////////////////////////////
     // Release `OpenCL` objects
 
-    unsafe {
-        release_event(x_write_event).unwrap();
-        release_event(y_write_event).unwrap();
-        release_event(kernel_event).unwrap();
-        release_event(read_event).unwrap();
-        release_mem_object(z).unwrap();
-        release_mem_object(y).unwrap();
-        release_mem_object(x).unwrap();
+    release_event(x_write_event).unwrap();
+    release_event(y_write_event).unwrap();
+    release_event(kernel_event).unwrap();
+    release_event(read_event).unwrap();
+    release_mem_object(z).unwrap();
+    release_mem_object(y).unwrap();
+    release_mem_object(x).unwrap();
 
-        // Release the `OpenCL` compute environment
-        release_kernel(kernel).unwrap();
-        release_program(program).unwrap();
-        release_command_queue(queue).unwrap();
-        release_context(context).unwrap();
-    }
+    // Release the `OpenCL` compute environment
+    release_kernel(kernel).unwrap();
+    release_program(program).unwrap();
+    release_command_queue(queue).unwrap();
+    release_context(context).unwrap();
 }

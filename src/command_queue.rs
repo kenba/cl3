@@ -1180,7 +1180,7 @@ pub fn enqueue_svm_migrate_mem(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
+    use crate::device::get_device_ids;
     use crate::error_codes::error_text;
     use crate::platform::get_platform_ids;
 

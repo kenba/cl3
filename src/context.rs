@@ -215,7 +215,7 @@ pub fn set_context_destructor_callback(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
+    use crate::device::get_device_ids;
     use crate::platform::get_platform_ids;
 
     #[test]

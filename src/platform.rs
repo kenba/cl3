@@ -85,7 +85,8 @@ pub fn get_platform_data(
 ///
 ///  # Examples
 /// ```
-/// use cl3::platform::{get_platform_ids, get_platform_info, CL_PLATFORM_NAME, CL_PLATFORM_VERSION};
+/// use cl3::constants::{CL_PLATFORM_NAME, CL_PLATFORM_VERSION};
+/// use cl3::platform::{get_platform_ids, get_platform_info};
 ///
 /// let platform_ids = get_platform_ids().unwrap();
 /// assert!(0 < platform_ids.len());

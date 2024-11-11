@@ -609,9 +609,10 @@ pub fn get_program_build_info(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, CL_DEVICE_TYPE_ALL};
+    use crate::device::get_device_ids;
     use crate::error_codes::error_text;
     use crate::platform::get_platform_ids;
+    use crate::program::create_program_with_source;
     use std::ffi::CString;
 
     #[test]

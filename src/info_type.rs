@@ -322,14 +322,9 @@ impl InfoType {
 }
 #[cfg(test)]
 mod tests {
-    use crate::device::{
-        get_device_ids, get_device_info, CL_DEVICE_MAX_WORK_ITEM_SIZES, CL_DEVICE_NAME,
-        CL_DEVICE_PARTITION_PROPERTIES, CL_DEVICE_TYPE, CL_DEVICE_TYPE_ALL, CL_DEVICE_VENDOR_ID,
-        CL_DRIVER_VERSION,
-    };
-    use crate::platform::{
-        get_platform_ids, get_platform_info, CL_PLATFORM_NAME, CL_PLATFORM_VERSION,
-    };
+    use crate::constants::*;
+    use crate::device::{get_device_ids, get_device_info};
+    use crate::platform::{get_platform_ids, get_platform_info};
 
     #[test]
     fn test_debug_display_info() {
