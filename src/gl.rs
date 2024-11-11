@@ -18,7 +18,10 @@
 #![allow(non_camel_case_types, deprecated)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::missing_safety_doc)]
 
-use crate::{constants::*, types::*};
+use crate::{
+    constants::*,
+    types::{cl_gl::*, *},
+};
 
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};

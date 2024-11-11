@@ -16,7 +16,10 @@
 
 #![allow(unused_unsafe)]
 
-use crate::{constants::*, types::*};
+use crate::{
+    constants::*,
+    types::{cl_icd::*, cl_layer::*, *},
+};
 
 #[allow(unused_imports)]
 use libc::{c_void, size_t};
