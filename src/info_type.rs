@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{constants::*, types::*};
+use crate::{constants::cl_ext::*, types::*};
 
 use libc::{intptr_t, size_t};
 use std::fmt;

@@ -19,7 +19,7 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::missing_safety_doc)]
 
 use crate::{
-    constants::*,
+    constants::{cl_gl::*, *},
     types::{cl_gl::*, *},
 };
 

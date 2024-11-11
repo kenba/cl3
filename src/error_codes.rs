@@ -14,7 +14,10 @@
 
 //! `OpenCL` API Error Codes.
 
-use crate::{constants::*, types::*};
+use crate::{
+    constants::{cl_d3d11::*, cl_dx9_media_sharing::*, cl_egl::*, cl_ext::*, cl_gl::*, *},
+    types::*,
+};
 
 use std::fmt;
 use thiserror::Error;
