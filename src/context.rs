@@ -14,6 +14,7 @@
 
 //! `OpenCL` Context API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
@@ -36,6 +37,7 @@ use std::ptr;
 ///
 /// returns a Result containing the new `OpenCL` context
 /// or the error code from the `OpenCL` C API function.
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn create_context(

@@ -16,6 +16,7 @@
 //! `cl_d3d11.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 11.
 //! `OpenCL` extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
+#![allow(unused_unsafe)]
 #![allow(clippy::missing_safety_doc)]
 
 use crate::{constants::*, types::*};

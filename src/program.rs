@@ -14,6 +14,7 @@
 
 //! `OpenCL` Program Object API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
@@ -41,6 +42,7 @@ pub const CL_PROGRAM_SCOPE_GLOBAL_DTORS_PRESENT: cl_program_info = 0x116B;
 ///
 /// returns a Result containing the new `OpenCL` program object
 /// or the error code from the `OpenCL` C API function.
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn create_program_with_source(
@@ -79,6 +81,7 @@ pub fn create_program_with_source(
 /// # Safety
 ///
 /// This is unsafe when a device is not a member of context.
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn create_program_with_binary(
     context: cl_context,
@@ -122,6 +125,7 @@ pub fn create_program_with_binary(
 ///
 /// This is unsafe when a device is not a member of context.
 #[cfg(feature = "CL_VERSION_1_2")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn create_program_with_builtin_kernels(
@@ -226,6 +230,7 @@ pub fn release_program(program: cl_program) -> Result<(), cl_int> {
 ///
 /// returns a Result containing the new `OpenCL` program object
 /// or the error code from the `OpenCL` C API function.
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn build_program(
@@ -272,6 +277,7 @@ pub fn build_program(
 ///
 /// Panics if `input_headers.len()` != `header_include_names.len()`.
 #[cfg(feature = "CL_VERSION_1_2")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn compile_program(
@@ -336,6 +342,7 @@ pub fn compile_program(
 ///
 /// This is unsafe when a device is not a member of context.
 #[cfg(feature = "CL_VERSION_1_2")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn link_program(

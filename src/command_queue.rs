@@ -14,6 +14,7 @@
 
 //! `OpenCL` Command Queue API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types, deprecated)]
 #![allow(
     clippy::too_many_arguments,

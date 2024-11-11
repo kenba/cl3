@@ -15,6 +15,7 @@
 //! `OpenCL` extensions that don't have external (OpenGL, D3D) dependencies.
 //! See: [OpenCL Extension Specification](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_Ext.html)
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types)]
 #![allow(
     clippy::not_unsafe_ptr_arg_deref,
@@ -37,6 +38,7 @@ use std::mem;
 use std::ptr;
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn create_command_buffer_khr(
     queues: &[cl_command_queue],
@@ -115,6 +117,7 @@ pub fn enqueue_command_buffer_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_barrier_with_wait_list_khr(
     command_buffer: cl_command_buffer_khr,
@@ -141,6 +144,7 @@ pub fn command_barrier_with_wait_list_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_copy_buffer_khr(
     command_buffer: cl_command_buffer_khr,
@@ -177,6 +181,7 @@ pub fn command_copy_buffer_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_copy_buffer_rect_khr(
     command_buffer: cl_command_buffer_khr,
@@ -221,6 +226,7 @@ pub fn command_copy_buffer_rect_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_copy_buffer_to_image_khr(
     command_buffer: cl_command_buffer_khr,
@@ -257,6 +263,7 @@ pub fn command_copy_buffer_to_image_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_copy_image_khr(
     command_buffer: cl_command_buffer_khr,
@@ -293,6 +300,7 @@ pub fn command_copy_image_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_copy_image_to_buffer_khr(
     command_buffer: cl_command_buffer_khr,
@@ -329,6 +337,7 @@ pub fn command_copy_image_to_buffer_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_fill_buffer_khr(
     command_buffer: cl_command_buffer_khr,
@@ -365,6 +374,7 @@ pub fn command_fill_buffer_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_fill_image_khr(
     command_buffer: cl_command_buffer_khr,
@@ -399,6 +409,7 @@ pub fn command_fill_image_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_nd_range_kernel_khr(
     command_buffer: cl_command_buffer_khr,
@@ -437,6 +448,7 @@ pub fn command_nd_range_kernel_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_svm_memcpy_khr(
     command_buffer: cl_command_buffer_khr,
@@ -469,6 +481,7 @@ pub fn command_svm_memcpy_khr(
 }
 
 #[cfg(feature = "cl_khr_command_buffer")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn command_svm_mem_fill_khr(
     command_buffer: cl_command_buffer_khr,
@@ -630,6 +643,7 @@ pub fn set_mem_object_destructor_apple(
 }
 
 #[cfg(feature = "cl_khr_icd")]
+#[allow(unused_unsafe)]
 #[allow(clippy::uninit_vec)]
 pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
@@ -755,6 +769,7 @@ fn count_sub_devices_ext(
 }
 
 #[cfg(feature = "cl_ext_device_fission")]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn create_sub_devices_ext(
     in_device: cl_device_id,

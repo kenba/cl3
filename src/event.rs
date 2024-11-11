@@ -14,6 +14,7 @@
 
 //! `OpenCL` Event Object API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
@@ -33,6 +34,7 @@ use std::ptr;
 ///
 /// returns an empty Result or the error code from the `OpenCL` C API function.
 #[inline]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
     let status: cl_int =

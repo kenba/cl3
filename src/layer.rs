@@ -14,6 +14,8 @@
 
 //! `OpenCL` layer extensions
 
+#![allow(unused_unsafe)]
+
 use crate::{constants::*, types::*};
 
 #[allow(unused_imports)]
@@ -59,6 +61,7 @@ pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
 /// # Safety
 ///
 /// This is unsafe if `target_dispatch` is not valid.
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn init_layer(target_dispatch: &[cl_icd_dispatch]) -> Result<&[cl_icd_dispatch], cl_int> {
     let mut num_entries_ret: cl_uint = 0;

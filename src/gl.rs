@@ -14,6 +14,7 @@
 
 //! `OpenCL` `OpenGL` Interoperability API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types, deprecated)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::missing_safety_doc)]
 

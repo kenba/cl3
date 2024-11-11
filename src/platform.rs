@@ -14,6 +14,7 @@
 
 //! `OpenCL` Platform API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types)]
 #![allow(clippy::wildcard_in_or_patterns)]
 

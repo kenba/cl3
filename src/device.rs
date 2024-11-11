@@ -14,6 +14,7 @@
 
 //! `OpenCL` Device API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types, non_upper_case_globals)]
 #![allow(
     clippy::not_unsafe_ptr_arg_deref,
@@ -505,6 +506,7 @@ fn count_sub_devices(
 /// or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
+#[allow(unused_unsafe)]
 #[allow(clippy::cast_possible_truncation)]
 pub fn create_sub_devices(
     in_device: cl_device_id,

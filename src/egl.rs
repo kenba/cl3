@@ -14,6 +14,8 @@
 
 //! `OpenCL` `OpenGL` ES Interoperability API.
 
+#![allow(unused_unsafe)]
+
 use crate::{constants::*, types::*};
 
 #[allow(unused_imports)]
