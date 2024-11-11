@@ -35,7 +35,7 @@ pub use crate::runtime::OpenClTypes::{
     cl_version,
 };
 
-#[cfg(feature = "static_runtime")]
+#[cfg(not(feature = "dynamic_runtime"))]
 pub use crate::runtime::OpenClTypes::{
     cl_GLenum, cl_GLint, cl_GLuint, cl_char, cl_double, cl_float, cl_half, cl_int, cl_long,
     cl_short, cl_uchar, cl_uint, cl_ulong, cl_ushort, DXGI_FORMAT,
@@ -68,7 +68,7 @@ pub mod cl_egl {
 }
 
 pub mod cl_ext {
-    #[cfg(feature = "static_runtime")]
+    #[cfg(not(feature = "dynamic_runtime"))]
     pub use crate::runtime::OpenClTypes::{
         cl_accelerator_info_intel, cl_accelerator_intel, cl_accelerator_type_intel,
         cl_amd_device_attribute_query, cl_amd_device_topology, cl_command_buffer_flags_khr,
@@ -138,7 +138,7 @@ pub mod cl_ext {
 }
 
 pub mod cl_gl {
-    #[cfg(feature = "static_runtime")]
+    #[cfg(not(feature = "dynamic_runtime"))]
     pub use crate::runtime::OpenClTypes::{
         cl_GLsync, cl_gl_context_info, cl_gl_object_type, cl_gl_platform_info, cl_gl_texture_info,
     };

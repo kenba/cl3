@@ -14,8 +14,7 @@ edition = "2021"
 
 [features]
 
-static_runtime = ["dep:opencl-sys"]
-dynamic_runtime = ["dep:opencl-dynamic-sys"]
+dynamic_runtime = []
 
 CL_VERSION_1_1 = ["opencl-sys/CL_VERSION_1_1"]
 CL_VERSION_1_2 = ["opencl-sys/CL_VERSION_1_2"]
@@ -72,8 +71,8 @@ default = ["CL_VERSION_1_1", "CL_VERSION_1_2", "static_runtime"]
 
 [dependencies]
 libc = "0.2"
-opencl-sys = {version = "0.3", optional = true}
-opencl-dynamic-sys = {git = "https://github.com/passware/opencl-dynamic-sys-rs.git", branch = "feature/cases/PKM-2673", optional = true}
+opencl-sys = "0.3"
+opencl-dynamic-sys = {path = "D:\\workspace\\opensource\\passware\\opencl-dynamic-sys-rs"}
 thiserror = "1.0"
 
 [[example]]

@@ -15,9 +15,9 @@
 //! `OpenCL` Runtime.
 
 #[macro_use]
-#[cfg(feature = "static_runtime")]
+#[cfg(not(feature = "dynamic_runtime"))]
 mod static_runtime;
-#[cfg(feature = "static_runtime")]
+#[cfg(not(feature = "dynamic_runtime"))]
 pub(crate) use static_runtime::{OpenClConstants, OpenClTypes};
 
 #[macro_use]

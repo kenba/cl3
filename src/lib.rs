@@ -79,7 +79,7 @@
 //!
 //! `OpenCL` and the `OpenCL` logo are trademarks of Apple Inc. used under license by Khronos.
 
-#[cfg(feature = "static_runtime")]
+#[cfg(not(feature = "dynamic_runtime"))]
 extern crate opencl_sys;
 
 #[macro_use]
