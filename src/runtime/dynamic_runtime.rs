@@ -1,3 +1,6 @@
+pub(crate) use opencl_dynamic_sys::constants as OpenClConstants;
+pub(crate) use opencl_dynamic_sys::types as OpenClTypes;
+
 pub fn is_opencl_runtime_available() -> bool {
     crate::runtime::load_dynamic_runtime().is_ok()
 }
@@ -12,6 +15,9 @@ pub fn load_dynamic_runtime() -> Result<&'static opencl_dynamic_sys::OpenClRunti
 
 macro_rules! cl_call {
     ($func:ident($($arg:expr),* $(,)?)) => {{
+        crate::runtime::load_dynamic_runtime()?.$func($($arg),*)
+    }};
+    ($namespace:ident::$func:ident($($arg:expr),* $(,)?)) => {{
         crate::runtime::load_dynamic_runtime()?.$func($($arg),*)
     }}
 }

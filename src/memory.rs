@@ -616,6 +616,7 @@ pub fn svm_alloc(
 /// This function is unsafe because `svm_pointer` is no longer valid after it is called.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
-pub fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
+pub fn svm_free(context: cl_context, svm_pointer: *mut c_void) -> Result<(), cl_int> {
     unsafe { cl_call!(clSVMFree(context, svm_pointer)) };
+    Ok(())
 }

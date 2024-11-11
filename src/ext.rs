@@ -1249,8 +1249,9 @@ pub fn svm_alloc_arm(
 }
 
 #[cfg(feature = "cl_arm_shared_virtual_memory")]
-pub fn svm_free_arm(context: cl_context, svm_pointer: *mut c_void) {
+pub fn svm_free_arm(context: cl_context, svm_pointer: *mut c_void) -> Result<(), cl_int> {
     unsafe { cl_call!(clSVMFreeARM(context, svm_pointer)) };
+    Ok(())
 }
 
 #[cfg(feature = "cl_arm_shared_virtual_memory")]
