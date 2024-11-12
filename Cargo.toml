@@ -72,7 +72,7 @@ default = ["CL_VERSION_1_1", "CL_VERSION_1_2"]
 [dependencies]
 libc = "0.2"
 opencl-sys = "0.3"
-opencl-dynamic-sys = {path = "D:\\workspace\\opensource\\passware\\opencl-dynamic-sys-rs"}
+opencl-dynamic-sys = "0.1"
 thiserror = "1.0"
 
 [[example]]
