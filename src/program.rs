@@ -18,7 +18,9 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
-use crate::{constants::*, types::*};
+use crate::constants::*;
+#[cfg(feature = "dynamic_runtime")]
+use crate::types::*;
 
 use super::info_type::InfoType;
 use super::{

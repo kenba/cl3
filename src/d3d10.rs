@@ -19,7 +19,9 @@
 #![allow(unused_unsafe)]
 #![allow(clippy::missing_safety_doc)]
 
-use crate::{constants::*, types::*};
+use crate::constants::*;
+#[cfg(feature = "dynamic_runtime")]
+use crate::types::*;
 
 #[allow(unused_imports)]
 use libc::c_void;

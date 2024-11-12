@@ -24,8 +24,10 @@
     clippy::too_many_arguments
 )]
 
+use crate::constants::*;
+#[cfg(feature = "dynamic_runtime")]
 use crate::{
-    constants::{cl_ext::*, *},
+    constants::cl_ext::*,
     types::{cl_ext::*, *},
 };
 

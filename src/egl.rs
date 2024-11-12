@@ -16,10 +16,9 @@
 
 #![allow(unused_unsafe)]
 
-use crate::{
-    constants::*,
-    types::{cl_egl::*, *},
-};
+#[cfg(feature = "dynamic_runtime")]
+use crate::types::*;
+use crate::{constants::*, types::cl_egl::*};
 
 #[allow(unused_imports)]
 use std::ptr;

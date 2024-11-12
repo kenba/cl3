@@ -16,10 +16,9 @@
 
 #![allow(unused_unsafe)]
 
-use crate::{
-    constants::*,
-    types::{cl_icd::*, cl_layer::*, *},
-};
+#[cfg(feature = "dynamic_runtime")]
+use crate::types::{cl_icd::*, *};
+use crate::{constants::*, types::cl_layer::*};
 
 #[allow(unused_imports)]
 use libc::{c_void, size_t};

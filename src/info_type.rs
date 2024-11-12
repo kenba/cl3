@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{constants::cl_ext::*, types::*};
+use crate::constants::cl_ext::*;
+#[cfg(feature = "dynamic_runtime")]
+use crate::types::*;
 
 use libc::{intptr_t, size_t};
 use std::fmt;

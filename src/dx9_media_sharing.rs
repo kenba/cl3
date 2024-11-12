@@ -20,10 +20,9 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::missing_safety_doc)]
 
-use crate::{
-    constants::*,
-    types::{cl_dx9_media_sharing::*, *},
-};
+#[cfg(feature = "dynamic_runtime")]
+use crate::types::*;
+use crate::{constants::*, types::cl_dx9_media_sharing::*};
 
 #[allow(unused_imports)]
 use libc::c_void;

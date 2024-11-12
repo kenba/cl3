@@ -18,7 +18,9 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
-use crate::{constants::*, types::*};
+use crate::constants::*;
+#[cfg(feature = "dynamic_runtime")]
+use crate::types::*;
 
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};

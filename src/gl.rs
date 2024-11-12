@@ -18,8 +18,10 @@
 #![allow(non_camel_case_types, deprecated)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::missing_safety_doc)]
 
+use crate::constants::*;
+#[cfg(feature = "dynamic_runtime")]
 use crate::{
-    constants::{cl_gl::*, *},
+    constants::cl_gl::*,
     types::{cl_gl::*, *},
 };
 
