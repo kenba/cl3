@@ -24,6 +24,4 @@ pub(crate) use static_runtime::{OpenClConstants, OpenClTypes};
 #[cfg(feature = "dynamic_runtime")]
 pub(crate) mod dynamic_runtime;
 #[cfg(feature = "dynamic_runtime")]
-pub use dynamic_runtime::is_opencl_runtime_available;
-#[cfg(feature = "dynamic_runtime")]
 pub(crate) use dynamic_runtime::{load_dynamic_runtime, OpenClConstants, OpenClTypes};

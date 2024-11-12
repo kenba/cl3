@@ -85,7 +85,7 @@ extern crate opencl_sys;
 #[macro_use]
 mod runtime;
 #[cfg(feature = "dynamic_runtime")]
-pub use runtime::is_opencl_runtime_available;
+pub use opencl_dynamic_sys::is_opencl_runtime_available;
 
 pub mod command_queue;
 pub mod context;
