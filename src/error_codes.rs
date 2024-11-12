@@ -18,6 +18,8 @@ use crate::{
     constants::{cl_d3d11::*, cl_dx9_media_sharing::*, cl_egl::*, cl_ext::*, cl_gl::*, *},
     types::*,
 };
+#[cfg(not(feature = "dynamic_runtime"))]
+use opencl_dynamic_sys::constants::{CL_FUNCTION_NOT_AVAILABLE, CL_RUNTIME_LOAD_FAILED};
 
 use std::fmt;
 use thiserror::Error;
@@ -127,6 +129,11 @@ pub const fn error_text(error_code: cl_int) -> &'static str {
         CL_INVALID_COMMAND_BUFFER_KHR => "CL_INVALID_COMMAND_BUFFER_KHR",
         CL_INVALID_SYNC_POINT_WAIT_LIST_KHR => "CL_INVALID_SYNC_POINT_WAIT_LIST_KHR",
         CL_INCOMPATIBLE_COMMAND_QUEUE_KHR => "CL_INCOMPATIBLE_COMMAND_QUEUE_KHR",
+
+        #[cfg(not(feature = "dynamic_runtime"))]
+        CL_RUNTIME_LOAD_FAILED => "CL_RUNTIME_LOAD_FAILED",
+        #[cfg(not(feature = "dynamic_runtime"))]
+        CL_FUNCTION_NOT_AVAILABLE => "CL_FUNCTION_NOT_AVAILABLE",
 
         _ => "UNKNOWN_ERROR",
     }
