@@ -67,7 +67,7 @@ cl_pocl_content_size = ["opencl-sys/cl_pocl_content_size"]
 cl_loader_layers = ["opencl-sys/cl_loader_layers"]
 
 # Default features:
-default = ["CL_VERSION_1_1", "CL_VERSION_1_2", "static_runtime"]
+default = ["CL_VERSION_1_1", "CL_VERSION_1_2"]
 
 [dependencies]
 libc = "0.2"
