@@ -16,8 +16,9 @@
 
 #![allow(unused_unsafe)]
 
-#[cfg(feature = "dynamic_runtime")]
+#[cfg(all(feature = "dynamic_runtime", feature = "cl_khr_egl_image"))]
 use crate::types::*;
+#[cfg(feature = "cl_khr_egl_image")]
 use crate::{constants::*, types::cl_egl::*};
 
 #[allow(unused_imports)]

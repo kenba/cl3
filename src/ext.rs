@@ -24,8 +24,9 @@
     clippy::too_many_arguments
 )]
 
+#[cfg(feature = "cl_khr_command_buffer")]
 use crate::constants::*;
-#[cfg(feature = "dynamic_runtime")]
+#[cfg(all(feature = "dynamic_runtime", feature = "cl_khr_command_buffer"))]
 use crate::{
     constants::cl_ext::*,
     types::{cl_ext::*, *},

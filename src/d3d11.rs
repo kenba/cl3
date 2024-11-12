@@ -19,8 +19,9 @@
 #![allow(unused_unsafe)]
 #![allow(clippy::missing_safety_doc)]
 
+#[cfg(feature = "cl_khr_d3d11_sharing")]
 use crate::constants::*;
-#[cfg(feature = "dynamic_runtime")]
+#[cfg(all(feature = "dynamic_runtime", feature = "cl_khr_d3d11_sharing"))]
 use crate::types::*;
 
 #[allow(unused_imports)]

@@ -20,8 +20,9 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::missing_safety_doc)]
 
-#[cfg(feature = "dynamic_runtime")]
+#[cfg(all(feature = "dynamic_runtime", feature = "cl_intel_dx9_media_sharing"))]
 use crate::types::*;
+#[cfg(feature = "cl_intel_dx9_media_sharing")]
 use crate::{constants::*, types::cl_dx9_media_sharing::*};
 
 #[allow(unused_imports)]
