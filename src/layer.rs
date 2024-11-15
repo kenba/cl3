@@ -14,8 +14,12 @@
 
 //! `OpenCL` layer extensions
 
-pub use opencl_sys::cl_layer::*;
-pub use opencl_sys::*;
+#![allow(unused_unsafe)]
+
+pub use crate::constants::CL_SUCCESS;
+pub use crate::types::cl_icd::cl_icd_dispatch;
+pub use crate::types::cl_layer::cl_layer_info;
+pub use crate::types::{cl_int, cl_uint};
 
 #[allow(unused_imports)]
 use libc::{c_void, size_t};
@@ -26,16 +30,23 @@ use std::ptr;
 /// Calls `clGetLayerInfo`.
 pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
     let mut size: size_t = 0;
-    let status = unsafe { clGetLayerInfo(param_name, 0, ptr::null_mut(), &mut size) };
+    let status = unsafe {
+        cl_call!(cl_layer::clGetLayerInfo(
+            param_name,
+            0,
+            ptr::null_mut(),
+            &mut size
+        ))
+    };
     if CL_SUCCESS == status {
         let mut data: Vec<u8> = Vec::with_capacity(size);
         let status = unsafe {
-            clGetLayerInfo(
+            cl_call!(cl_layer::clGetLayerInfo(
                 param_name,
                 size,
                 data.as_mut_ptr().cast::<c_void>(),
                 ptr::null_mut(),
-            )
+            ))
         };
         if CL_SUCCESS == status {
             Ok(data)
@@ -59,12 +70,12 @@ pub unsafe fn init_layer(
 ) -> Result<&[cl_icd_dispatch], cl_int> {
     let mut num_entries_ret: cl_uint = 0;
     let mut layer_dispatch_ret: *const cl_icd_dispatch = ptr::null();
-    let status = clInitLayer(
+    let status = cl_call!(cl_layer::clInitLayer(
         target_dispatch.len() as cl_uint,
         target_dispatch.as_ptr(),
         &mut num_entries_ret,
         &mut layer_dispatch_ret,
-    );
+    ));
     if CL_SUCCESS == status {
         let slice = std::slice::from_raw_parts(layer_dispatch_ret, num_entries_ret as usize);
         Ok(slice)

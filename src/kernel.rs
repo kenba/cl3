@@ -14,6 +14,7 @@
 
 //! `OpenCL` Kernel Object API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types)]
 #![allow(
     clippy::not_unsafe_ptr_arg_deref,
@@ -21,15 +22,12 @@
     clippy::wildcard_in_or_patterns
 )]
 
-pub use opencl_sys::{
-    cl_device_id, cl_int, cl_kernel, cl_kernel_arg_access_qualifier, cl_kernel_arg_info,
-    cl_kernel_exec_info, cl_kernel_info, cl_kernel_sub_group_info, cl_kernel_work_group_info,
-    cl_program, cl_uint, cl_ulong, CL_INVALID_VALUE, CL_KERNEL_ARG_ACCESS_NONE,
-    CL_KERNEL_ARG_ACCESS_QUALIFIER, CL_KERNEL_ARG_ACCESS_READ_ONLY,
-    CL_KERNEL_ARG_ACCESS_READ_WRITE, CL_KERNEL_ARG_ACCESS_WRITE_ONLY,
-    CL_KERNEL_ARG_ADDRESS_CONSTANT, CL_KERNEL_ARG_ADDRESS_GLOBAL, CL_KERNEL_ARG_ADDRESS_LOCAL,
-    CL_KERNEL_ARG_ADDRESS_PRIVATE, CL_KERNEL_ARG_ADDRESS_QUALIFIER, CL_KERNEL_ARG_NAME,
-    CL_KERNEL_ARG_TYPE_CONST, CL_KERNEL_ARG_TYPE_NAME, CL_KERNEL_ARG_TYPE_NONE,
+pub use crate::constants::{
+    CL_INVALID_VALUE, CL_KERNEL_ARG_ACCESS_NONE, CL_KERNEL_ARG_ACCESS_QUALIFIER,
+    CL_KERNEL_ARG_ACCESS_READ_ONLY, CL_KERNEL_ARG_ACCESS_READ_WRITE,
+    CL_KERNEL_ARG_ACCESS_WRITE_ONLY, CL_KERNEL_ARG_ADDRESS_CONSTANT, CL_KERNEL_ARG_ADDRESS_GLOBAL,
+    CL_KERNEL_ARG_ADDRESS_LOCAL, CL_KERNEL_ARG_ADDRESS_PRIVATE, CL_KERNEL_ARG_ADDRESS_QUALIFIER,
+    CL_KERNEL_ARG_NAME, CL_KERNEL_ARG_TYPE_CONST, CL_KERNEL_ARG_TYPE_NAME, CL_KERNEL_ARG_TYPE_NONE,
     CL_KERNEL_ARG_TYPE_PIPE, CL_KERNEL_ARG_TYPE_QUALIFIER, CL_KERNEL_ARG_TYPE_RESTRICT,
     CL_KERNEL_ARG_TYPE_VOLATILE, CL_KERNEL_ATTRIBUTES, CL_KERNEL_COMPILE_NUM_SUB_GROUPS,
     CL_KERNEL_COMPILE_WORK_GROUP_SIZE, CL_KERNEL_CONTEXT,
@@ -41,17 +39,11 @@ pub use opencl_sys::{
     CL_KERNEL_REFERENCE_COUNT, CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE, CL_KERNEL_WORK_GROUP_SIZE,
     CL_SUCCESS,
 };
-
-use opencl_sys::{
-    clCreateKernel, clCreateKernelsInProgram, clGetKernelArgInfo, clGetKernelInfo,
-    clGetKernelWorkGroupInfo, clReleaseKernel, clRetainKernel, clSetKernelArg,
+pub use crate::types::{
+    cl_device_id, cl_int, cl_kernel, cl_kernel_arg_access_qualifier, cl_kernel_arg_info,
+    cl_kernel_exec_info, cl_kernel_info, cl_kernel_sub_group_info, cl_kernel_work_group_info,
+    cl_program, cl_uint, cl_ulong,
 };
-
-#[cfg(feature = "CL_VERSION_2_0")]
-use opencl_sys::{clSetKernelArgSVMPointer, clSetKernelExecInfo};
-
-#[cfg(feature = "CL_VERSION_2_1")]
-use opencl_sys::{clCloneKernel, clGetKernelSubGroupInfo};
 
 use super::info_type::InfoType;
 use super::{
@@ -63,8 +55,8 @@ use std::ffi::CStr;
 use std::mem;
 use std::ptr;
 
-/// Create an `OpenCL` kernel object for a program with a successfully built executable.  
-/// Calls clCreateKernel to create an `OpenCL` kernel object.  
+/// Create an `OpenCL` kernel object for a program with a successfully built executable.
+/// Calls clCreateKernel to create an `OpenCL` kernel object.
 ///
 /// * `program` - a valid `OpenCL` program.
 /// * `kernel_name` - a kernel function name in the program.
@@ -74,7 +66,8 @@ use std::ptr;
 #[inline]
 pub fn create_kernel(program: cl_program, kernel_name: &CStr) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let kernel: cl_kernel = unsafe { clCreateKernel(program, kernel_name.as_ptr(), &mut status) };
+    let kernel: cl_kernel =
+        unsafe { cl_call!(clCreateKernel(program, kernel_name.as_ptr(), &mut status)) };
     if CL_SUCCESS == status {
         Ok(kernel)
     } else {
@@ -84,8 +77,14 @@ pub fn create_kernel(program: cl_program, kernel_name: &CStr) -> Result<cl_kerne
 
 fn count_kernels_in_program(program: cl_program) -> Result<cl_uint, cl_int> {
     let mut count: cl_uint = 0;
-    let status: cl_int =
-        unsafe { clCreateKernelsInProgram(program, 0, ptr::null_mut(), &mut count) };
+    let status: cl_int = unsafe {
+        cl_call!(clCreateKernelsInProgram(
+            program,
+            0,
+            ptr::null_mut(),
+            &mut count
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(count)
     } else {
@@ -93,8 +92,8 @@ fn count_kernels_in_program(program: cl_program) -> Result<cl_uint, cl_int> {
     }
 }
 
-/// Create `OpenCL` kernel objects for all kernel functions in a program.  
-/// Calls clCreateKernelsInProgram to create `OpenCL` kernel objects.  
+/// Create `OpenCL` kernel objects for all kernel functions in a program.
+/// Calls clCreateKernelsInProgram to create `OpenCL` kernel objects.
 ///
 /// * `program` - a valid `OpenCL` program.
 ///
@@ -106,12 +105,12 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
     let mut kernels: Vec<cl_kernel> = Vec::with_capacity(count as size_t);
     let status: cl_int = unsafe {
         kernels.set_len(count as size_t);
-        clCreateKernelsInProgram(
+        cl_call!(clCreateKernelsInProgram(
             program,
             count,
             kernels.as_mut_ptr().cast::<cl_kernel>(),
             ptr::null_mut(),
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(kernels)
@@ -120,8 +119,8 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
     }
 }
 
-/// Clone an `OpenCL` kernel object.  
-/// Calls clCloneKernel to clone an `OpenCL` kernel object.  
+/// Clone an `OpenCL` kernel object.
+/// Calls clCloneKernel to clone an `OpenCL` kernel object.
 /// `CL_VERSION_2_1`
 ///
 /// * `source_kernel` - a valid `OpenCL` `cl_kernel` object that will be copied.
@@ -132,7 +131,7 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
 #[inline]
 pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let kernel: cl_kernel = unsafe { clCloneKernel(source_kernel, &mut status) };
+    let kernel: cl_kernel = unsafe { cl_call!(clCloneKernel(source_kernel, &mut status)) };
     if CL_SUCCESS == status {
         Ok(kernel)
     } else {
@@ -140,7 +139,7 @@ pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
     }
 }
 
-/// Retain an `OpenCL` kernel.  
+/// Retain an `OpenCL` kernel.
 /// Calls clRetainKernel to increment the kernel reference count.
 ///
 /// * `program` - the `OpenCL` kernel.
@@ -152,7 +151,7 @@ pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
-    let status: cl_int = clRetainKernel(kernel);
+    let status: cl_int = cl_call!(clRetainKernel(kernel));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -160,7 +159,7 @@ pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` kernel.  
+/// Release an `OpenCL` kernel.
 /// Calls clReleaseKernel to decrement the kernel reference count.
 ///
 /// * `kernel` - the `OpenCL` kernel.
@@ -172,7 +171,7 @@ pub unsafe fn retain_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseKernel(kernel);
+    let status: cl_int = cl_call!(clReleaseKernel(kernel));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -180,8 +179,8 @@ pub unsafe fn release_kernel(kernel: cl_kernel) -> Result<(), cl_int> {
     }
 }
 
-/// Set the argument value for a specific argument of a kernel.  
-/// Calls clSetKernelArg.  
+/// Set the argument value for a specific argument of a kernel.
+/// Calls clSetKernelArg.
 ///
 /// * `kernel` - the `OpenCL` kernel.
 /// * `arg_index` - the kernel argument index.
@@ -199,7 +198,7 @@ pub unsafe fn set_kernel_arg(
     arg_size: size_t,
     arg_value: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clSetKernelArg(kernel, arg_index, arg_size, arg_value);
+    let status: cl_int = cl_call!(clSetKernelArg(kernel, arg_index, arg_size, arg_value));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -207,8 +206,8 @@ pub unsafe fn set_kernel_arg(
     }
 }
 
-/// Set set a SVM pointer as the argument value for a specific argument of a kernel.  
-/// Calls clSetKernelArgSVMPointer.  
+/// Set set a SVM pointer as the argument value for a specific argument of a kernel.
+/// Calls clSetKernelArgSVMPointer.
 ///
 /// * `kernel` - the `OpenCL` kernel.
 /// * `arg_index` - the kernel argument index.
@@ -226,7 +225,7 @@ pub unsafe fn set_kernel_arg_svm_pointer(
     arg_index: cl_uint,
     arg_ptr: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clSetKernelArgSVMPointer(kernel, arg_index, arg_ptr);
+    let status: cl_int = cl_call!(clSetKernelArgSVMPointer(kernel, arg_index, arg_ptr));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -234,8 +233,8 @@ pub unsafe fn set_kernel_arg_svm_pointer(
     }
 }
 
-/// Pass additional information other than argument values to a kernel.  
-/// Calls clSetKernelExecInfo.  
+/// Pass additional information other than argument values to a kernel.
+/// Calls clSetKernelExecInfo.
 ///
 /// * `kernel` - the `OpenCL` kernel.
 /// * `param_name` - the information to be passed to kernel, see:
@@ -255,7 +254,12 @@ pub unsafe fn set_kernel_exec_info(
     param_value_size: size_t,
     param_value: *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clSetKernelExecInfo(kernel, param_name, param_value_size, param_value);
+    let status: cl_int = cl_call!(clSetKernelExecInfo(
+        kernel,
+        param_name,
+        param_value_size,
+        param_value
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -272,7 +276,7 @@ pub fn get_kernel_data(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<
     get_vector(kernel, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` kernel.  
+/// Get specific information about an `OpenCL` kernel.
 /// Calls clGetKernelInfo to get the desired information about the kernel.
 ///
 /// * `kernel` - the `OpenCL` kernel.
@@ -312,7 +316,7 @@ pub fn get_kernel_arg_data(
     get_vector(kernel, arg_indx, param_name, size)
 }
 
-/// Get specific information about arguments of an `OpenCL` kernel.  
+/// Get specific information about arguments of an `OpenCL` kernel.
 /// Calls clGetKernelArgInfo to get the desired information about the kernel.
 ///
 /// * `kernel` - the `OpenCL` kernel.
@@ -362,7 +366,7 @@ pub fn get_kernel_work_group_data(
     get_vector(kernel, device, param_name, size)
 }
 
-/// Get specific information about work groups of an `OpenCL` kernel.  
+/// Get specific information about work groups of an `OpenCL` kernel.
 /// Calls clGetKernelWorkGroupInfo to get the desired information about the kernel.
 ///
 /// * `kernel` - the `OpenCL` kernel.
@@ -420,8 +424,8 @@ pub fn get_kernel_work_group_info(
     }
 }
 
-/// Get specific information about sub groups of an `OpenCL` kernel.  
-/// Calls clGetKernelSubGroupInfo to get the desired information about the kernel.  
+/// Get specific information about sub groups of an `OpenCL` kernel.
+/// Calls clGetKernelSubGroupInfo to get the desired information about the kernel.
 /// `CL_VERSION_2_1`
 ///
 /// * `kernel` - the `OpenCL` kernel.
@@ -452,7 +456,7 @@ pub fn get_kernel_sub_group_info(
             let mut data: size_t = 0;
             let data_ptr: *mut size_t = &mut data;
             let status = unsafe {
-                clGetKernelSubGroupInfo(
+                cl_call!(clGetKernelSubGroupInfo(
                     kernel,
                     device,
                     param_name,
@@ -461,7 +465,7 @@ pub fn get_kernel_sub_group_info(
                     size,
                     data_ptr.cast::<c_void>(),
                     ptr::null_mut(),
-                )
+                ))
             };
             if CL_SUCCESS == status {
                 Ok(InfoType::Size(data))
@@ -473,7 +477,7 @@ pub fn get_kernel_sub_group_info(
         CL_KERNEL_LOCAL_SIZE_FOR_SUB_GROUP_COUNT => {
             // get the size
             let status: cl_int = unsafe {
-                clGetKernelSubGroupInfo(
+                cl_call!(clGetKernelSubGroupInfo(
                     kernel,
                     device,
                     param_name,
@@ -482,7 +486,7 @@ pub fn get_kernel_sub_group_info(
                     0,
                     ptr::null_mut(),
                     &mut size,
-                )
+                ))
             };
             if CL_SUCCESS == status {
                 // Get the information.
@@ -490,7 +494,7 @@ pub fn get_kernel_sub_group_info(
                 let mut data: Vec<size_t> = Vec::with_capacity(count);
                 let status = unsafe {
                     data.set_len(count);
-                    clGetKernelSubGroupInfo(
+                    cl_call!(clGetKernelSubGroupInfo(
                         kernel,
                         device,
                         param_name,
@@ -499,7 +503,7 @@ pub fn get_kernel_sub_group_info(
                         size,
                         data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
-                    )
+                    ))
                 };
                 if CL_SUCCESS == status {
                     Ok(InfoType::VecSize(data))
@@ -514,7 +518,7 @@ pub fn get_kernel_sub_group_info(
         _ => {
             // get the size
             let status: cl_int = unsafe {
-                clGetKernelSubGroupInfo(
+                cl_call!(clGetKernelSubGroupInfo(
                     kernel,
                     device,
                     param_name,
@@ -523,7 +527,7 @@ pub fn get_kernel_sub_group_info(
                     0,
                     ptr::null_mut(),
                     &mut size,
-                )
+                ))
             };
             if CL_SUCCESS == status {
                 // Get the information.
@@ -531,7 +535,7 @@ pub fn get_kernel_sub_group_info(
                 let mut data: Vec<u8> = Vec::with_capacity(count);
                 let status = unsafe {
                     data.set_len(count);
-                    clGetKernelSubGroupInfo(
+                    cl_call!(clGetKernelSubGroupInfo(
                         kernel,
                         device,
                         param_name,
@@ -540,7 +544,7 @@ pub fn get_kernel_sub_group_info(
                         size,
                         data.as_mut_ptr().cast::<c_void>(),
                         ptr::null_mut(),
-                    )
+                    ))
                 };
                 if CL_SUCCESS == status {
                     Ok(InfoType::VecUchar(data))

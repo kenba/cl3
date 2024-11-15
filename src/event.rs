@@ -14,17 +14,23 @@
 
 //! `OpenCL` Event Object API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
-pub use opencl_sys::{
-    cl_command_queue, cl_command_type, cl_context, cl_event, cl_event_info, cl_int,
-    cl_profiling_info, cl_uint, cl_ulong, CL_COMMAND_ACQUIRE_GL_OBJECTS, CL_COMMAND_BARRIER,
-    CL_COMMAND_COMMAND_BUFFER_KHR, CL_COMMAND_COPY_BUFFER, CL_COMMAND_COPY_BUFFER_RECT,
-    CL_COMMAND_COPY_BUFFER_TO_IMAGE, CL_COMMAND_COPY_IMAGE, CL_COMMAND_COPY_IMAGE_TO_BUFFER,
-    CL_COMMAND_FILL_BUFFER, CL_COMMAND_FILL_IMAGE, CL_COMMAND_MAP_BUFFER, CL_COMMAND_MAP_IMAGE,
-    CL_COMMAND_MARKER, CL_COMMAND_MEMADVISE_INTEL, CL_COMMAND_MEMCPY_INTEL,
-    CL_COMMAND_MEMFILL_INTEL, CL_COMMAND_MIGRATEMEM_INTEL, CL_COMMAND_MIGRATE_MEM_OBJECTS,
+pub use crate::constants::cl_egl::{
+    CL_COMMAND_ACQUIRE_EGL_OBJECTS_KHR, CL_COMMAND_EGL_FENCE_SYNC_OBJECT_KHR,
+    CL_COMMAND_RELEASE_EGL_OBJECTS_KHR,
+};
+pub use crate::constants::cl_ext::{
+    CL_COMMAND_COMMAND_BUFFER_KHR, CL_COMMAND_MEMADVISE_INTEL, CL_COMMAND_MEMCPY_INTEL,
+    CL_COMMAND_MEMFILL_INTEL, CL_COMMAND_MIGRATEMEM_INTEL,
+};
+pub use crate::constants::{
+    CL_COMMAND_ACQUIRE_GL_OBJECTS, CL_COMMAND_BARRIER, CL_COMMAND_COPY_BUFFER,
+    CL_COMMAND_COPY_BUFFER_RECT, CL_COMMAND_COPY_BUFFER_TO_IMAGE, CL_COMMAND_COPY_IMAGE,
+    CL_COMMAND_COPY_IMAGE_TO_BUFFER, CL_COMMAND_FILL_BUFFER, CL_COMMAND_FILL_IMAGE,
+    CL_COMMAND_MAP_BUFFER, CL_COMMAND_MAP_IMAGE, CL_COMMAND_MARKER, CL_COMMAND_MIGRATE_MEM_OBJECTS,
     CL_COMMAND_NATIVE_KERNEL, CL_COMMAND_NDRANGE_KERNEL, CL_COMMAND_READ_BUFFER,
     CL_COMMAND_READ_BUFFER_RECT, CL_COMMAND_READ_IMAGE, CL_COMMAND_RELEASE_GL_OBJECTS,
     CL_COMMAND_SVM_FREE, CL_COMMAND_SVM_MAP, CL_COMMAND_SVM_MEMCPY, CL_COMMAND_SVM_MEMFILL,
@@ -35,15 +41,9 @@ pub use opencl_sys::{
     CL_PROFILING_COMMAND_END, CL_PROFILING_COMMAND_QUEUED, CL_PROFILING_COMMAND_START,
     CL_PROFILING_COMMAND_SUBMIT, CL_QUEUED, CL_RUNNING, CL_SUBMITTED, CL_SUCCESS,
 };
-
-pub use opencl_sys::cl_egl::{
-    CL_COMMAND_ACQUIRE_EGL_OBJECTS_KHR, CL_COMMAND_EGL_FENCE_SYNC_OBJECT_KHR,
-    CL_COMMAND_RELEASE_EGL_OBJECTS_KHR,
-};
-
-use opencl_sys::{
-    clCreateUserEvent, clGetEventInfo, clGetEventProfilingInfo, clReleaseEvent, clRetainEvent,
-    clSetEventCallback, clSetUserEventStatus, clWaitForEvents,
+pub use crate::types::{
+    cl_command_queue, cl_command_type, cl_context, cl_event, cl_event_info, cl_int,
+    cl_profiling_info, cl_uint, cl_ulong,
 };
 
 use super::info_type::InfoType;
@@ -53,7 +53,7 @@ use std::fmt;
 use std::mem;
 use std::ptr;
 
-/// Wait for `OpenCL` events to complete.  
+/// Wait for `OpenCL` events to complete.
 /// Calls `clWaitForEvents`.
 ///
 /// * `events` - a slice of `OpenCL` events.
@@ -62,7 +62,8 @@ use std::ptr;
 #[inline]
 #[allow(clippy::cast_possible_truncation)]
 pub fn wait_for_events(events: &[cl_event]) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clWaitForEvents(events.len() as cl_uint, events.as_ptr()) };
+    let status: cl_int =
+        unsafe { cl_call!(clWaitForEvents(events.len() as cl_uint, events.as_ptr())) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -79,7 +80,7 @@ pub fn get_event_data(event: cl_event, param_name: cl_event_info) -> Result<Vec<
     get_vector(event, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` event.  
+/// Get specific information about an `OpenCL` event.
 /// Calls `clGetEventInfo` to get the desired information about the event.
 ///
 /// * `event` - the `OpenCL` event.
@@ -109,8 +110,8 @@ pub fn get_event_info(event: cl_event, param_name: cl_event_info) -> Result<Info
     }
 }
 
-/// Create an `OpenCL` user event object.  
-/// Calls `clCreateUserEvent` to create an `OpenCL` event.  
+/// Create an `OpenCL` user event object.
+/// Calls `clCreateUserEvent` to create an `OpenCL` event.
 ///
 /// * `context` - a valid `OpenCL` context.
 ///
@@ -119,7 +120,7 @@ pub fn get_event_info(event: cl_event, param_name: cl_event_info) -> Result<Info
 #[inline]
 pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let event: cl_event = unsafe { clCreateUserEvent(context, &mut status) };
+    let event: cl_event = unsafe { cl_call!(clCreateUserEvent(context, &mut status)) };
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -127,7 +128,7 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
     }
 }
 
-/// Retain an `OpenCL` event.  
+/// Retain an `OpenCL` event.
 /// Calls clRetainEvent to increment the event reference count.
 ///
 /// * `event` - the `OpenCL` event.
@@ -139,7 +140,7 @@ pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
-    let status: cl_int = clRetainEvent(event);
+    let status: cl_int = cl_call!(clRetainEvent(event));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -147,7 +148,7 @@ pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` event.  
+/// Release an `OpenCL` event.
 /// Calls `clReleaseEvent` to decrement the event reference count.
 ///
 /// * `event` - the `OpenCL` event.
@@ -159,7 +160,7 @@ pub unsafe fn retain_event(event: cl_event) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseEvent(event);
+    let status: cl_int = cl_call!(clReleaseEvent(event));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -167,7 +168,7 @@ pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
     }
 }
 
-/// Set the execution status of a user event object.  
+/// Set the execution status of a user event object.
 /// Calls `clSetUserEventStatus` to set the execution status.
 ///
 /// * `event` - the `OpenCL` event.
@@ -176,7 +177,7 @@ pub unsafe fn release_event(event: cl_event) -> Result<(), cl_int> {
 /// returns an empty Result or the error code from the `OpenCL` C API function.
 #[inline]
 pub fn set_user_event_status(event: cl_event, execution_status: cl_int) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clSetUserEventStatus(event, execution_status) };
+    let status: cl_int = unsafe { cl_call!(clSetUserEventStatus(event, execution_status)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -185,7 +186,7 @@ pub fn set_user_event_status(event: cl_event, execution_status: cl_int) -> Resul
 }
 
 /// Register a user callback function for a specific command execution status,
-/// Calls `clSetEventCallback` to register a callback function.  
+/// Calls `clSetEventCallback` to register a callback function.
 ///
 /// * `event` - the `OpenCL` event.
 /// * `pfn_notify` - function pointer to the callback function.
@@ -200,12 +201,12 @@ pub fn set_event_callback(
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = unsafe {
-        clSetEventCallback(
+        cl_call!(clSetEventCallback(
             event,
             command_exec_callback_type,
             Some(pfn_notify),
             user_data,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(())
@@ -227,7 +228,7 @@ pub fn get_event_profiling_data(
 }
 
 /// Get profiling information for a command associated with an event when
-/// profiling is enabled.  
+/// profiling is enabled.
 /// Calls clGetEventProfilingInfo to get the desired information.
 ///
 /// * `event` - the `OpenCL` event.

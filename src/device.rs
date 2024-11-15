@@ -14,6 +14,7 @@
 
 //! `OpenCL` Device API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types, non_upper_case_globals)]
 #![allow(
     clippy::not_unsafe_ptr_arg_deref,
@@ -21,12 +22,35 @@
     clippy::wildcard_in_or_patterns
 )]
 
-pub use opencl_sys::{
-    cl_amd_device_topology, cl_command_queue, cl_context, cl_device_fp_config, cl_device_id,
-    cl_device_info, cl_device_integer_dot_product_acceleration_properties_khr,
-    cl_device_partition_property, cl_device_pci_bus_info_khr, cl_device_svm_capabilities,
-    cl_device_type, cl_double, cl_float, cl_int, cl_name_version, cl_platform_id, cl_uint,
-    cl_ulong, CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR,
+pub use crate::constants::cl_ext::{
+    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_4x8BIT_PACKED_KHR,
+    CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD, CL_DEVICE_BOARD_NAME_AMD,
+    CL_DEVICE_COMMAND_BUFFER_CAPABILITIES_KHR,
+    CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR, CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV,
+    CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV, CL_DEVICE_DOUBLE_FP_CONFIG,
+    CL_DEVICE_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR, CL_DEVICE_FEATURE_CAPABILITIES_INTEL,
+    CL_DEVICE_GFXIP_MAJOR_AMD, CL_DEVICE_GFXIP_MINOR_AMD, CL_DEVICE_GLOBAL_FREE_MEMORY_AMD,
+    CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD,
+    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD, CL_DEVICE_GPU_OVERLAP_NV,
+    CL_DEVICE_HALF_FP_CONFIG, CL_DEVICE_ID_INTEL,
+    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR,
+    CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR, CL_DEVICE_INTEGRATED_MEMORY_NV,
+    CL_DEVICE_IP_VERSION_INTEL, CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV, CL_DEVICE_LOCAL_MEM_BANKS_AMD,
+    CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD, CL_DEVICE_LUID_KHR, CL_DEVICE_LUID_VALID_KHR,
+    CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD, CL_DEVICE_NODE_MASK_KHR,
+    CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL, CL_DEVICE_NUM_SLICES_INTEL,
+    CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL, CL_DEVICE_NUM_THREADS_PER_EU_INTEL,
+    CL_DEVICE_PCIE_ID_AMD, CL_DEVICE_PCI_BUS_ID_NV, CL_DEVICE_PCI_BUS_INFO_KHR,
+    CL_DEVICE_PCI_SLOT_ID_NV, CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD,
+    CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD, CL_DEVICE_PROFILING_TIMER_OFFSET_AMD,
+    CL_DEVICE_REGISTERS_PER_BLOCK_NV, CL_DEVICE_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR,
+    CL_DEVICE_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR, CL_DEVICE_SEMAPHORE_TYPES_KHR,
+    CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD, CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD,
+    CL_DEVICE_SIMD_WIDTH_AMD, CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD, CL_DEVICE_TOPOLOGY_AMD,
+    CL_DEVICE_UUID_KHR, CL_DEVICE_WARP_SIZE_NV, CL_DEVICE_WAVEFRONT_WIDTH_AMD, CL_DRIVER_UUID_KHR,
+    CL_LUID_SIZE_KHR, CL_UUID_SIZE_KHR,
+};
+pub use crate::constants::{
     CL_DEVICE_ADDRESS_BITS, CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE, CL_DEVICE_AFFINITY_DOMAIN_L2_CACHE,
     CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE, CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE,
     CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE, CL_DEVICE_AFFINITY_DOMAIN_NUMA,
@@ -34,88 +58,67 @@ pub use opencl_sys::{
     CL_DEVICE_ATOMIC_ORDER_ACQ_REL, CL_DEVICE_ATOMIC_ORDER_RELAXED, CL_DEVICE_ATOMIC_ORDER_SEQ_CST,
     CL_DEVICE_ATOMIC_SCOPE_ALL_DEVICES, CL_DEVICE_ATOMIC_SCOPE_DEVICE,
     CL_DEVICE_ATOMIC_SCOPE_WORK_GROUP, CL_DEVICE_ATOMIC_SCOPE_WORK_ITEM, CL_DEVICE_AVAILABLE,
-    CL_DEVICE_AVAILABLE_ASYNC_QUEUES_AMD, CL_DEVICE_BOARD_NAME_AMD, CL_DEVICE_BUILT_IN_KERNELS,
-    CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION, CL_DEVICE_COMMAND_BUFFER_CAPABILITIES_KHR,
-    CL_DEVICE_COMMAND_BUFFER_REQUIRED_QUEUE_PROPERTIES_KHR, CL_DEVICE_COMPILER_AVAILABLE,
-    CL_DEVICE_COMPUTE_CAPABILITY_MAJOR_NV, CL_DEVICE_COMPUTE_CAPABILITY_MINOR_NV,
-    CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES, CL_DEVICE_DOUBLE_FP_CONFIG, CL_DEVICE_ENDIAN_LITTLE,
+    CL_DEVICE_BUILT_IN_KERNELS, CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION,
+    CL_DEVICE_COMPILER_AVAILABLE, CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES, CL_DEVICE_ENDIAN_LITTLE,
     CL_DEVICE_ERROR_CORRECTION_SUPPORT, CL_DEVICE_EXECUTION_CAPABILITIES, CL_DEVICE_EXTENSIONS,
-    CL_DEVICE_EXTENSIONS_WITH_VERSION, CL_DEVICE_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR,
-    CL_DEVICE_FEATURE_CAPABILITIES_INTEL, CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT,
-    CL_DEVICE_GFXIP_MAJOR_AMD, CL_DEVICE_GFXIP_MINOR_AMD, CL_DEVICE_GLOBAL_FREE_MEMORY_AMD,
+    CL_DEVICE_EXTENSIONS_WITH_VERSION, CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT,
     CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE, CL_DEVICE_GLOBAL_MEM_CACHE_SIZE,
-    CL_DEVICE_GLOBAL_MEM_CACHE_TYPE, CL_DEVICE_GLOBAL_MEM_CHANNELS_AMD,
-    CL_DEVICE_GLOBAL_MEM_CHANNEL_BANKS_AMD, CL_DEVICE_GLOBAL_MEM_CHANNEL_BANK_WIDTH_AMD,
-    CL_DEVICE_GLOBAL_MEM_SIZE, CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE,
-    CL_DEVICE_GPU_OVERLAP_NV, CL_DEVICE_HALF_FP_CONFIG, CL_DEVICE_HOST_UNIFIED_MEMORY,
-    CL_DEVICE_ID_INTEL, CL_DEVICE_ILS_WITH_VERSION, CL_DEVICE_IL_VERSION,
-    CL_DEVICE_IMAGE2D_MAX_HEIGHT, CL_DEVICE_IMAGE2D_MAX_WIDTH, CL_DEVICE_IMAGE3D_MAX_DEPTH,
-    CL_DEVICE_IMAGE3D_MAX_HEIGHT, CL_DEVICE_IMAGE3D_MAX_WIDTH,
-    CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT, CL_DEVICE_IMAGE_MAX_ARRAY_SIZE,
-    CL_DEVICE_IMAGE_MAX_BUFFER_SIZE, CL_DEVICE_IMAGE_PITCH_ALIGNMENT, CL_DEVICE_IMAGE_SUPPORT,
-    CL_DEVICE_INTEGER_DOT_PRODUCT_ACCELERATION_PROPERTIES_8BIT_KHR,
-    CL_DEVICE_INTEGER_DOT_PRODUCT_CAPABILITIES_KHR, CL_DEVICE_INTEGRATED_MEMORY_NV,
-    CL_DEVICE_IP_VERSION_INTEL, CL_DEVICE_KERNEL_EXEC_TIMEOUT_NV,
+    CL_DEVICE_GLOBAL_MEM_CACHE_TYPE, CL_DEVICE_GLOBAL_MEM_SIZE,
+    CL_DEVICE_GLOBAL_VARIABLE_PREFERRED_TOTAL_SIZE, CL_DEVICE_HOST_UNIFIED_MEMORY,
+    CL_DEVICE_ILS_WITH_VERSION, CL_DEVICE_IL_VERSION, CL_DEVICE_IMAGE2D_MAX_HEIGHT,
+    CL_DEVICE_IMAGE2D_MAX_WIDTH, CL_DEVICE_IMAGE3D_MAX_DEPTH, CL_DEVICE_IMAGE3D_MAX_HEIGHT,
+    CL_DEVICE_IMAGE3D_MAX_WIDTH, CL_DEVICE_IMAGE_BASE_ADDRESS_ALIGNMENT,
+    CL_DEVICE_IMAGE_MAX_ARRAY_SIZE, CL_DEVICE_IMAGE_MAX_BUFFER_SIZE,
+    CL_DEVICE_IMAGE_PITCH_ALIGNMENT, CL_DEVICE_IMAGE_SUPPORT,
     CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED, CL_DEVICE_LINKER_AVAILABLE,
-    CL_DEVICE_LOCAL_MEM_BANKS_AMD, CL_DEVICE_LOCAL_MEM_SIZE,
-    CL_DEVICE_LOCAL_MEM_SIZE_PER_COMPUTE_UNIT_AMD, CL_DEVICE_LOCAL_MEM_TYPE, CL_DEVICE_LUID_KHR,
-    CL_DEVICE_LUID_VALID_KHR, CL_DEVICE_MAX_CLOCK_FREQUENCY, CL_DEVICE_MAX_COMPUTE_UNITS,
-    CL_DEVICE_MAX_CONSTANT_ARGS, CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE,
+    CL_DEVICE_LOCAL_MEM_SIZE, CL_DEVICE_LOCAL_MEM_TYPE, CL_DEVICE_MAX_CLOCK_FREQUENCY,
+    CL_DEVICE_MAX_COMPUTE_UNITS, CL_DEVICE_MAX_CONSTANT_ARGS, CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE,
     CL_DEVICE_MAX_GLOBAL_VARIABLE_SIZE, CL_DEVICE_MAX_MEM_ALLOC_SIZE, CL_DEVICE_MAX_NUM_SUB_GROUPS,
     CL_DEVICE_MAX_ON_DEVICE_EVENTS, CL_DEVICE_MAX_ON_DEVICE_QUEUES, CL_DEVICE_MAX_PARAMETER_SIZE,
     CL_DEVICE_MAX_PIPE_ARGS, CL_DEVICE_MAX_READ_IMAGE_ARGS, CL_DEVICE_MAX_READ_WRITE_IMAGE_ARGS,
-    CL_DEVICE_MAX_SAMPLERS, CL_DEVICE_MAX_WORK_GROUP_SIZE, CL_DEVICE_MAX_WORK_GROUP_SIZE_AMD,
-    CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, CL_DEVICE_MAX_WORK_ITEM_SIZES,
-    CL_DEVICE_MAX_WRITE_IMAGE_ARGS, CL_DEVICE_MEM_BASE_ADDR_ALIGN,
+    CL_DEVICE_MAX_SAMPLERS, CL_DEVICE_MAX_WORK_GROUP_SIZE, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS,
+    CL_DEVICE_MAX_WORK_ITEM_SIZES, CL_DEVICE_MAX_WRITE_IMAGE_ARGS, CL_DEVICE_MEM_BASE_ADDR_ALIGN,
     CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE, CL_DEVICE_NAME, CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR,
     CL_DEVICE_NATIVE_VECTOR_WIDTH_DOUBLE, CL_DEVICE_NATIVE_VECTOR_WIDTH_FLOAT,
     CL_DEVICE_NATIVE_VECTOR_WIDTH_HALF, CL_DEVICE_NATIVE_VECTOR_WIDTH_INT,
     CL_DEVICE_NATIVE_VECTOR_WIDTH_LONG, CL_DEVICE_NATIVE_VECTOR_WIDTH_SHORT,
-    CL_DEVICE_NODE_MASK_KHR, CL_DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT, CL_DEVICE_NOT_FOUND,
-    CL_DEVICE_NUMERIC_VERSION, CL_DEVICE_NUM_EUS_PER_SUB_SLICE_INTEL, CL_DEVICE_NUM_SLICES_INTEL,
-    CL_DEVICE_NUM_SUB_SLICES_PER_SLICE_INTEL, CL_DEVICE_NUM_THREADS_PER_EU_INTEL,
+    CL_DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT, CL_DEVICE_NOT_FOUND, CL_DEVICE_NUMERIC_VERSION,
     CL_DEVICE_OPENCL_C_ALL_VERSIONS, CL_DEVICE_OPENCL_C_FEATURES, CL_DEVICE_OPENCL_C_VERSION,
     CL_DEVICE_PARENT_DEVICE, CL_DEVICE_PARTITION_AFFINITY_DOMAIN,
     CL_DEVICE_PARTITION_MAX_SUB_DEVICES, CL_DEVICE_PARTITION_PROPERTIES, CL_DEVICE_PARTITION_TYPE,
-    CL_DEVICE_PCIE_ID_AMD, CL_DEVICE_PCI_BUS_ID_NV, CL_DEVICE_PCI_BUS_INFO_KHR,
-    CL_DEVICE_PCI_SLOT_ID_NV, CL_DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS,
-    CL_DEVICE_PIPE_MAX_PACKET_SIZE, CL_DEVICE_PIPE_SUPPORT, CL_DEVICE_PLATFORM,
-    CL_DEVICE_PREFERRED_CONSTANT_BUFFER_SIZE_AMD, CL_DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT,
+    CL_DEVICE_PIPE_MAX_ACTIVE_RESERVATIONS, CL_DEVICE_PIPE_MAX_PACKET_SIZE, CL_DEVICE_PIPE_SUPPORT,
+    CL_DEVICE_PLATFORM, CL_DEVICE_PREFERRED_GLOBAL_ATOMIC_ALIGNMENT,
     CL_DEVICE_PREFERRED_INTEROP_USER_SYNC, CL_DEVICE_PREFERRED_LOCAL_ATOMIC_ALIGNMENT,
     CL_DEVICE_PREFERRED_PLATFORM_ATOMIC_ALIGNMENT, CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR,
     CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE, CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT,
     CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF, CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT,
     CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG, CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT,
-    CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_AMD, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE,
-    CL_DEVICE_PRINTF_BUFFER_SIZE, CL_DEVICE_PROFILE, CL_DEVICE_PROFILING_TIMER_OFFSET_AMD,
+    CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, CL_DEVICE_PRINTF_BUFFER_SIZE, CL_DEVICE_PROFILE,
     CL_DEVICE_PROFILING_TIMER_RESOLUTION, CL_DEVICE_QUEUE_ON_DEVICE_MAX_SIZE,
     CL_DEVICE_QUEUE_ON_DEVICE_PREFERRED_SIZE, CL_DEVICE_QUEUE_ON_DEVICE_PROPERTIES,
     CL_DEVICE_QUEUE_ON_HOST_PROPERTIES, CL_DEVICE_QUEUE_REPLACEABLE_DEFAULT,
-    CL_DEVICE_QUEUE_SUPPORTED, CL_DEVICE_REFERENCE_COUNT, CL_DEVICE_REGISTERS_PER_BLOCK_NV,
-    CL_DEVICE_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR, CL_DEVICE_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR,
-    CL_DEVICE_SEMAPHORE_TYPES_KHR, CL_DEVICE_SIMD_INSTRUCTION_WIDTH_AMD,
-    CL_DEVICE_SIMD_PER_COMPUTE_UNIT_AMD, CL_DEVICE_SIMD_WIDTH_AMD, CL_DEVICE_SINGLE_FP_CONFIG,
+    CL_DEVICE_QUEUE_SUPPORTED, CL_DEVICE_REFERENCE_COUNT, CL_DEVICE_SINGLE_FP_CONFIG,
     CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS, CL_DEVICE_SVM_ATOMICS,
     CL_DEVICE_SVM_CAPABILITIES, CL_DEVICE_SVM_COARSE_GRAIN_BUFFER, CL_DEVICE_SVM_FINE_GRAIN_BUFFER,
-    CL_DEVICE_SVM_FINE_GRAIN_SYSTEM, CL_DEVICE_THREAD_TRACE_SUPPORTED_AMD, CL_DEVICE_TOPOLOGY_AMD,
-    CL_DEVICE_TYPE, CL_DEVICE_TYPE_ACCELERATOR, CL_DEVICE_TYPE_ALL, CL_DEVICE_TYPE_CPU,
-    CL_DEVICE_TYPE_CUSTOM, CL_DEVICE_TYPE_DEFAULT, CL_DEVICE_TYPE_GPU, CL_DEVICE_UUID_KHR,
-    CL_DEVICE_VENDOR, CL_DEVICE_VENDOR_ID, CL_DEVICE_VERSION, CL_DEVICE_WARP_SIZE_NV,
-    CL_DEVICE_WAVEFRONT_WIDTH_AMD, CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT,
-    CL_DRIVER_UUID_KHR, CL_DRIVER_VERSION, CL_EXEC_KERNEL, CL_EXEC_NATIVE_KERNEL, CL_FALSE,
-    CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT, CL_FP_DENORM, CL_FP_FMA, CL_FP_INF_NAN,
-    CL_FP_ROUND_TO_INF, CL_FP_ROUND_TO_NEAREST, CL_FP_ROUND_TO_ZERO, CL_FP_SOFT_FLOAT, CL_GLOBAL,
-    CL_LOCAL, CL_LUID_SIZE_KHR, CL_NONE, CL_READ_ONLY_CACHE, CL_READ_WRITE_CACHE, CL_SUCCESS,
-    CL_TRUE, CL_UUID_SIZE_KHR, CL_VERSION_MAJOR_BITS, CL_VERSION_MAJOR_MASK, CL_VERSION_MINOR_BITS,
+    CL_DEVICE_SVM_FINE_GRAIN_SYSTEM, CL_DEVICE_TYPE, CL_DEVICE_TYPE_ACCELERATOR,
+    CL_DEVICE_TYPE_ALL, CL_DEVICE_TYPE_CPU, CL_DEVICE_TYPE_CUSTOM, CL_DEVICE_TYPE_DEFAULT,
+    CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR, CL_DEVICE_VENDOR_ID, CL_DEVICE_VERSION,
+    CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT, CL_DRIVER_VERSION, CL_EXEC_KERNEL,
+    CL_EXEC_NATIVE_KERNEL, CL_FALSE, CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT, CL_FP_DENORM, CL_FP_FMA,
+    CL_FP_INF_NAN, CL_FP_ROUND_TO_INF, CL_FP_ROUND_TO_NEAREST, CL_FP_ROUND_TO_ZERO,
+    CL_FP_SOFT_FLOAT, CL_GLOBAL, CL_LOCAL, CL_NONE, CL_READ_ONLY_CACHE, CL_READ_WRITE_CACHE,
+    CL_SUCCESS, CL_TRUE, CL_VERSION_MAJOR_BITS, CL_VERSION_MAJOR_MASK, CL_VERSION_MINOR_BITS,
     CL_VERSION_MINOR_MASK, CL_VERSION_PATCH_BITS, CL_VERSION_PATCH_MASK,
 };
-
-use opencl_sys::{
-    clCreateSubDevices, clGetDeviceIDs, clGetDeviceInfo, clReleaseDevice, clRetainDevice,
+pub use crate::types::cl_ext::{
+    cl_amd_device_topology, cl_device_integer_dot_product_acceleration_properties_khr,
+    cl_device_pci_bus_info_khr,
 };
-
-#[cfg(feature = "CL_VERSION_2_1")]
-use opencl_sys::{clGetDeviceAndHostTimer, clGetHostTimer, clSetDefaultDeviceCommandQueue};
+pub use crate::types::{
+    cl_command_queue, cl_context, cl_device_fp_config, cl_device_id, cl_device_info,
+    cl_device_partition_property, cl_device_svm_capabilities, cl_device_type, cl_double, cl_float,
+    cl_int, cl_name_version, cl_platform_id, cl_uint, cl_ulong,
+};
 
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
@@ -123,7 +126,7 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Get the list of available devices of the given type on a platform.  
+/// Get the list of available devices of the given type on a platform.
 /// Calls clGetDeviceIDs to get the available device ids on the platform.
 ///  # Examples
 /// ```
@@ -152,8 +155,15 @@ pub fn get_device_ids(
 ) -> Result<Vec<cl_device_id>, cl_int> {
     // Get the number of devices of device_type
     let mut count: cl_uint = 0;
-    let mut status =
-        unsafe { clGetDeviceIDs(platform, device_type, 0, ptr::null_mut(), &mut count) };
+    let mut status = unsafe {
+        cl_call!(clGetDeviceIDs(
+            platform,
+            device_type,
+            0,
+            ptr::null_mut(),
+            &mut count
+        ))
+    };
 
     if (CL_SUCCESS != status) && (CL_DEVICE_NOT_FOUND != status) {
         Err(status)
@@ -162,13 +172,13 @@ pub fn get_device_ids(
         let len = count as size_t;
         let mut ids: Vec<cl_device_id> = Vec::with_capacity(len);
         unsafe {
-            status = clGetDeviceIDs(
+            status = cl_call!(clGetDeviceIDs(
                 platform,
                 device_type,
                 count,
                 ids.as_mut_ptr(),
                 ptr::null_mut(),
-            );
+            ));
             ids.set_len(len);
         };
 
@@ -194,13 +204,13 @@ pub fn get_device_data(
     get_vector(device, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` device.  
+/// Get specific information about an `OpenCL` device.
 /// Calls clGetDeviceInfo to get the desired information about the device.
 ///  # Examples
 /// ```
 /// use cl3::platform::get_platform_ids;
 /// use cl3::device::{get_device_ids, get_device_info, CL_DEVICE_TYPE, CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR, CL_DEVICE_VERSION};
-/// use opencl_sys::cl_ulong;
+/// use cl3::types::cl_ulong;
 ///
 /// let platform_ids = get_platform_ids().unwrap();
 /// assert!(0 < platform_ids.len());
@@ -441,12 +451,12 @@ pub fn get_device_info(
         => {
             let mut value: [u8; CL_UUID_SIZE_KHR] = [0; CL_UUID_SIZE_KHR];
             let status = unsafe {
-                clGetDeviceInfo(
+                cl_call!(clGetDeviceInfo(
                     device,
                     param_name,
                     CL_UUID_SIZE_KHR,
                     value.as_mut_ptr().cast::<c_void>(),
-                     ptr::null_mut(),)
+                     ptr::null_mut(),))
                     };
             if CL_SUCCESS == status {
                 Ok(InfoType::Uuid(value))
@@ -459,12 +469,12 @@ pub fn get_device_info(
         => {
             let mut value: [u8; CL_LUID_SIZE_KHR] = [0; CL_LUID_SIZE_KHR];
             let status = unsafe {
-                clGetDeviceInfo(
+                cl_call!(clGetDeviceInfo(
                     device,
                     param_name,
                     CL_LUID_SIZE_KHR,
                     value.as_mut_ptr().cast::<c_void>(),
-                    ptr::null_mut(),)
+                    ptr::null_mut(),))
                 };
             if CL_SUCCESS == status {
                 Ok(InfoType::Luid(value))
@@ -566,13 +576,13 @@ fn count_sub_devices(
 ) -> Result<cl_uint, cl_int> {
     let mut count: cl_uint = 0;
     let status: cl_int = unsafe {
-        clCreateSubDevices(
+        cl_call!(clCreateSubDevices(
             in_device,
             properties.as_ptr(),
             0,
             ptr::null_mut(),
             &mut count,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(count)
@@ -604,13 +614,13 @@ pub fn create_sub_devices(
     let mut ids: Vec<cl_device_id> = Vec::with_capacity(num_devices as size_t);
     let status: cl_int = unsafe {
         ids.set_len(num_devices as size_t);
-        clCreateSubDevices(
+        cl_call!(clCreateSubDevices(
             in_device,
             properties.as_ptr(),
             num_devices * mem::size_of::<cl_device_id>() as cl_uint,
             ids.as_mut_ptr(),
             ptr::null_mut(),
-        )
+        ))
     };
 
     if CL_SUCCESS == status {
@@ -620,7 +630,7 @@ pub fn create_sub_devices(
     }
 }
 
-/// Retain an `OpenCL` device.  
+/// Retain an `OpenCL` device.
 /// Calls `clRetainDevice` to increment the device reference count
 /// if device is a valid sub-device created by a call to clCreateSubDevices.
 ///
@@ -634,7 +644,7 @@ pub fn create_sub_devices(
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = clRetainDevice(device);
+    let status: cl_int = cl_call!(clRetainDevice(device));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -642,7 +652,7 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` device.  
+/// Release an `OpenCL` device.
 /// Calls `clReleaseDevice` to decrement the device reference count
 /// if device is a valid sub-device created by a call to clCreateSubDevices.
 ///
@@ -656,7 +666,7 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseDevice(device);
+    let status: cl_int = cl_call!(clReleaseDevice(device));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -664,8 +674,8 @@ pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-/// Replace the default command queue on an `OpenCL` device.  
-/// Calls `clSetDefaultDeviceCommandQueue` to replace the default command queue  
+/// Replace the default command queue on an `OpenCL` device.
+/// Calls `clSetDefaultDeviceCommandQueue` to replace the default command queue
 /// `CL_VERSION_2_1`
 ///
 /// * `context` - the `OpenCL` context used to create `command_queue`.
@@ -681,7 +691,13 @@ pub fn set_default_device_command_queue(
     device: cl_device_id,
     command_queue: cl_command_queue,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clSetDefaultDeviceCommandQueue(context, device, command_queue) };
+    let status: cl_int = unsafe {
+        cl_call!(clSetDefaultDeviceCommandQueue(
+            context,
+            device,
+            command_queue
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -689,8 +705,8 @@ pub fn set_default_device_command_queue(
     }
 }
 
-/// Query device and host timestamps.  
-/// Calls `clGetDeviceAndHostTimer`  
+/// Query device and host timestamps.
+/// Calls `clGetDeviceAndHostTimer`
 /// `CL_VERSION_2_1`
 ///
 /// * `device` - a valid `OpenCL` device.
@@ -702,8 +718,13 @@ pub fn set_default_device_command_queue(
 pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], cl_int> {
     let mut device_timestamp: cl_ulong = 0;
     let mut host_timestamp: cl_ulong = 0;
-    let status: cl_int =
-        unsafe { clGetDeviceAndHostTimer(device, &mut device_timestamp, &mut host_timestamp) };
+    let status: cl_int = unsafe {
+        cl_call!(clGetDeviceAndHostTimer(
+            device,
+            &mut device_timestamp,
+            &mut host_timestamp
+        ))
+    };
     if CL_SUCCESS == status {
         Ok([device_timestamp, host_timestamp])
     } else {
@@ -711,8 +732,8 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
     }
 }
 
-/// The current value of the host clock as seen by device.  
-/// Calls `clGetHostTimer`  
+/// The current value of the host clock as seen by device.
+/// Calls `clGetHostTimer`
 /// `CL_VERSION_2_1`
 ///
 /// * `device` - a valid `OpenCL` `device`.
@@ -723,7 +744,7 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
 #[inline]
 pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
     let mut host_timestamp: cl_ulong = 0;
-    let status: cl_int = unsafe { clGetHostTimer(device, &mut host_timestamp) };
+    let status: cl_int = unsafe { cl_call!(clGetHostTimer(device, &mut host_timestamp)) };
     if CL_SUCCESS == status {
         Ok(host_timestamp)
     } else {
@@ -1844,7 +1865,11 @@ mod tests {
         let platform_ids = get_platform_ids().unwrap();
 
         // Choose the platform with the most compliant GPU
-        let platform_id = platform_ids[1];
+        let platform_id = if platform_ids.len() > 1 {
+            platform_ids[1]
+        } else {
+            platform_ids[0]
+        };
 
         let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
         println!("CL_DEVICE_TYPE_GPU count: {}", device_ids.len());
@@ -1853,7 +1878,13 @@ mod tests {
         let device_id = device_ids[0];
 
         // CL_VERSION_3_0
-        let value = get_device_info(device_id, CL_DEVICE_NUMERIC_VERSION).unwrap();
+        let value = if let Ok(value) = get_device_info(device_id, CL_DEVICE_NUMERIC_VERSION) {
+            value
+        } else {
+            println!("OpenCL device doesn't support OpenCL 3.0 API");
+            return;
+        };
+
         let value = cl_uint::from(value);
         println!("CL_DEVICE_NUMERIC_VERSION: {}", value);
         assert!(0 < value);

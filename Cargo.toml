@@ -14,6 +14,8 @@ edition = "2021"
 
 [features]
 
+dynamic_runtime = []
+
 CL_VERSION_1_1 = ["opencl-sys/CL_VERSION_1_1"]
 CL_VERSION_1_2 = ["opencl-sys/CL_VERSION_1_2"]
 CL_VERSION_2_0 = ["opencl-sys/CL_VERSION_2_0"]
@@ -70,6 +72,7 @@ default = ["CL_VERSION_1_1", "CL_VERSION_1_2"]
 [dependencies]
 libc = "0.2"
 opencl-sys = "0.3"
+opencl-dynamic-sys = "0.1"
 thiserror = "1.0"
 
 [[example]]

@@ -14,26 +14,26 @@
 
 //! `OpenCL` `OpenGL` ES Interoperability API.
 
-pub use opencl_sys::cl_egl::*;
-
-pub use opencl_sys::{
+pub use crate::constants::cl_egl::*;
+pub use crate::constants::{CL_INVALID_VALUE, CL_SUCCESS};
+pub use crate::types::cl_egl::*;
+pub use crate::types::{
     cl_command_queue, cl_context, cl_event, cl_int, cl_mem, cl_mem_flags, cl_uint,
-    CL_INVALID_VALUE, CL_SUCCESS,
 };
 
 #[allow(unused_imports)]
 use std::ptr;
 
-/// Create an `OpenCL` image object, from the `EGLImage` source provided as image.  
-/// Requires the `cl_khr_egl_image` extension.  
-/// Calls `clCreateFromEGLImageKHR` to create an `OpenCL` memory object.  
+/// Create an `OpenCL` image object, from the `EGLImage` source provided as image.
+/// Requires the `cl_khr_egl_image` extension.
+/// Calls `clCreateFromEGLImageKHR` to create an `OpenCL` memory object.
 ///
 /// * `context` - a valid `OpenCL` context created from an `OpenGL` context.
 /// * `display` - should be of type `EGLDisplay`, cast into the type `CLeglDisplayKHR`
-/// * `image` - should be of type `EGLImageKHR`, cast into the type `CLeglImageKHR`.  
-/// * `flags` -  usage information about the memory object being created.  
+/// * `image` - should be of type `EGLImageKHR`, cast into the type `CLeglImageKHR`.
+/// * `flags` -  usage information about the memory object being created.
 /// * `properties` - a null terminated list of property names and their
-/// corresponding values.  
+/// corresponding values.
 ///
 /// returns a Result containing the new `OpenCL` image object
 /// or the error code from the `OpenCL` C API function.
@@ -51,7 +51,14 @@ pub unsafe fn create_from_egl_image(
     properties: *const cl_egl_image_properties_khr,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = clCreateFromEGLImageKHR(context, display, image, flags, properties, &mut status);
+    let mem = cl_call!(cl_egl::clCreateFromEGLImageKHR(
+        context,
+        display,
+        image,
+        flags,
+        properties,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -59,9 +66,9 @@ pub unsafe fn create_from_egl_image(
     }
 }
 
-/// Acquire `OpenCL` memory objects that have been created from EGL resources.  
-/// Requires the `cl_khr_egl_image` extension.  
-/// Calls `clEnqueueAcquireEGLObjectsKHR`.  
+/// Acquire `OpenCL` memory objects that have been created from EGL resources.
+/// Requires the `cl_khr_egl_image` extension.
+/// Calls `clEnqueueAcquireEGLObjectsKHR`.
 ///
 /// * `command_queue` - a valid `OpenCL` `command_queue`.
 /// * `num_objects` - the number of memory objects to acquire.
@@ -85,14 +92,14 @@ pub unsafe fn enqueue_acquire_egl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueAcquireEGLObjectsKHR(
+    let status: cl_int = cl_call!(cl_egl::clEnqueueAcquireEGLObjectsKHR(
         command_queue,
         num_objects,
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -100,9 +107,9 @@ pub unsafe fn enqueue_acquire_egl_objects(
     }
 }
 
-/// Release `OpenCL` memory objects that have been created from EGL resources.  
-/// Requires the `cl_khr_egl_image` extension.  
-/// Calls `clEnqueueReleaseEGLObjectsKHR`.  
+/// Release `OpenCL` memory objects that have been created from EGL resources.
+/// Requires the `cl_khr_egl_image` extension.
+/// Calls `clEnqueueReleaseEGLObjectsKHR`.
 ///
 /// * `command_queue` - a valid `OpenCL` `command_queue`.
 /// * `num_objects` - the number of memory objects to acquire.
@@ -126,14 +133,14 @@ pub unsafe fn enqueue_release_egl_objects(
     event_wait_list: *const cl_event,
 ) -> Result<cl_event, cl_int> {
     let mut event: cl_event = ptr::null_mut();
-    let status: cl_int = clEnqueueReleaseEGLObjectsKHR(
+    let status: cl_int = cl_call!(cl_egl::clEnqueueReleaseEGLObjectsKHR(
         command_queue,
         num_objects,
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
         &mut event,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {
@@ -141,13 +148,13 @@ pub unsafe fn enqueue_release_egl_objects(
     }
 }
 
-/// Create an event object linked to an EGL fence sync object.  
+/// Create an event object linked to an EGL fence sync object.
 /// Requires the `cl_khr_egl_event` extension
-/// Calls `clCreateEventFromEGLSyncKHR`.  
+/// Calls `clCreateEventFromEGLSyncKHR`.
 ///
 /// * `context` - a valid `OpenCL` context.
-/// * `sync` - the handle to an `EGLSync` object.  
-/// * `display` - the handle to an `EGLDisplay`.  
+/// * `sync` - the handle to an `EGLSync` object.
+/// * `display` - the handle to an `EGLDisplay`.
 ///
 /// returns a Result containing the new `OpenCL` event
 /// or the error code from the `OpenCL` C API function.
@@ -163,7 +170,12 @@ pub unsafe fn create_event_from_egl_sync_khr(
     display: CLeglDisplayKHR,
 ) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let event: cl_event = clCreateEventFromEGLSyncKHR(context, sync, display, &mut status);
+    let event: cl_event = cl_call!(cl_egl::clCreateEventFromEGLSyncKHR(
+        context,
+        sync,
+        display,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(event)
     } else {

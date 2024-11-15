@@ -14,46 +14,37 @@
 
 //! `OpenCL` Memory Object API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
-pub use opencl_sys::{
+pub use crate::constants::{
+    CL_RGBx, CL_RGx, CL_Rx, CL_sRGB, CL_sRGBA, CL_sRGBx, CL_A, CL_ABGR, CL_ADDRESS_CLAMP,
+    CL_ADDRESS_CLAMP_TO_EDGE, CL_ADDRESS_MIRRORED_REPEAT, CL_ADDRESS_NONE, CL_ADDRESS_REPEAT,
+    CL_ARGB, CL_BGRA, CL_BUFFER_CREATE_TYPE_REGION, CL_DEPTH, CL_FALSE, CL_FILTER_LINEAR,
+    CL_FILTER_NEAREST, CL_FLOAT, CL_HALF_FLOAT, CL_IMAGE_ARRAY_SIZE, CL_IMAGE_BUFFER,
+    CL_IMAGE_DEPTH, CL_IMAGE_ELEMENT_SIZE, CL_IMAGE_FORMAT, CL_IMAGE_HEIGHT,
+    CL_IMAGE_NUM_MIP_LEVELS, CL_IMAGE_NUM_SAMPLES, CL_IMAGE_ROW_PITCH, CL_IMAGE_SLICE_PITCH,
+    CL_IMAGE_WIDTH, CL_INTENSITY, CL_INVALID_VALUE, CL_LUMINANCE, CL_MAP_READ, CL_MAP_WRITE,
+    CL_MAP_WRITE_INVALIDATE_REGION, CL_MEM_ALLOC_HOST_PTR, CL_MEM_ASSOCIATED_MEMOBJECT,
+    CL_MEM_CONTEXT, CL_MEM_COPY_HOST_PTR, CL_MEM_FLAGS, CL_MEM_HOST_NO_ACCESS, CL_MEM_HOST_PTR,
+    CL_MEM_HOST_READ_ONLY, CL_MEM_HOST_WRITE_ONLY, CL_MEM_KERNEL_READ_AND_WRITE, CL_MEM_MAP_COUNT,
+    CL_MEM_OBJECT_BUFFER, CL_MEM_OBJECT_IMAGE1D, CL_MEM_OBJECT_IMAGE1D_ARRAY,
+    CL_MEM_OBJECT_IMAGE1D_BUFFER, CL_MEM_OBJECT_IMAGE2D, CL_MEM_OBJECT_IMAGE2D_ARRAY,
+    CL_MEM_OBJECT_IMAGE3D, CL_MEM_OBJECT_PIPE, CL_MEM_OFFSET, CL_MEM_PROPERTIES, CL_MEM_READ_ONLY,
+    CL_MEM_READ_WRITE, CL_MEM_REFERENCE_COUNT, CL_MEM_SIZE, CL_MEM_SVM_ATOMICS,
+    CL_MEM_SVM_FINE_GRAIN_BUFFER, CL_MEM_TYPE, CL_MEM_USES_SVM_POINTER, CL_MEM_USE_HOST_PTR,
+    CL_MEM_WRITE_ONLY, CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED, CL_MIGRATE_MEM_OBJECT_HOST,
+    CL_PIPE_MAX_PACKETS, CL_PIPE_PACKET_SIZE, CL_PIPE_PROPERTIES, CL_R, CL_RA, CL_RG, CL_RGB,
+    CL_RGBA, CL_SIGNED_INT16, CL_SIGNED_INT32, CL_SIGNED_INT8, CL_SNORM_INT16, CL_SNORM_INT8,
+    CL_SUCCESS, CL_TRUE, CL_UNORM_INT16, CL_UNORM_INT8, CL_UNORM_INT_101010, CL_UNORM_INT_101010_2,
+    CL_UNORM_SHORT_555, CL_UNORM_SHORT_565, CL_UNSIGNED_INT16, CL_UNSIGNED_INT32, CL_UNSIGNED_INT8,
+};
+pub use crate::types::{
     cl_buffer_create_type, cl_buffer_region, cl_context, cl_image_desc, cl_image_format,
     cl_image_info, cl_int, cl_mem, cl_mem_flags, cl_mem_info, cl_mem_object_type,
-    cl_mem_properties, cl_pipe_info, cl_svm_mem_flags, cl_uint, cl_ulong, CL_RGBx, CL_RGx, CL_Rx,
-    CL_sRGB, CL_sRGBA, CL_sRGBx, CL_A, CL_ABGR, CL_ADDRESS_CLAMP, CL_ADDRESS_CLAMP_TO_EDGE,
-    CL_ADDRESS_MIRRORED_REPEAT, CL_ADDRESS_NONE, CL_ADDRESS_REPEAT, CL_ARGB, CL_BGRA,
-    CL_BUFFER_CREATE_TYPE_REGION, CL_DEPTH, CL_FALSE, CL_FILTER_LINEAR, CL_FILTER_NEAREST,
-    CL_FLOAT, CL_HALF_FLOAT, CL_IMAGE_ARRAY_SIZE, CL_IMAGE_BUFFER, CL_IMAGE_DEPTH,
-    CL_IMAGE_ELEMENT_SIZE, CL_IMAGE_FORMAT, CL_IMAGE_HEIGHT, CL_IMAGE_NUM_MIP_LEVELS,
-    CL_IMAGE_NUM_SAMPLES, CL_IMAGE_ROW_PITCH, CL_IMAGE_SLICE_PITCH, CL_IMAGE_WIDTH, CL_INTENSITY,
-    CL_INVALID_VALUE, CL_LUMINANCE, CL_MAP_READ, CL_MAP_WRITE, CL_MAP_WRITE_INVALIDATE_REGION,
-    CL_MEM_ALLOC_HOST_PTR, CL_MEM_ASSOCIATED_MEMOBJECT, CL_MEM_CONTEXT, CL_MEM_COPY_HOST_PTR,
-    CL_MEM_FLAGS, CL_MEM_HOST_NO_ACCESS, CL_MEM_HOST_PTR, CL_MEM_HOST_READ_ONLY,
-    CL_MEM_HOST_WRITE_ONLY, CL_MEM_KERNEL_READ_AND_WRITE, CL_MEM_MAP_COUNT, CL_MEM_OBJECT_BUFFER,
-    CL_MEM_OBJECT_IMAGE1D, CL_MEM_OBJECT_IMAGE1D_ARRAY, CL_MEM_OBJECT_IMAGE1D_BUFFER,
-    CL_MEM_OBJECT_IMAGE2D, CL_MEM_OBJECT_IMAGE2D_ARRAY, CL_MEM_OBJECT_IMAGE3D, CL_MEM_OBJECT_PIPE,
-    CL_MEM_OFFSET, CL_MEM_PROPERTIES, CL_MEM_READ_ONLY, CL_MEM_READ_WRITE, CL_MEM_REFERENCE_COUNT,
-    CL_MEM_SIZE, CL_MEM_SVM_ATOMICS, CL_MEM_SVM_FINE_GRAIN_BUFFER, CL_MEM_TYPE,
-    CL_MEM_USES_SVM_POINTER, CL_MEM_USE_HOST_PTR, CL_MEM_WRITE_ONLY,
-    CL_MIGRATE_MEM_OBJECT_CONTENT_UNDEFINED, CL_MIGRATE_MEM_OBJECT_HOST, CL_PIPE_MAX_PACKETS,
-    CL_PIPE_PACKET_SIZE, CL_PIPE_PROPERTIES, CL_R, CL_RA, CL_RG, CL_RGB, CL_RGBA, CL_SIGNED_INT16,
-    CL_SIGNED_INT32, CL_SIGNED_INT8, CL_SNORM_INT16, CL_SNORM_INT8, CL_SUCCESS, CL_TRUE,
-    CL_UNORM_INT16, CL_UNORM_INT8, CL_UNORM_INT_101010, CL_UNORM_INT_101010_2, CL_UNORM_SHORT_555,
-    CL_UNORM_SHORT_565, CL_UNSIGNED_INT16, CL_UNSIGNED_INT32, CL_UNSIGNED_INT8,
+    cl_mem_properties, cl_pipe_info, cl_svm_mem_flags, cl_uint, cl_ulong,
 };
-
-use opencl_sys::{
-    clCreateBuffer, clCreateImage, clCreateSubBuffer, clGetImageInfo, clGetMemObjectInfo,
-    clGetSupportedImageFormats, clReleaseMemObject, clRetainMemObject,
-    clSetMemObjectDestructorCallback,
-};
-
-#[cfg(feature = "CL_VERSION_2_0")]
-use opencl_sys::{clCreatePipe, clGetPipeInfo, clSVMAlloc, clSVMFree};
-
-#[cfg(feature = "CL_VERSION_3_0")]
-use opencl_sys::{clCreateBufferWithProperties, clCreateImageWithProperties};
 
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
@@ -61,8 +52,8 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an `OpenCL` buffer object for a `context`.  
-/// Calls `clCreateBuffer` to create an `OpenCL` buffer object.  
+/// Create an `OpenCL` buffer object for a `context`.
+/// Calls `clCreateBuffer` to create an `OpenCL` buffer object.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information
@@ -86,7 +77,7 @@ pub unsafe fn create_buffer(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clCreateBuffer(context, flags, size, host_ptr, &mut status);
+    let mem: cl_mem = cl_call!(clCreateBuffer(context, flags, size, host_ptr, &mut status));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -94,8 +85,8 @@ pub unsafe fn create_buffer(
     }
 }
 
-/// Create an new `OpenCL` buffer object from an existing buffer object.  
-/// Calls `clCreateSubBuffer` to create an `OpenCL` sub-buffer object.  
+/// Create an new `OpenCL` buffer object from an existing buffer object.
+/// Calls `clCreateSubBuffer` to create an `OpenCL` sub-buffer object.
 ///
 /// * `buffer` - a valid `OpenCL` buffer.
 /// * `flags` - a bit-field used to specify allocation and usage information
@@ -119,13 +110,13 @@ pub unsafe fn create_sub_buffer(
     buffer_create_info: *const c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clCreateSubBuffer(
+    let mem: cl_mem = cl_call!(clCreateSubBuffer(
         buffer,
         flags,
         buffer_create_type,
         buffer_create_info,
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -133,8 +124,8 @@ pub unsafe fn create_sub_buffer(
     }
 }
 
-/// Create an `OpenCL` image object for a `context`.  
-/// Calls `clCreateImage` to create an `OpenCL` image object.  
+/// Create an `OpenCL` image object for a `context`.
+/// Calls `clCreateImage` to create an `OpenCL` image object.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information
@@ -163,14 +154,14 @@ pub unsafe fn create_image(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clCreateImage(
+    let mem: cl_mem = cl_call!(clCreateImage(
         context,
         flags,
         image_format,
         image_desc,
         host_ptr,
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -178,8 +169,8 @@ pub unsafe fn create_image(
     }
 }
 
-/// Create an `OpenCL` pipe object for a context.  
-/// Calls `clCreatePipe` to create an `OpenCL` pipe object.  
+/// Create an `OpenCL` pipe object for a context.
+/// Calls `clCreatePipe` to create an `OpenCL` pipe object.
 /// `CL_VERSION_2_0`
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -206,14 +197,14 @@ pub unsafe fn create_pipe(
     // properties: *const cl_pipe_properties,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clCreatePipe(
+    let mem: cl_mem = cl_call!(clCreatePipe(
         context,
         flags,
         pipe_packet_size,
         pipe_max_packets,
         ptr::null(),
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -221,8 +212,8 @@ pub unsafe fn create_pipe(
     }
 }
 
-/// Create an `OpenCL` buffer object for a context.  
-/// Calls `clCreateBufferWithProperties` to create an `OpenCL` buffer object.  
+/// Create an `OpenCL` buffer object for a context.
+/// Calls `clCreateBufferWithProperties` to create an `OpenCL` buffer object.
 /// `CL_VERSION_3_0`
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -250,8 +241,14 @@ pub unsafe fn create_buffer_with_properties(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem =
-        clCreateBufferWithProperties(context, properties, flags, size, host_ptr, &mut status);
+    let mem: cl_mem = cl_call!(clCreateBufferWithProperties(
+        context,
+        properties,
+        flags,
+        size,
+        host_ptr,
+        &mut status
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -259,8 +256,8 @@ pub unsafe fn create_buffer_with_properties(
     }
 }
 
-/// Create an `OpenCL` image object for a context.  
-/// Calls `clCreateImage` to create an `OpenCL` image object.  
+/// Create an `OpenCL` image object for a context.
+/// Calls `clCreateImage` to create an `OpenCL` image object.
 /// `CL_VERSION_3_0`
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -292,7 +289,7 @@ pub unsafe fn create_image_with_properties(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = clCreateImageWithProperties(
+    let mem: cl_mem = cl_call!(clCreateImageWithProperties(
         context,
         properties,
         flags,
@@ -300,7 +297,7 @@ pub unsafe fn create_image_with_properties(
         image_desc,
         host_ptr,
         &mut status,
-    );
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -308,7 +305,7 @@ pub unsafe fn create_image_with_properties(
     }
 }
 
-/// Retain an `OpenCL` memory object.  
+/// Retain an `OpenCL` memory object.
 /// Calls `clRetainMemObject` to increment the memory object reference count.
 ///
 /// * `memobj` - the `OpenCL` memory object.
@@ -320,7 +317,7 @@ pub unsafe fn create_image_with_properties(
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
-    let status: cl_int = clRetainMemObject(memobj);
+    let status: cl_int = cl_call!(clRetainMemObject(memobj));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -328,7 +325,7 @@ pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` memory object.  
+/// Release an `OpenCL` memory object.
 /// Calls `clReleaseMemObject` to decrement the memory object reference count.
 ///
 /// * `memobj` - the `OpenCL` memory object.
@@ -340,7 +337,7 @@ pub unsafe fn retain_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_mem_object(memobj: cl_mem) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseMemObject(memobj);
+    let status: cl_int = cl_call!(clReleaseMemObject(memobj));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -355,7 +352,14 @@ fn count_supported_image_formats(
 ) -> Result<cl_uint, cl_int> {
     let mut count: cl_uint = 0;
     let status: cl_int = unsafe {
-        clGetSupportedImageFormats(context, flags, image_type, 0, ptr::null_mut(), &mut count)
+        cl_call!(clGetSupportedImageFormats(
+            context,
+            flags,
+            image_type,
+            0,
+            ptr::null_mut(),
+            &mut count
+        ))
     };
     if CL_SUCCESS == status {
         Ok(count)
@@ -365,7 +369,7 @@ fn count_supported_image_formats(
 }
 
 /// Get the list of image formats supported by an `OpenCL` implementation for a
-/// specified context, image type, and allocation information.  
+/// specified context, image type, and allocation information.
 /// Calls `clGetSupportedImageFormats` to get the desired information about the program.
 ///
 /// * `context` - a valid `OpenCL` context on which the image object(s) will be created.
@@ -386,14 +390,14 @@ pub fn get_supported_image_formats(
     let mut image_formats: Vec<cl_image_format> = Vec::with_capacity(count as usize);
     let status: cl_int = unsafe {
         image_formats.set_len(count as usize);
-        clGetSupportedImageFormats(
+        cl_call!(clGetSupportedImageFormats(
             context,
             flags,
             image_type,
             count,
             image_formats.as_mut_ptr(),
             ptr::null_mut(),
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(image_formats)
@@ -411,7 +415,7 @@ pub fn get_mem_object_data(memobj: cl_mem, param_name: cl_mem_info) -> Result<Ve
     get_vector(memobj, param_name, size)
 }
 
-/// Get information common to all `OpenCL` memory objects (buffer and image objects).  
+/// Get information common to all `OpenCL` memory objects (buffer and image objects).
 /// Calls `clGetMemObjectInfo` to get the desired information about the memory objects.
 ///
 /// * `memobj` - the `OpenCL` memory objects.
@@ -467,7 +471,7 @@ pub fn get_image_data(image: cl_mem, param_name: cl_image_info) -> Result<Vec<u8
     get_vector(image, param_name, size)
 }
 
-/// Get information specific to an `OpenCL` image object.  
+/// Get information specific to an `OpenCL` image object.
 /// Calls `clGetImageInfo` to get the desired information about the image object.
 ///
 /// * `image` - the `OpenCL` image object.
@@ -520,7 +524,7 @@ pub fn get_pipe_data(pipe: cl_mem, param_name: cl_pipe_info) -> Result<Vec<u8>, 
     get_vector(pipe, param_name, size)
 }
 
-/// Get information specific to an `OpenCL` pipe object.  
+/// Get information specific to an `OpenCL` pipe object.
 /// Calls `clGetPipeInfo` to get the desired information about the pipe object.
 /// `CL_VERSION_2_0`
 ///
@@ -550,8 +554,8 @@ pub fn get_pipe_info(pipe: cl_mem, param_name: cl_pipe_info) -> Result<InfoType,
 }
 
 /// Register a callback function with an `OpenCL` memory object that is called when the
-/// memory object is destroyed.  
-/// Calls `clSetMemObjectDestructorCallback`.  
+/// memory object is destroyed.
+/// Calls `clSetMemObjectDestructorCallback`.
 ///
 /// * `memobj` - the `OpenCL` memory object.
 /// * `pfn_notify` - callback function to be registered by the application.
@@ -568,7 +572,11 @@ pub unsafe fn set_mem_object_destructor_callback(
     pfn_notify: extern "C" fn(cl_mem, *mut c_void),
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = clSetMemObjectDestructorCallback(memobj, Some(pfn_notify), user_data);
+    let status: cl_int = cl_call!(clSetMemObjectDestructorCallback(
+        memobj,
+        Some(pfn_notify),
+        user_data
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -577,8 +585,8 @@ pub unsafe fn set_mem_object_destructor_callback(
 }
 
 /// Allocate a shared virtual memory (SVM) buffer that can be shared by the
-/// host and all devices in an `OpenCL` context.  
-/// Calls `clSVMAlloc`.  
+/// host and all devices in an `OpenCL` context.
+/// Calls `clSVMAlloc`.
 /// `CL_VERSION_2_0`
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -602,7 +610,7 @@ pub unsafe fn svm_alloc(
     size: size_t,
     alignment: cl_uint,
 ) -> Result<*mut c_void, cl_int> {
-    let ptr = clSVMAlloc(context, flags, size, alignment);
+    let ptr = cl_call!(clSVMAlloc(context, flags, size, alignment));
     if ptr.is_null() {
         Err(CL_INVALID_VALUE)
     } else {
@@ -610,8 +618,8 @@ pub unsafe fn svm_alloc(
     }
 }
 
-/// Free a shared virtual memory (SVM) buffer allocated using `clSVMAlloc`.  
-/// Calls `clSVMFree`.  
+/// Free a shared virtual memory (SVM) buffer allocated using `clSVMAlloc`.
+/// Calls `clSVMFree`.
 /// `CL_VERSION_2_0`
 ///
 /// * `context` - the valid `OpenCL` context used to create the SVM buffer.
@@ -622,6 +630,7 @@ pub unsafe fn svm_alloc(
 /// This function is unsafe because `svm_pointer` is no longer valid after it is called.
 #[cfg(feature = "CL_VERSION_2_0")]
 #[inline]
-pub unsafe fn svm_free(context: cl_context, svm_pointer: *mut c_void) {
-    clSVMFree(context, svm_pointer);
+pub unsafe fn svm_free(context: cl_context, svm_pointer: *mut c_void) -> Result<(), cl_int> {
+    cl_call!(clSVMFree(context, svm_pointer));
+    Ok(())
 }

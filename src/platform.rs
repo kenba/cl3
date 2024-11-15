@@ -14,19 +14,23 @@
 
 //! `OpenCL` Platform API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types)]
 #![allow(clippy::wildcard_in_or_patterns)]
 
-pub use opencl_sys::{
-    cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong, cl_version,
-    CL_PLATFORM_EXTENSIONS, CL_PLATFORM_EXTENSIONS_WITH_VERSION,
-    CL_PLATFORM_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR, CL_PLATFORM_HOST_TIMER_RESOLUTION,
-    CL_PLATFORM_NAME, CL_PLATFORM_NUMERIC_VERSION, CL_PLATFORM_PROFILE,
+pub use crate::constants::cl_ext::{
+    CL_PLATFORM_EXTERNAL_MEMORY_IMPORT_HANDLE_TYPES_KHR,
     CL_PLATFORM_SEMAPHORE_EXPORT_HANDLE_TYPES_KHR, CL_PLATFORM_SEMAPHORE_IMPORT_HANDLE_TYPES_KHR,
-    CL_PLATFORM_SEMAPHORE_TYPES_KHR, CL_PLATFORM_VENDOR, CL_PLATFORM_VERSION, CL_SUCCESS,
+    CL_PLATFORM_SEMAPHORE_TYPES_KHR,
 };
-
-use opencl_sys::{clGetPlatformIDs, clGetPlatformInfo};
+pub use crate::constants::{
+    CL_PLATFORM_EXTENSIONS, CL_PLATFORM_EXTENSIONS_WITH_VERSION, CL_PLATFORM_HOST_TIMER_RESOLUTION,
+    CL_PLATFORM_NAME, CL_PLATFORM_NUMERIC_VERSION, CL_PLATFORM_PROFILE, CL_PLATFORM_VENDOR,
+    CL_PLATFORM_VERSION, CL_SUCCESS,
+};
+pub use crate::types::{
+    cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong, cl_version,
+};
 
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
@@ -35,7 +39,7 @@ use libc::{c_void, size_t};
 use std::mem;
 use std::ptr;
 
-/// Get the available platforms.  
+/// Get the available platforms.
 /// Calls clGetPlatformIDs to get the available platform ids.
 ///  # Examples
 /// ```
@@ -50,7 +54,7 @@ use std::ptr;
 pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
     let mut count: cl_uint = 0;
-    let mut status = unsafe { clGetPlatformIDs(0, ptr::null_mut(), &mut count) };
+    let mut status = unsafe { cl_call!(clGetPlatformIDs(0, ptr::null_mut(), &mut count)) };
 
     if CL_SUCCESS != status {
         Err(status)
@@ -59,7 +63,7 @@ pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
         let len = count as usize;
         let mut ids: Vec<cl_platform_id> = Vec::with_capacity(len);
         unsafe {
-            status = clGetPlatformIDs(count, ids.as_mut_ptr(), ptr::null_mut());
+            status = cl_call!(clGetPlatformIDs(count, ids.as_mut_ptr(), ptr::null_mut()));
             ids.set_len(len);
         };
 
