@@ -49,8 +49,8 @@ use std::ptr;
 ///
 /// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `bufobj` - the OpenGL buffer.  
 ///
 /// returns a Result containing the new `OpenCL` buffer object
@@ -70,15 +70,16 @@ pub unsafe fn create_from_gl_buffer(
     }
 }
 
-/// Create an `OpenCL` image object, image array object, or image buffer object
-/// for a context from an OpenGL texture object, texture array object,
+/// Create an `OpenCL` image object, image array object, or image buffer object.
+///
+/// For a context from an OpenGL texture object, texture array object,
 /// texture buffer object, or a single face of an OpenGL cubemap texture object.  
 /// Calls clCreateFromGLTexture to create an `OpenCL` memory object.  
 ///
 /// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `texture_target` - used to define the image type of texture.  
 /// * `miplevel ` - used to define the mipmap level.  
 /// * `texture  ` - the name of a GL buffer texture object.  
@@ -109,13 +110,14 @@ pub unsafe fn create_from_gl_texture(
     }
 }
 
-/// Create an `OpenCL` 2D image object from an OpenGL renderbuffer object.  
+/// Create an `OpenCL` 2D image object from an OpenGL renderbuffer object.
+///
 /// Calls clCreateFromGLRenderbuffer to create an `OpenCL` buffer object.  
 ///
 /// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `renderbuffer`  - a GL renderbuffer object.  
 ///
 /// returns a Result containing the new `OpenCL` image object
@@ -136,6 +138,7 @@ pub unsafe fn create_from_gl_render_buffer(
 }
 
 /// Query an OpenGL object used to create an `OpenCL` memory object.  
+///
 /// Calls clGetGLObjectInfo to get the object type and name.  
 ///
 /// * `memobj` - a valid `OpenCL` memory object handle.
@@ -155,6 +158,7 @@ pub fn get_gl_object_info(memobj: cl_mem) -> Result<(cl_GLuint, cl_GLuint), cl_i
 }
 
 /// Get data about an OpenGL texture object.
+///
 /// Calls clGetGLTextureInfo to get the desired data about the texture object.
 pub fn get_gl_texture_data(
     memobj: cl_mem,
@@ -167,11 +171,12 @@ pub fn get_gl_texture_data(
 }
 
 /// Get information about the GL texture object associated with a memory object.
+///
 /// Calls clGetGLTextureInfo to get the desired information.
 ///
 /// * `memobj` - the `OpenCL` memory object.
 /// * `param_name` - the type of memory object information being queried, see:
-/// [Texture Info](https://www.khronos.org/registry/OpenCL//sdk/2.2/docs/man/html/clGetGLTextureInfo.html).
+///   [Texture Info](https://www.khronos.org/registry/OpenCL//sdk/2.2/docs/man/html/clGetGLTextureInfo.html).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
@@ -265,14 +270,15 @@ pub unsafe fn enqueue_release_gl_objects(
 }
 
 /// Create an `OpenCL` 2D image object from an `OpenGL` 2D texture object,
-/// or a single face of an OpenGL cubemap texture object.  
+/// or a single face of an OpenGL cubemap texture object.
+///
 /// Calls clCreateFromGLTexture2D to create an `OpenCL` memory object.  
 /// Deprecated in `CL_VERSION_1_2`, use `create_from_gl_texture`.
 ///
 /// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `texture_target` - used to define the image type of texture.  
 /// * `miplevel ` - used to define the mipmap level.  
 /// * `texture  ` - the name of a GL 2D, cubemap or rectangle texture object.  
@@ -317,13 +323,14 @@ pub unsafe fn create_from_gl_texture_2d(
 }
 
 /// Create an `OpenCL` 3D image object from an OpenGL 3D texture object.  
+///
 /// Calls `clCreateFromGLTexture3D` to create an `OpenCL` memory object.  
 /// Deprecated in `CL_VERSION_1_2`, use `create_from_gl_texture`.
 ///
 /// * `context` - a valid `OpenCL` context created from an OpenGL context.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `texture_target` - used to define the image type of texture.  
 /// * `miplevel ` - used to define the mipmap level.  
 /// * `texture  ` - the name of a GL 2D, cubemap or rectangle texture object.  
@@ -372,7 +379,7 @@ pub unsafe fn create_from_gl_texture_3d(
 ///
 /// * `properties` - the `OpenCL` context properties.
 /// * `param_name` - the type of memory object information being queried, see:
-/// [Context Info](https://www.khronos.org/registry/OpenCL//sdk/2.2/docs/man/html/clGetGLContextInfoKHR.html).
+///   [Context Info](https://www.khronos.org/registry/OpenCL//sdk/2.2/docs/man/html/clGetGLContextInfoKHR.html).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.

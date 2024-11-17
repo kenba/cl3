@@ -239,7 +239,7 @@ pub unsafe fn set_kernel_arg_svm_pointer(
 ///
 /// * `kernel` - the `OpenCL` kernel.
 /// * `param_name` - the information to be passed to kernel, see:
-/// [Kernel Execution Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-exec-info-table).
+///   [Kernel Execution Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-exec-info-table).
 /// * `param_ptr` - pointer to the data for the `param_name`.
 ///
 /// returns an empty Result or the error code from the `OpenCL` C API function.
@@ -277,7 +277,7 @@ pub fn get_kernel_data(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<
 ///
 /// * `kernel` - the `OpenCL` kernel.
 /// * `param_name` - the type of kernel information being queried, see:
-/// [Kernel Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-info-table).
+///   [Kernel Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
@@ -318,7 +318,7 @@ pub fn get_kernel_arg_data(
 /// * `kernel` - the `OpenCL` kernel.
 /// * `arg_index` - the kernel argument index.
 /// * `param_name` - the type of kernel information being queried, see:
-/// [Kernel Argument Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-argument-info-table).
+///   [Kernel Argument Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-argument-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
@@ -368,7 +368,7 @@ pub fn get_kernel_work_group_data(
 /// * `kernel` - the `OpenCL` kernel.
 /// * `device` - a specific device in the list of devices associated with kernel.
 /// * `param_name` - the type of kernel information being queried, see:
-/// [Kernel Object Device Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-workgroup-info-table).
+///   [Kernel Object Device Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-workgroup-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
@@ -427,10 +427,10 @@ pub fn get_kernel_work_group_info(
 /// * `kernel` - the `OpenCL` kernel.
 /// * `device` - a specific device in the list of devices associated with kernel.
 /// * `param_name` - the type of kernel information being queried, see:
-/// [Kernel Object Subgroup Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-subgroup-info-table).
+///   [Kernel Object Subgroup Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#kernel-subgroup-info-table).
 /// * `input_value_size` - the size in bytes of memory pointed to by `input_value`.
 /// * `input_value` -  pointer to memory where the appropriate parameterization
-/// of the query is passed from.
+///   of the query is passed from.
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.

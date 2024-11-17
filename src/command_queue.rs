@@ -57,14 +57,15 @@ use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an `OpenCL` host or device command-queue on a specific device.  
+/// Create an `OpenCL` host or device command-queue on a specific device.
+///
 /// Calls `clCreateCommandQueue` to create an `OpenCL` context.  
 /// Deprecated in `CL_VERSION_2_0` by `create_command_queue_with_properties`.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `device` - a device or sub-device associated with context.
 /// * `properties` - a list of properties for the command-queue, see
-/// [cl_command_queue_properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#legacy-queue-properties-table).
+///   [cl_command_queue_properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#legacy-queue-properties-table).
 ///
 /// returns a Result containing the new `OpenCL` command-queue
 /// or the error code from the `OpenCL` C API function.
@@ -99,14 +100,15 @@ pub unsafe fn create_command_queue(
     }
 }
 
-/// Create an `OpenCL` host or device command-queue on a specific device.  
+/// Create an `OpenCL` host or device command-queue on a specific device.
+///
 /// Calls clCreateCommandQueueWithProperties to create an `OpenCL` context.  
 /// `CL_VERSION_2_0` onwards.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `device` - a device or sub-device associated with context.
 /// * `properties` - a null terminated list of properties for the command-queue, see
-/// [cl_queue_properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#queue-properties-table).
+///   [cl_queue_properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#queue-properties-table).
 ///
 /// returns a Result containing the new `OpenCL` command-queue
 /// or the error code from the `OpenCL` C API function.
@@ -188,7 +190,7 @@ pub fn get_command_queue_data(
 ///
 /// * `command_queue` - the `OpenCL` command-queue.
 /// * `param_name` - the type of command-queue information being queried, see:
-/// [Command Queue Parameter](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#command-queue-param-table).
+///   [Command Queue Parameter](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#command-queue-param-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.

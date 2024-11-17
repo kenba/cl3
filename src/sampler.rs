@@ -91,7 +91,7 @@ pub fn create_sampler(
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `sampler_properties` - an optional null terminated list of properties, see:
-/// [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table).
+///   [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table).
 ///
 /// returns a Result containing the new `OpenCL` `sampler` object
 /// or the error code from the `OpenCL` C API function.
@@ -168,7 +168,7 @@ pub fn get_sampler_data(
 ///
 /// * `sampler` - the `OpenCL` sampler object.
 /// * `param_name` - the type of sampler information being queried, see:
-/// [Sampler Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-info-table).
+///   [Sampler Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.

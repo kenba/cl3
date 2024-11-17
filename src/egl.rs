@@ -33,7 +33,7 @@ use std::ptr;
 /// * `image` - should be of type `EGLImageKHR`, cast into the type `CLeglImageKHR`.  
 /// * `flags` -  usage information about the memory object being created.  
 /// * `properties` - a null terminated list of property names and their
-/// corresponding values.  
+///   corresponding values.  
 ///
 /// returns a Result containing the new `OpenCL` image object
 /// or the error code from the `OpenCL` C API function.

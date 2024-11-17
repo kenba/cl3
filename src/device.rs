@@ -142,7 +142,7 @@ use std::ptr;
 /// ```
 /// * `platform` - the `cl_platform_id` of the `OpenCL` platform.
 /// * `device_type` - the type of device, see
-/// [Device Types](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-types-table).
+///   [Device Types](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-types-table).
 ///
 /// returns a Result containing a vector of available device ids
 /// or the error code from the `OpenCL` C API function.
@@ -232,7 +232,7 @@ pub fn get_device_data(
 /// ```
 /// * `device` - the `cl_device_id` of the `OpenCL` device.
 /// * `param_name` - the type of device information being queried, see
-/// [Device Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-queries-table).
+///   [Device Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-queries-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
@@ -586,7 +586,7 @@ fn count_sub_devices(
 ///
 /// * `in_device` - the `cl_device_id` of the `OpenCL` device to partition.
 /// * `properties` - the slice of `cl_device_partition_property`, see
-/// [Subdevice Partition](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#subdevice-partition-table).
+///   [Subdevice Partition](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#subdevice-partition-table).
 ///
 /// returns a Result containing a vector of available sub-device ids
 /// or the error code from the `OpenCL` C API function.
@@ -671,7 +671,7 @@ pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
 /// * `context` - the `OpenCL` context used to create `command_queue`.
 /// * `device` - a valid `OpenCL` device associated with context.
 /// * `command_queue` - a command queue object which replaces the default
-/// device command queue.
+///   device command queue.
 ///
 /// returns an empty Result or the error code from the `OpenCL` C API function.
 #[cfg(feature = "CL_VERSION_2_1")]
@@ -733,6 +733,7 @@ pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
 // #endif
 
 /// Device Vendor Ids.
+///
 /// The `PCie` IDs of some `OpenCL` device vendors as returned by `get_device_info`,
 /// i.e.: `clGetDeviceInfo` - `CL_DEVICE_VENDOR_ID`
 /// They were obtained from the `PCIe` ID Repository: <https://pci-ids.ucw.cz/>

@@ -110,7 +110,7 @@ pub fn get_platform_data(
 /// ```
 /// * `platform` - the `cl_platform_id` of the `OpenCL` platform.
 /// * `param_name` - the type of platform information being queried, see
-/// [Platform Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#platform-queries-table).
+///   [Platform Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#platform-queries-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.

@@ -80,6 +80,6 @@ path = "examples/clinfo.rs"
 enum_glob_use = "deny"
 missing_errors_doc = "allow"
 module_name_repetitions = "allow"
-nursery = "deny"
-pedantic = "deny"
+nursery = { level = "deny", priority = -1 }
+pedantic =  { level = "deny", priority = -1 }
 unwrap_used = "deny"

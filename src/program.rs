@@ -129,7 +129,8 @@ pub unsafe fn create_program_with_binary(
 }
 
 /// Create an `OpenCL` program object for a context and  loads the information
-/// related to the built-in kernels into that object.  
+/// related to the built-in kernels into that object.
+///
 /// Calls `clCreateProgramWithBuiltInKernels` to create an `OpenCL` program object.  
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -280,7 +281,7 @@ pub fn build_program(
 /// * `options` - the compilation options in a null-terminated string.
 /// * `input_headers` - a slice of programs that describe headers in the `input_headers`.
 /// * `header_include_names` - an array that has a one to one correspondence with
-/// `input_headers`.
+///   `input_headers`.
 /// * `pfn_notify` - an optional function pointer to a notification routine.
 /// * `user_data` - passed as an argument when `pfn_notify` is called, or `ptr::null_mut()`.
 ///
@@ -393,7 +394,7 @@ pub unsafe fn link_program(
 /// * `spec_id` - the specialization constant whose value will be set.
 /// * `spec_size` - size in bytes of the data pointed to by `spec_value`.
 /// * `spec_value` - pointer to the memory location that contains the value
-/// of the specialization constant.
+///   of the specialization constant.
 ///
 /// returns an empty Result or the error code from the `OpenCL` C API function.
 ///
@@ -455,7 +456,7 @@ pub fn get_program_data(
 ///
 /// * `program` - the `OpenCL` program.
 /// * `param_name` - the type of program information being queried, see:
-/// [Program Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#program-info-table).
+///   [Program Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#program-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
@@ -559,7 +560,7 @@ pub fn get_program_build_data(
 /// * `program` - the `OpenCL` program.
 /// * `device` - -the device for which build information is being queried.
 /// * `param_name` - the type of program build information being queried, see:
-/// [Program Build Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#program-build-info-table).
+///   [Program Build Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#program-build-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
