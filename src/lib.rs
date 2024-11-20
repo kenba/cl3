@@ -81,6 +81,19 @@
 
 extern crate opencl_sys;
 
+#[cfg(feature = "dynamic")]
+mod runtime;
+#[cfg(feature = "dynamic")]
+pub use runtime::{is_opencl_runtime_available, load_library, OpenCl, OpenClRuntime};
+
+#[macro_use]
+#[cfg(feature = "dynamic")]
+mod dynamic_library;
+
+#[macro_use]
+#[cfg(not(feature = "dynamic"))]
+mod static_library;
+
 pub mod command_queue;
 pub mod context;
 pub mod d3d10;

@@ -14,6 +14,9 @@ edition = "2021"
 
 [features]
 
+static  = ["opencl-sys/static"]
+dynamic = ["opencl-sys/dynamic"]
+
 CL_VERSION_1_1 = ["opencl-sys/CL_VERSION_1_1"]
 CL_VERSION_1_2 = ["opencl-sys/CL_VERSION_1_2"]
 CL_VERSION_2_0 = ["opencl-sys/CL_VERSION_2_0"]
@@ -64,13 +67,16 @@ cl_loader_info = ["opencl-sys/cl_loader_info"]
 cl_pocl_content_size = ["opencl-sys/cl_pocl_content_size"]
 cl_loader_layers = ["opencl-sys/cl_loader_layers"]
 
-# Default features:
-default = ["CL_VERSION_1_1", "CL_VERSION_1_2"]
-
 [dependencies]
+dlopen2 = "0.7"
 libc = "0.2"
-opencl-sys = "0.3"
+# opencl-sys = "0.3"
+opencl-sys = { git = "https://github.com/kenba/opencl-sys-rs", branch = "develop" }
 thiserror = "2.0"
+
+[dev-dependencies]
+cl3 = { path = ".", features = ["static", "CL_VERSION_1_1", "CL_VERSION_1_2"] }
+# cl3 = { path = ".", features = ["dynamic"] }
 
 [[example]]
 name = "clinfo"

@@ -14,8 +14,7 @@
 
 //! `OpenCL` Platform API.
 
-#![allow(non_camel_case_types)]
-#![allow(clippy::wildcard_in_or_patterns)]
+#![allow(non_camel_case_types, clippy::wildcard_in_or_patterns)]
 
 pub use opencl_sys::{
     cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong, cl_version,
@@ -26,8 +25,13 @@ pub use opencl_sys::{
     CL_PLATFORM_SEMAPHORE_TYPES_KHR, CL_PLATFORM_VENDOR, CL_PLATFORM_VERSION, CL_SUCCESS,
 };
 
+#[allow(unused_imports)]
 use opencl_sys::{clGetPlatformIDs, clGetPlatformInfo};
 
+#[cfg(feature = "dynamic")]
+use super::dynamic_library::load_dynamic_runtime;
+#[allow(unused_imports)]
+use super::error_codes::DLOPEN_FUNCTION_NOT_AVAILABLE;
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
 
@@ -47,10 +51,11 @@ use std::ptr;
 /// ```
 /// returns a Result containing a vector of available platform ids
 /// or the error code from the `OpenCL` C API function.
+#[allow(unused_unsafe)]
 pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
     let mut count: cl_uint = 0;
-    let mut status = unsafe { clGetPlatformIDs(0, ptr::null_mut(), &mut count) };
+    let mut status = unsafe { cl_call!(clGetPlatformIDs(0, ptr::null_mut(), &mut count)) };
 
     if CL_SUCCESS != status {
         Err(status)
@@ -59,7 +64,7 @@ pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
         let len = count as usize;
         let mut ids: Vec<cl_platform_id> = Vec::with_capacity(len);
         unsafe {
-            status = clGetPlatformIDs(count, ids.as_mut_ptr(), ptr::null_mut());
+            status = cl_call!(clGetPlatformIDs(count, ids.as_mut_ptr(), ptr::null_mut()));
             ids.set_len(len);
         };
 
