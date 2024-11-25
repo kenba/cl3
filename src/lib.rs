@@ -57,12 +57,12 @@
 //! in those sections with their associated types and constants. The exceptions are:
 //!
 //! * [`error_codes`] - contains the `OpenCL` API error codes from cl.h and a function
-//! (`error_text`) to convert an error code to it's enum name from cl.h.
+//!   (`error_text`) to convert an error code to it's enum name from cl.h.
 //! * [`info_type`] - contains a Rust enum (`InfoType`) to hold the `OpenCL` types
-//! that can be returned from `OpenCL` "Info" functions, e.g. clGetPlatformInfo,
-//! clGetDeviceInfo, clGetProgramInfo, etc.
+//!   that can be returned from `OpenCL` "Info" functions, e.g. clGetPlatformInfo,
+//!   clGetDeviceInfo, clGetProgramInfo, etc.
 //! * [`macros`] - contains Rust macros to call the `OpenCL` "Info" functions and
-//! return the appropriate `InfoType` in a Rust Result.
+//!   return the appropriate `InfoType` in a Rust Result.
 //!
 //! It is vital to call the correct `InfoType` method type when decoding the
 //! result of "Info" functions, since the methods will panic if called with the
@@ -82,10 +82,18 @@
 #[cfg(not(feature = "dynamic_runtime"))]
 extern crate opencl_sys;
 
-#[macro_use]
+#[cfg(feature = "dynamic")]
 mod runtime;
-#[cfg(feature = "dynamic_runtime")]
-pub use opencl_dynamic_sys::is_opencl_runtime_available;
+#[cfg(feature = "dynamic")]
+pub use runtime::{is_opencl_runtime_available, load_library, OpenCl, OpenClRuntime};
+
+#[macro_use]
+#[cfg(feature = "dynamic")]
+mod dynamic_library;
+
+#[macro_use]
+#[cfg(not(feature = "dynamic"))]
+mod static_library;
 
 pub mod command_queue;
 pub mod context;

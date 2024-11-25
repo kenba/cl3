@@ -57,11 +57,11 @@ use std::ptr;
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `size` - the size in bytes of the buffer memory object to be allocated.
 /// * `host_ptr` - a pointer to the buffer data that may already be allocated
-/// by the application.
+///   by the application.
 ///
 /// returns a Result containing the new `OpenCL` buffer object
 /// or the error code from the `OpenCL` C API function.
@@ -90,11 +90,11 @@ pub unsafe fn create_buffer(
 ///
 /// * `buffer` - a valid `OpenCL` buffer.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the sub-buffer memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the sub-buffer memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `buffer_create_type`,`buffer_create_info` - describe the type of
-/// buffer object to be created, see:
-/// [SubBuffer Attributes](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#subbuffer-create-info-table).
+///   buffer object to be created, see:
+///   [SubBuffer Attributes](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#subbuffer-create-info-table).
 ///
 /// returns a Result containing the new `OpenCL` buffer object
 /// or the error code from the `OpenCL` C API function.
@@ -129,14 +129,14 @@ pub unsafe fn create_sub_buffer(
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `image_format` - a pointer to a structure that describes format properties
-/// of the image to be allocated.
+///   of the image to be allocated.
 /// * `image_desc` - a pointer to a structure that describes type and dimensions
-/// of the image to be allocated.
+///   of the image to be allocated.
 /// * `host_ptr` - a pointer to the image data that may already be allocated
-/// by the application.
+///   by the application.
 ///
 /// returns a Result containing the new `OpenCL` image object
 /// or the error code from the `OpenCL` C API function.
@@ -175,8 +175,8 @@ pub unsafe fn create_image(
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `pipe_packet_size` - the size in bytes of a pipe packet.
 /// * `pipe_max_packets` -the maximum number of packets the pipe can hold.
 /// * `properties` - currently must be NULL.
@@ -219,11 +219,11 @@ pub unsafe fn create_pipe(
 /// * `context` - a valid `OpenCL` context.
 /// * `properties` - an optional null terminated list of properties.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `size` - the size in bytes of the buffer memory object to be allocated.
 /// * `host_ptr` - a pointer to the buffer data that may already be allocated
-/// by the application.
+///   by the application.
 ///
 /// returns a Result containing the new `OpenCL` buffer object
 /// or the error code from the `OpenCL` C API function.
@@ -263,14 +263,14 @@ pub unsafe fn create_buffer_with_properties(
 /// * `context` - a valid `OpenCL` context.
 /// * `properties` - an optional null terminated list of properties.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `image_format` - a pointer to a structure that describes format properties
-/// of the image to be allocated.
+///   of the image to be allocated.
 /// * `image_desc` - a pointer to a structure that describes type and dimensions
-/// of the image to be allocated.
+///   of the image to be allocated.
 /// * `host_ptr` - a pointer to the image data that may already be allocated
-/// by the application.
+///   by the application.
 ///
 /// returns a Result containing the new `OpenCL` image object
 /// or the error code from the `OpenCL` C API function.
@@ -370,12 +370,13 @@ fn count_supported_image_formats(
 
 /// Get the list of image formats supported by an `OpenCL` implementation for a
 /// specified context, image type, and allocation information.
+///
 /// Calls `clGetSupportedImageFormats` to get the desired information about the program.
 ///
 /// * `context` - a valid `OpenCL` context on which the image object(s) will be created.
 /// * `flags` - a bit-field used to specify allocation and usage information
-/// about the image memory object being created, see:
-/// [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
+///   about the image memory object being created, see:
+///   [Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#memory-flags-table).
 /// * `image_type` - describes the image type.
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
@@ -420,7 +421,7 @@ pub fn get_mem_object_data(memobj: cl_mem, param_name: cl_mem_info) -> Result<Ve
 ///
 /// * `memobj` - the `OpenCL` memory objects.
 /// * `param_name` - the type of memory object information being queried, see:
-/// [Memory Object Info](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#mem-info-table).
+///   [Memory Object Info](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#mem-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
@@ -476,7 +477,7 @@ pub fn get_image_data(image: cl_mem, param_name: cl_image_info) -> Result<Vec<u8
 ///
 /// * `image` - the `OpenCL` image object.
 /// * `param_name` - the type of memory object information being queried, see:
-/// [Image Object Info](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#image-info-table).
+///   [Image Object Info](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#image-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
@@ -530,7 +531,7 @@ pub fn get_pipe_data(pipe: cl_mem, param_name: cl_pipe_info) -> Result<Vec<u8>, 
 ///
 /// * `pipe` - the `OpenCL` pipe object.
 /// * `param_name` - the type of pipe object information being queried, see:
-/// [Pipe Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#pipe-info-table).
+///   [Pipe Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#pipe-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
@@ -591,10 +592,10 @@ pub unsafe fn set_mem_object_destructor_callback(
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `flags` - a bit-field used to specify allocation and usage information, see:
-/// [SVM Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#svm-flags-table).
+///   [SVM Memory Flags](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#svm-flags-table).
 /// * `size` - the size in bytes of the SVM buffer to be allocated.
 /// * `alignment` - the minimum alignment in bytes that is required for the
-/// newly created buffers memory region.
+///   newly created buffers memory region.
 ///
 /// returns Result containing the address of the SVM buffer
 /// or the error code: `CL_INVALID_VALUE` if the address is NULL.

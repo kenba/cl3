@@ -38,7 +38,7 @@ use std::ptr;
 ///
 /// * `devices` - a slice of unique devices for an `OpenCL` platform.
 /// * `properties` - a null terminated list of `cl_context_properties`, see
-/// [Context Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#context-properties-table).
+///   [Context Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#context-properties-table).
 /// * `pfn_notify` - an optional callback function that can be registered by the application.
 /// * `user_data` - passed as the `user_data` argument when `pfn_notify` is called.
 ///
@@ -75,9 +75,9 @@ pub fn create_context(
 /// Calls `clCreateContextFromType` to create an `OpenCL` context.
 ///
 /// * `device_type` - the type of `OpenCL` device, see:
-/// [Device Types](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-types-table).
+///   [Device Types](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#device-types-table).
 /// * `properties` - a null terminated list of `cl_context_properties`, see:
-/// [Context Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#context-properties-table).
+///   [Context Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#context-properties-table).
 /// * `pfn_notify` - an optional callback function that can be registered by the application.
 /// * `user_data` - passed as the `user_data` argument when `pfn_notify` is called.
 ///
@@ -164,7 +164,7 @@ pub fn get_context_data(
 ///
 /// * `context` - the `cl_context` of the `OpenCL` context.
 /// * `param_name` - the type of platform information being queried, see:
-/// [Context Attributes](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#context-info-table).
+///   [Context Attributes](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#context-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.

@@ -61,6 +61,9 @@ pub use crate::types::cl_int;
 use std::fmt;
 use thiserror::Error;
 
+pub const DLOPEN_RUNTIME_LOAD_FAILED: cl_int = -2000;
+pub const DLOPEN_FUNCTION_NOT_AVAILABLE: cl_int = -2001;
+
 #[must_use]
 pub const fn error_text(error_code: cl_int) -> &'static str {
     match error_code {
@@ -167,10 +170,10 @@ pub const fn error_text(error_code: cl_int) -> &'static str {
         CL_INVALID_SYNC_POINT_WAIT_LIST_KHR => "CL_INVALID_SYNC_POINT_WAIT_LIST_KHR",
         CL_INCOMPATIBLE_COMMAND_QUEUE_KHR => "CL_INCOMPATIBLE_COMMAND_QUEUE_KHR",
 
-        #[cfg(feature = "dynamic_runtime")]
-        CL_RUNTIME_LOAD_FAILED => "CL_RUNTIME_LOAD_FAILED",
-        #[cfg(feature = "dynamic_runtime")]
-        CL_FUNCTION_NOT_AVAILABLE => "CL_FUNCTION_NOT_AVAILABLE",
+        #[cfg(feature = "dynamic")]
+        DLOPEN_RUNTIME_LOAD_FAILED => "DLOPEN_RUNTIME_LOAD_FAILED",
+        #[cfg(feature = "dynamic")]
+        DLOPEN_FUNCTION_NOT_AVAILABLE => "DLOPEN_FUNCTION_NOT_AVAILABLE",
 
         _ => "UNKNOWN_ERROR",
     }

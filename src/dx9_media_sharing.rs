@@ -13,7 +13,8 @@
 // limitations under the License.
 
 //! FFI bindings for `cl_dx9_media_sharing.h`
-//! `cl_ecl_dx9_media_sharing.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 9.
+//!
+//! `cl_ecl_dx9_media_sharing.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 9.  
 //! `OpenCL` extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
 #![allow(non_camel_case_types)]

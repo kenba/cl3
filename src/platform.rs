@@ -32,6 +32,13 @@ pub use crate::types::{
     cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong, cl_version,
 };
 
+#[allow(unused_imports)]
+use opencl_sys::{clGetPlatformIDs, clGetPlatformInfo};
+
+#[cfg(feature = "dynamic")]
+use super::dynamic_library::load_dynamic_runtime;
+#[allow(unused_imports)]
+use super::error_codes::DLOPEN_FUNCTION_NOT_AVAILABLE;
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
 
@@ -51,6 +58,7 @@ use std::ptr;
 /// ```
 /// returns a Result containing a vector of available platform ids
 /// or the error code from the `OpenCL` C API function.
+#[allow(unused_unsafe)]
 pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
     let mut count: cl_uint = 0;
@@ -114,7 +122,7 @@ pub fn get_platform_data(
 /// ```
 /// * `platform` - the `cl_platform_id` of the `OpenCL` platform.
 /// * `param_name` - the type of platform information being queried, see
-/// [Platform Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#platform-queries-table).
+///   [Platform Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#platform-queries-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.

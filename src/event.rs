@@ -85,7 +85,7 @@ pub fn get_event_data(event: cl_event, param_name: cl_event_info) -> Result<Vec<
 ///
 /// * `event` - the `OpenCL` event.
 /// * `param_name` - the type of program information being queried, see:
-/// [Event Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#event-info-table).
+///   [Event Object Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#event-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
@@ -233,7 +233,7 @@ pub fn get_event_profiling_data(
 ///
 /// * `event` - the `OpenCL` event.
 /// * `param_name` - the type of event profiling information being queried, see:
-/// [Event Profiling Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#event-profiling-info-table).
+///   [Event Profiling Queries](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#event-profiling-info-table).
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
