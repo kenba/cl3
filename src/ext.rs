@@ -24,15 +24,7 @@
     clippy::too_many_arguments
 )]
 
-pub use crate::constants::cl_ext::*;
-pub use crate::constants::{CL_INVALID_VALUE, CL_SUCCESS};
-pub use crate::types::cl_ext::*;
-pub use crate::types::{
-    cl_bool, cl_command_queue, cl_context, cl_device_id, cl_event, cl_image_desc, cl_image_format,
-    cl_int, cl_kernel, cl_kernel_sub_group_info, cl_long, cl_map_flags, cl_mem, cl_mem_flags,
-    cl_mem_migration_flags, cl_mem_object_type, cl_mem_properties, cl_platform_id, cl_program,
-    cl_uint,
-};
+pub use opencl_sys::*;
 
 #[allow(unused_imports)]
 use super::info_type::InfoType;

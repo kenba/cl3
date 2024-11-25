@@ -14,18 +14,15 @@
 
 //! FFI bindings for `cl_dx9_media_sharing.h`
 //!
-//! `cl_ecl_dx9_media_sharing.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 9.  
+//! `cl_ecl_dx9_media_sharing.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 9.
 //! `OpenCL` extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
 #![allow(non_camel_case_types)]
 #![allow(clippy::missing_safety_doc)]
 
-pub use crate::constants::cl_dx9_media_sharing::*;
-pub use crate::constants::{CL_INVALID_VALUE, CL_SUCCESS};
-pub use crate::types::cl_dx9_media_sharing::*;
-pub use crate::types::{
-    cl_command_queue, cl_context, cl_device_id, cl_event, cl_int, cl_mem, cl_mem_flags,
-    cl_mem_object_type, cl_platform_id, cl_uint,
+pub use opencl_sys::cl_dx9_media_sharing::*;
+pub use opencl_sys::{
+    cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint, CL_INVALID_VALUE, CL_SUCCESS,
 };
 
 #[allow(unused_imports)]

@@ -116,5 +116,4 @@ pub mod platform;
 pub mod program;
 pub mod sampler;
 
-pub mod constants;
 pub mod types;

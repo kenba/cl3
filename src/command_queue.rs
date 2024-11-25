@@ -22,16 +22,14 @@
     clippy::missing_safety_doc
 )]
 
-pub use crate::constants::{
-    CL_BLOCKING, CL_INVALID_VALUE, CL_NON_BLOCKING, CL_QUEUE_CONTEXT, CL_QUEUE_DEVICE,
-    CL_QUEUE_DEVICE_DEFAULT, CL_QUEUE_ON_DEVICE, CL_QUEUE_ON_DEVICE_DEFAULT,
-    CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, CL_QUEUE_PROFILING_ENABLE, CL_QUEUE_PROPERTIES,
-    CL_QUEUE_PROPERTIES_ARRAY, CL_QUEUE_REFERENCE_COUNT, CL_QUEUE_SIZE, CL_SUCCESS,
-};
-pub use crate::types::{
+pub use opencl_sys::{
     cl_bool, cl_command_queue, cl_command_queue_info, cl_command_queue_properties, cl_context,
     cl_device_id, cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_mem_migration_flags,
-    cl_queue_properties, cl_uint, cl_ulong,
+    cl_queue_properties, cl_uint, cl_ulong, CL_BLOCKING, CL_INVALID_VALUE, CL_NON_BLOCKING,
+    CL_QUEUE_CONTEXT, CL_QUEUE_DEVICE, CL_QUEUE_DEVICE_DEFAULT, CL_QUEUE_ON_DEVICE,
+    CL_QUEUE_ON_DEVICE_DEFAULT, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, CL_QUEUE_PROFILING_ENABLE,
+    CL_QUEUE_PROPERTIES, CL_QUEUE_PROPERTIES_ARRAY, CL_QUEUE_REFERENCE_COUNT, CL_QUEUE_SIZE,
+    CL_SUCCESS,
 };
 
 use super::info_type::InfoType;
@@ -42,7 +40,7 @@ use std::ptr;
 
 /// Create an `OpenCL` host or device command-queue on a specific device.
 ///
-/// Calls `clCreateCommandQueue` to create an `OpenCL` context.  
+/// Calls `clCreateCommandQueue` to create an `OpenCL` context.
 /// Deprecated in `CL_VERSION_2_0` by `create_command_queue_with_properties`.
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -90,7 +88,7 @@ pub unsafe fn create_command_queue(
 
 /// Create an `OpenCL` host or device command-queue on a specific device.
 ///
-/// Calls clCreateCommandQueueWithProperties to create an `OpenCL` context.  
+/// Calls clCreateCommandQueueWithProperties to create an `OpenCL` context.
 /// `CL_VERSION_2_0` onwards.
 ///
 /// * `context` - a valid `OpenCL` context.

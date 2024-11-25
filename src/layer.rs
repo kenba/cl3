@@ -16,10 +16,8 @@
 
 #![allow(unused_unsafe)]
 
-pub use crate::constants::CL_SUCCESS;
-pub use crate::types::cl_icd::cl_icd_dispatch;
-pub use crate::types::cl_layer::cl_layer_info;
-pub use crate::types::{cl_int, cl_uint};
+pub use opencl_sys::cl_layer::*;
+pub use opencl_sys::*;
 
 #[allow(unused_imports)]
 use libc::{c_void, size_t};

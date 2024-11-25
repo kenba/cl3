@@ -18,19 +18,16 @@
 #![allow(non_camel_case_types)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
-pub use crate::constants::{
-    CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE, CL_BUILD_SUCCESS, CL_FALSE,
-    CL_INVALID_VALUE, CL_PROGRAM_BINARIES, CL_PROGRAM_BINARY_SIZES, CL_PROGRAM_BINARY_TYPE,
-    CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT, CL_PROGRAM_BINARY_TYPE_EXECUTABLE,
-    CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_NONE,
+pub use opencl_sys::{
+    cl_context, cl_device_id, cl_int, cl_platform_id, cl_program, cl_program_build_info,
+    cl_program_info, cl_uchar, cl_uint, CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE,
+    CL_BUILD_SUCCESS, CL_FALSE, CL_INVALID_VALUE, CL_PROGRAM_BINARIES, CL_PROGRAM_BINARY_SIZES,
+    CL_PROGRAM_BINARY_TYPE, CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT,
+    CL_PROGRAM_BINARY_TYPE_EXECUTABLE, CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_NONE,
     CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE, CL_PROGRAM_BUILD_LOG, CL_PROGRAM_BUILD_OPTIONS,
     CL_PROGRAM_BUILD_STATUS, CL_PROGRAM_CONTEXT, CL_PROGRAM_DEVICES, CL_PROGRAM_IL,
     CL_PROGRAM_KERNEL_NAMES, CL_PROGRAM_NUM_DEVICES, CL_PROGRAM_NUM_KERNELS,
     CL_PROGRAM_REFERENCE_COUNT, CL_PROGRAM_SOURCE, CL_SUCCESS, CL_TRUE,
-};
-pub use crate::types::{
-    cl_context, cl_device_id, cl_int, cl_platform_id, cl_program, cl_program_build_info,
-    cl_program_info, cl_uchar, cl_uint,
 };
 
 use super::info_type::InfoType;
@@ -122,7 +119,7 @@ pub unsafe fn create_program_with_binary(
 /// Create an `OpenCL` program object for a context and  loads the information
 /// related to the built-in kernels into that object.
 ///
-/// Calls `clCreateProgramWithBuiltInKernels` to create an `OpenCL` program object.  
+/// Calls `clCreateProgramWithBuiltInKernels` to create an `OpenCL` program object.
 ///
 /// * `context` - a valid `OpenCL` context.
 /// * `devices` - a slice of devices that are in context.

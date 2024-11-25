@@ -19,10 +19,10 @@
 
 #![allow(clippy::missing_safety_doc)]
 
-pub use crate::constants::cl_d3d10::*;
-pub use crate::constants::{CL_INVALID_VALUE, CL_SUCCESS};
-pub use crate::types::cl_d3d10::*;
-pub use crate::types::{cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint};
+pub use opencl_sys::cl_d3d10::*;
+pub use opencl_sys::{
+    cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint, CL_INVALID_VALUE, CL_SUCCESS,
+};
 
 #[allow(unused_imports)]
 use libc::c_void;

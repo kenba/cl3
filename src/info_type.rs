@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::constants::cl_ext::{CL_LUID_SIZE_KHR, CL_UUID_SIZE_KHR};
-use crate::types::{cl_image_format, cl_int, cl_name_version, cl_uchar, cl_uint, cl_ulong};
-
 use libc::{intptr_t, size_t};
+use opencl_sys::{
+    cl_image_format, cl_int, cl_name_version, cl_uchar, cl_uint, cl_ulong, CL_LUID_SIZE_KHR,
+    CL_UUID_SIZE_KHR,
+};
 use std::fmt;
 
 /// A Rust enum to handle `OpenCL` API "Info" function return types.

@@ -14,15 +14,15 @@
 
 //! FFI bindings for `cl_d3d11.h`
 //!
-//! `cl_d3d11.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 11.  
+//! `cl_d3d11.h` contains `OpenCL` extensions that provide interoperability with `Direct3D` 11.
 //! `OpenCL` extensions are documented in the [OpenCL-Registry](https://github.com/KhronosGroup/OpenCL-Registry)
 
 #![allow(clippy::missing_safety_doc)]
 
-pub use crate::constants::cl_d3d11::*;
-pub use crate::constants::{CL_INVALID_VALUE, CL_SUCCESS};
-pub use crate::types::cl_d3d11::*;
-pub use crate::types::{cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint};
+pub use opencl_sys::cl_d3d11::*;
+pub use opencl_sys::{
+    cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint, CL_INVALID_VALUE, CL_SUCCESS,
+};
 
 #[allow(unused_imports)]
 use libc::c_void;

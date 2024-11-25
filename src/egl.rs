@@ -14,11 +14,11 @@
 
 //! `OpenCL` `OpenGL` ES Interoperability API.
 
-pub use crate::constants::cl_egl::*;
-pub use crate::constants::{CL_INVALID_VALUE, CL_SUCCESS};
-pub use crate::types::cl_egl::*;
-pub use crate::types::{
+pub use opencl_sys::cl_egl::*;
+
+pub use opencl_sys::{
     cl_command_queue, cl_context, cl_event, cl_int, cl_mem, cl_mem_flags, cl_uint,
+    CL_INVALID_VALUE, CL_SUCCESS,
 };
 
 #[allow(unused_imports)]
