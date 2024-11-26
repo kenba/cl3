@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use cl3::constants::{
-    CL_DEVICE_BUILT_IN_KERNELS, CL_DEVICE_EXTENSIONS, CL_DEVICE_NAME, CL_DEVICE_OPENCL_C_VERSION,
-    CL_DEVICE_PROFILE, CL_DEVICE_SVM_CAPABILITIES, CL_DEVICE_TYPE, CL_DEVICE_TYPE_ALL,
-    CL_DEVICE_VENDOR, CL_DEVICE_VENDOR_ID, CL_DEVICE_VERSION, CL_PLATFORM_EXTENSIONS,
-    CL_PLATFORM_NAME, CL_PLATFORM_PROFILE, CL_PLATFORM_VENDOR, CL_PLATFORM_VERSION,
+use cl3::device::{
+    device_type_text, get_device_ids, get_device_info, vendor_id_text, CL_DEVICE_BUILT_IN_KERNELS,
+    CL_DEVICE_EXTENSIONS, CL_DEVICE_NAME, CL_DEVICE_OPENCL_C_VERSION, CL_DEVICE_PROFILE,
+    CL_DEVICE_SVM_CAPABILITIES, CL_DEVICE_TYPE, CL_DEVICE_TYPE_ALL, CL_DEVICE_VENDOR,
+    CL_DEVICE_VENDOR_ID, CL_DEVICE_VERSION,
 };
-use cl3::device::{device_type_text, get_device_ids, get_device_info, vendor_id_text};
-use cl3::platform::{get_platform_ids, get_platform_info};
+use cl3::platform::{
+    get_platform_ids, get_platform_info, CL_PLATFORM_EXTENSIONS, CL_PLATFORM_NAME,
+    CL_PLATFORM_PROFILE, CL_PLATFORM_VENDOR, CL_PLATFORM_VERSION,
+};
 use cl3::types::{cl_int, cl_uint, cl_ulong};
 
 /// Finds all the `OpenCL` platforms and devices on a system.
