@@ -14,7 +14,9 @@
 
 //! `OpenCL` Platform API.
 
-#![allow(non_camel_case_types, clippy::wildcard_in_or_patterns)]
+#![allow(unused_unsafe)]
+#![allow(non_camel_case_types)]
+#![allow(clippy::wildcard_in_or_patterns)]
 
 pub use opencl_sys::{
     cl_int, cl_name_version, cl_platform_id, cl_platform_info, cl_uint, cl_ulong, cl_version,
@@ -26,11 +28,6 @@ pub use opencl_sys::{
 };
 
 #[allow(unused_imports)]
-use opencl_sys::{clGetPlatformIDs, clGetPlatformInfo};
-
-#[cfg(feature = "dynamic")]
-use super::dynamic_library::load_dynamic_runtime;
-#[allow(unused_imports)]
 use super::error_codes::DLOPEN_FUNCTION_NOT_AVAILABLE;
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
@@ -39,7 +36,7 @@ use libc::{c_void, size_t};
 use std::mem;
 use std::ptr;
 
-/// Get the available platforms.  
+/// Get the available platforms.
 /// Calls clGetPlatformIDs to get the available platform ids.
 ///  # Examples
 /// ```

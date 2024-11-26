@@ -14,6 +14,7 @@
 
 //! `OpenCL` Device API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types, non_upper_case_globals)]
 #![allow(
     clippy::not_unsafe_ptr_arg_deref,
@@ -110,20 +111,13 @@ pub use opencl_sys::{
     CL_VERSION_MINOR_MASK, CL_VERSION_PATCH_BITS, CL_VERSION_PATCH_MASK,
 };
 
-use opencl_sys::{
-    clCreateSubDevices, clGetDeviceIDs, clGetDeviceInfo, clReleaseDevice, clRetainDevice,
-};
-
-#[cfg(feature = "CL_VERSION_2_1")]
-use opencl_sys::{clGetDeviceAndHostTimer, clGetHostTimer, clSetDefaultDeviceCommandQueue};
-
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Get the list of available devices of the given type on a platform.  
+/// Get the list of available devices of the given type on a platform.
 /// Calls clGetDeviceIDs to get the available device ids on the platform.
 ///  # Examples
 /// ```
@@ -152,8 +146,15 @@ pub fn get_device_ids(
 ) -> Result<Vec<cl_device_id>, cl_int> {
     // Get the number of devices of device_type
     let mut count: cl_uint = 0;
-    let mut status =
-        unsafe { clGetDeviceIDs(platform, device_type, 0, ptr::null_mut(), &mut count) };
+    let mut status = unsafe {
+        cl_call!(clGetDeviceIDs(
+            platform,
+            device_type,
+            0,
+            ptr::null_mut(),
+            &mut count
+        ))
+    };
 
     if (CL_SUCCESS != status) && (CL_DEVICE_NOT_FOUND != status) {
         Err(status)
@@ -162,13 +163,13 @@ pub fn get_device_ids(
         let len = count as size_t;
         let mut ids: Vec<cl_device_id> = Vec::with_capacity(len);
         unsafe {
-            status = clGetDeviceIDs(
+            status = cl_call!(clGetDeviceIDs(
                 platform,
                 device_type,
                 count,
                 ids.as_mut_ptr(),
                 ptr::null_mut(),
-            );
+            ));
             ids.set_len(len);
         };
 
@@ -194,13 +195,13 @@ pub fn get_device_data(
     get_vector(device, param_name, size)
 }
 
-/// Get specific information about an `OpenCL` device.  
+/// Get specific information about an `OpenCL` device.
 /// Calls clGetDeviceInfo to get the desired information about the device.
 ///  # Examples
 /// ```
 /// use cl3::platform::get_platform_ids;
 /// use cl3::device::{get_device_ids, get_device_info, CL_DEVICE_TYPE, CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR, CL_DEVICE_VERSION};
-/// use opencl_sys::cl_ulong;
+/// use cl3::types::cl_ulong;
 ///
 /// let platform_ids = get_platform_ids().unwrap();
 /// assert!(0 < platform_ids.len());
@@ -441,12 +442,12 @@ pub fn get_device_info(
         => {
             let mut value: [u8; CL_UUID_SIZE_KHR] = [0; CL_UUID_SIZE_KHR];
             let status = unsafe {
-                clGetDeviceInfo(
+                cl_call!(clGetDeviceInfo(
                     device,
                     param_name,
                     CL_UUID_SIZE_KHR,
                     value.as_mut_ptr().cast::<c_void>(),
-                     ptr::null_mut(),)
+                     ptr::null_mut(),))
                     };
             if CL_SUCCESS == status {
                 Ok(InfoType::Uuid(value))
@@ -459,12 +460,12 @@ pub fn get_device_info(
         => {
             let mut value: [u8; CL_LUID_SIZE_KHR] = [0; CL_LUID_SIZE_KHR];
             let status = unsafe {
-                clGetDeviceInfo(
+                cl_call!(clGetDeviceInfo(
                     device,
                     param_name,
                     CL_LUID_SIZE_KHR,
                     value.as_mut_ptr().cast::<c_void>(),
-                    ptr::null_mut(),)
+                    ptr::null_mut(),))
                 };
             if CL_SUCCESS == status {
                 Ok(InfoType::Luid(value))
@@ -566,13 +567,13 @@ fn count_sub_devices(
 ) -> Result<cl_uint, cl_int> {
     let mut count: cl_uint = 0;
     let status: cl_int = unsafe {
-        clCreateSubDevices(
+        cl_call!(clCreateSubDevices(
             in_device,
             properties.as_ptr(),
             0,
             ptr::null_mut(),
             &mut count,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(count)
@@ -604,13 +605,13 @@ pub fn create_sub_devices(
     let mut ids: Vec<cl_device_id> = Vec::with_capacity(num_devices as size_t);
     let status: cl_int = unsafe {
         ids.set_len(num_devices as size_t);
-        clCreateSubDevices(
+        cl_call!(clCreateSubDevices(
             in_device,
             properties.as_ptr(),
             num_devices * mem::size_of::<cl_device_id>() as cl_uint,
             ids.as_mut_ptr(),
             ptr::null_mut(),
-        )
+        ))
     };
 
     if CL_SUCCESS == status {
@@ -620,7 +621,7 @@ pub fn create_sub_devices(
     }
 }
 
-/// Retain an `OpenCL` device.  
+/// Retain an `OpenCL` device.
 /// Calls `clRetainDevice` to increment the device reference count
 /// if device is a valid sub-device created by a call to clCreateSubDevices.
 ///
@@ -634,7 +635,7 @@ pub fn create_sub_devices(
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = clRetainDevice(device);
+    let status: cl_int = cl_call!(clRetainDevice(device));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -642,7 +643,7 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` device.  
+/// Release an `OpenCL` device.
 /// Calls `clReleaseDevice` to decrement the device reference count
 /// if device is a valid sub-device created by a call to clCreateSubDevices.
 ///
@@ -656,7 +657,7 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 #[cfg(feature = "CL_VERSION_1_2")]
 #[inline]
 pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseDevice(device);
+    let status: cl_int = cl_call!(clReleaseDevice(device));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -664,8 +665,8 @@ pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
     }
 }
 
-/// Replace the default command queue on an `OpenCL` device.  
-/// Calls `clSetDefaultDeviceCommandQueue` to replace the default command queue  
+/// Replace the default command queue on an `OpenCL` device.
+/// Calls `clSetDefaultDeviceCommandQueue` to replace the default command queue
 /// `CL_VERSION_2_1`
 ///
 /// * `context` - the `OpenCL` context used to create `command_queue`.
@@ -681,7 +682,13 @@ pub fn set_default_device_command_queue(
     device: cl_device_id,
     command_queue: cl_command_queue,
 ) -> Result<(), cl_int> {
-    let status: cl_int = unsafe { clSetDefaultDeviceCommandQueue(context, device, command_queue) };
+    let status: cl_int = unsafe {
+        cl_call!(clSetDefaultDeviceCommandQueue(
+            context,
+            device,
+            command_queue
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -689,8 +696,8 @@ pub fn set_default_device_command_queue(
     }
 }
 
-/// Query device and host timestamps.  
-/// Calls `clGetDeviceAndHostTimer`  
+/// Query device and host timestamps.
+/// Calls `clGetDeviceAndHostTimer`
 /// `CL_VERSION_2_1`
 ///
 /// * `device` - a valid `OpenCL` device.
@@ -702,8 +709,13 @@ pub fn set_default_device_command_queue(
 pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], cl_int> {
     let mut device_timestamp: cl_ulong = 0;
     let mut host_timestamp: cl_ulong = 0;
-    let status: cl_int =
-        unsafe { clGetDeviceAndHostTimer(device, &mut device_timestamp, &mut host_timestamp) };
+    let status: cl_int = unsafe {
+        cl_call!(clGetDeviceAndHostTimer(
+            device,
+            &mut device_timestamp,
+            &mut host_timestamp
+        ))
+    };
     if CL_SUCCESS == status {
         Ok([device_timestamp, host_timestamp])
     } else {
@@ -711,8 +723,8 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
     }
 }
 
-/// The current value of the host clock as seen by device.  
-/// Calls `clGetHostTimer`  
+/// The current value of the host clock as seen by device.
+/// Calls `clGetHostTimer`
 /// `CL_VERSION_2_1`
 ///
 /// * `device` - a valid `OpenCL` `device`.
@@ -723,7 +735,7 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
 #[inline]
 pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
     let mut host_timestamp: cl_ulong = 0;
-    let status: cl_int = unsafe { clGetHostTimer(device, &mut host_timestamp) };
+    let status: cl_int = unsafe { cl_call!(clGetHostTimer(device, &mut host_timestamp)) };
     if CL_SUCCESS == status {
         Ok(host_timestamp)
     } else {
@@ -1845,7 +1857,11 @@ mod tests {
         let platform_ids = get_platform_ids().unwrap();
 
         // Choose the platform with the most compliant GPU
-        let platform_id = platform_ids[1];
+        let platform_id = if platform_ids.len() > 1 {
+            platform_ids[1]
+        } else {
+            platform_ids[0]
+        };
 
         let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
         println!("CL_DEVICE_TYPE_GPU count: {}", device_ids.len());
@@ -1854,7 +1870,13 @@ mod tests {
         let device_id = device_ids[0];
 
         // CL_VERSION_3_0
-        let value = get_device_info(device_id, CL_DEVICE_NUMERIC_VERSION).unwrap();
+        let value = if let Ok(value) = get_device_info(device_id, CL_DEVICE_NUMERIC_VERSION) {
+            value
+        } else {
+            println!("OpenCL device doesn't support OpenCL 3.0 API");
+            return;
+        };
+
         let value = cl_uint::from(value);
         println!("CL_DEVICE_NUMERIC_VERSION: {}", value);
         assert!(0 < value);

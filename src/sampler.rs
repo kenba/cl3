@@ -14,6 +14,7 @@
 
 //! `OpenCL` Sampler API.
 
+#![allow(unused_unsafe)]
 #![allow(non_camel_case_types, deprecated)]
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
@@ -25,19 +26,14 @@ pub use opencl_sys::{
     CL_SAMPLER_REFERENCE_COUNT, CL_SUCCESS,
 };
 
-use opencl_sys::{clCreateSampler, clGetSamplerInfo, clReleaseSampler, clRetainSampler};
-
-#[cfg(feature = "CL_VERSION_2_0")]
-use opencl_sys::clCreateSamplerWithProperties;
-
 use super::info_type::InfoType;
 use super::{api_info_size, api_info_value, api_info_vector};
 use libc::{c_void, intptr_t, size_t};
 use std::mem;
 use std::ptr;
 
-/// Create an `OpenCL` buffer `sampler` for a context.  
-/// Calls `clCreateSampler` to create an `OpenCL` `sampler` object.  
+/// Create an `OpenCL` buffer `sampler` for a context.
+/// Calls `clCreateSampler` to create an `OpenCL` `sampler` object.
 /// Deprecated in `CL_VERSION_2_0` by `create_sampler_with_properties`.
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -46,7 +42,7 @@ use std::ptr;
 /// * `filter_mode` - same interpretation as  `CL_SAMPLER_FILTER_MODE`.
 ///
 /// `CL_SAMPLER_NORMALIZED_COORDS`, `CL_SAMPLER_ADDRESSING_MODE` and `CL_SAMPLER_FILTER_MODE`
-/// are described in: [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table) table.  
+/// are described in: [Sampler Properties](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html#sampler-properties-table) table.
 /// returns a Result containing the new `OpenCL` `sampler` object
 /// or the error code from the `OpenCL` C API function.
 #[cfg_attr(
@@ -70,13 +66,13 @@ pub fn create_sampler(
 ) -> Result<cl_sampler, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let sampler: cl_sampler = unsafe {
-        clCreateSampler(
+        cl_call!(clCreateSampler(
             context,
             normalize_coords,
             addressing_mode,
             filter_mode,
             &mut status,
-        )
+        ))
     };
     if CL_SUCCESS == status {
         Ok(sampler)
@@ -85,8 +81,8 @@ pub fn create_sampler(
     }
 }
 
-/// Create an `OpenCL` buffer sampler for a context.  
-/// Calls `clCreateSamplerWithProperties` to create an `OpenCL` `sampler` object.  
+/// Create an `OpenCL` buffer sampler for a context.
+/// Calls `clCreateSamplerWithProperties` to create an `OpenCL` `sampler` object.
 /// `CL_VERSION_2_0`
 ///
 /// * `context` - a valid `OpenCL` context.
@@ -102,8 +98,13 @@ pub fn create_sampler_with_properties(
     properties: *const cl_sampler_properties,
 ) -> Result<cl_sampler, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let sampler: cl_sampler =
-        unsafe { clCreateSamplerWithProperties(context, properties, &mut status) };
+    let sampler: cl_sampler = unsafe {
+        cl_call!(clCreateSamplerWithProperties(
+            context,
+            properties,
+            &mut status
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(sampler)
     } else {
@@ -111,7 +112,7 @@ pub fn create_sampler_with_properties(
     }
 }
 
-/// Retain an `OpenCL` sampler.  
+/// Retain an `OpenCL` sampler.
 /// Calls `clRetainSampler` to increment the `sampler` reference count.
 ///
 /// * `sampler` - the `OpenCL` sampler.
@@ -123,7 +124,7 @@ pub fn create_sampler_with_properties(
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
-    let status: cl_int = clRetainSampler(sampler);
+    let status: cl_int = cl_call!(clRetainSampler(sampler));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -131,7 +132,7 @@ pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
     }
 }
 
-/// Release an `OpenCL` sampler.  
+/// Release an `OpenCL` sampler.
 /// Calls `clReleaseMemObject` to decrement the `sampler` reference count.
 ///
 /// * `sampler` - the `OpenCL` sampler.
@@ -143,7 +144,7 @@ pub unsafe fn retain_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
 /// This function is unsafe because it changes the `OpenCL` object reference count.
 #[inline]
 pub unsafe fn release_sampler(sampler: cl_sampler) -> Result<(), cl_int> {
-    let status: cl_int = clReleaseSampler(sampler);
+    let status: cl_int = cl_call!(clReleaseSampler(sampler));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -163,7 +164,7 @@ pub fn get_sampler_data(
     get_vector(sampler, param_name, size)
 }
 
-/// Get information specific to an `OpenCL` sampler object.  
+/// Get information specific to an `OpenCL` sampler object.
 /// Calls `clGetImageInfo` to get the desired information about the sampler object.
 ///
 /// * `sampler` - the `OpenCL` sampler object.

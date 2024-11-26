@@ -19,9 +19,9 @@ use opencl_sys::{
 };
 use std::fmt;
 
-/// A Rust enum to handle `OpenCL` API "Info" function return types.  
+/// A Rust enum to handle `OpenCL` API "Info" function return types.
 /// Each of the data types may be extracted from the enum using its associated
-/// From trait or `to_*` function.  
+/// From trait or `to_*` function.
 ///
 /// # Panics
 ///

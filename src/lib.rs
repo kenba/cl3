@@ -27,7 +27,7 @@
 //! based upon the [opencl-sys](https://crates.io/crates/opencl-sys) `OpenCL` FFI bindings.
 //!
 //! [OpenCL 3.0](https://www.khronos.org/registry/OpenCL/specs/3.0-unified/html/OpenCL_API.html)
-//! is a unified specification that adds little new functionality to previous `OpenCL` versions.  
+//! is a unified specification that adds little new functionality to previous `OpenCL` versions.
 //! It specifies that all `OpenCL 1.2` features are **mandatory**, while all
 //! `OpenCL 2.x` and `OpenCL 3.0` features are now optional.
 //!
@@ -70,11 +70,11 @@
 //!
 //! # Use
 //!
-//! See [cl3](https://crates.io/crates/cl3).  
+//! See [cl3](https://crates.io/crates/cl3).
 //!
 //! ## License
 //!
-//! Licensed under the Apache License, Version 2.0, as per Khronos Group `OpenCL`.  
+//! Licensed under the Apache License, Version 2.0, as per Khronos Group `OpenCL`.
 //! You may obtain a copy of the License at: <http://www.apache.org/licenses/LICENSE-2.0>
 //!
 //! `OpenCL` and the `OpenCL` logo are trademarks of Apple Inc. used under license by Khronos.
@@ -114,4 +114,5 @@ pub mod memory;
 pub mod platform;
 pub mod program;
 pub mod sampler;
+
 pub mod types;

@@ -14,8 +14,7 @@
 
 //! `OpenCL` dynamic library function call.
 
-#[allow(unused_imports)]
-use crate::error_codes::{DLOPEN_FUNCTION_NOT_AVAILABLE, DLOPEN_RUNTIME_LOAD_FAILED};
+use crate::error_codes::DLOPEN_RUNTIME_LOAD_FAILED;
 use crate::runtime::{load_library, OpenClRuntime};
 
 pub fn load_dynamic_runtime() -> Result<&'static OpenClRuntime, i32> {
@@ -26,10 +25,10 @@ pub fn load_dynamic_runtime() -> Result<&'static OpenClRuntime, i32> {
 
 macro_rules! cl_call {
     ($func:ident($($arg:expr),* $(,)?)) => {{
-        if let Some(result) = load_dynamic_runtime()?.$func($($arg),*) {
+        if let Some(result) = $crate::dynamic_library::load_dynamic_runtime()?.$func($($arg),*) {
             result
         } else {
-            return Err(DLOPEN_FUNCTION_NOT_AVAILABLE)
+            return Err($crate::error_codes::DLOPEN_FUNCTION_NOT_AVAILABLE)
         }
     }};
     ($namespace:ident::$func:ident($($arg:expr),* $(,)?)) => {{
