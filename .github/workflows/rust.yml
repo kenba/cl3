@@ -9,6 +9,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
