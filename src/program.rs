@@ -131,7 +131,7 @@ pub unsafe fn create_program_with_binary(
 /// # Safety
 ///
 /// This is unsafe when a device is not a member of context.
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub unsafe fn create_program_with_builtin_kernels(
@@ -164,7 +164,7 @@ pub unsafe fn create_program_with_builtin_kernels(
 ///
 /// returns a Result containing the new `OpenCL` program object
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_2_1")]
+#[cfg(any(feature = "CL_VERSION_2_1", feature = "dynamic"))]
 #[inline]
 pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_program, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
@@ -279,7 +279,7 @@ pub fn build_program(
 /// # Panics
 ///
 /// Panics if `input_headers.len()` != `header_include_names.len()`.
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub fn compile_program(
@@ -343,7 +343,7 @@ pub fn compile_program(
 /// # Safety
 ///
 /// This is unsafe when a device is not a member of context.
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[allow(clippy::cast_possible_truncation)]
 #[inline]
 pub unsafe fn link_program(
@@ -389,7 +389,7 @@ pub unsafe fn link_program(
 /// # Safety
 ///
 /// This function is unsafe because `spec_size` and `spec_value` must be valid.
-#[cfg(feature = "CL_VERSION_2_2")]
+#[cfg(any(feature = "CL_VERSION_2_2", feature = "dynamic"))]
 #[inline]
 pub unsafe fn set_program_specialization_constant(
     program: cl_program,
@@ -417,7 +417,7 @@ pub unsafe fn set_program_specialization_constant(
 /// # Safety
 ///
 /// This function is unsafe because the platform compiler is not valid after this call.
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 pub unsafe fn unload_platform_compiler(platform: cl_platform_id) -> Result<(), cl_int> {
     let status: cl_int = cl_call!(clUnloadPlatformCompiler(platform));
@@ -607,6 +607,7 @@ mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
     use crate::device::{get_device_ids, CL_DEVICE_TYPE_ALL};
+    #[allow(unused_imports)]
     use crate::error_codes::error_text;
     use crate::platform::get_platform_ids;
     use std::ffi::CString;
@@ -697,7 +698,7 @@ mod tests {
         println!("CL_PROGRAM_BINARY_TYPE: {:?}", value);
         assert_eq!(CL_PROGRAM_BINARY_TYPE_EXECUTABLE as cl_uint, value);
 
-        #[cfg(feature = "CL_VERSION_2_0")]
+        #[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
         match get_program_build_info(
             program,
             device_id,
@@ -736,7 +737,7 @@ mod tests {
         println!("CL_PROGRAM_KERNEL_NAMES: {}", value);
         assert!(0 < value.len());
 
-        #[cfg(feature = "CL_VERSION_2_1")]
+        #[cfg(any(feature = "CL_VERSION_2_1", feature = "dynamic"))]
         match get_program_info(program, CL_PROGRAM_IL) {
             Ok(value) => {
                 let value = String::from(value);
@@ -745,7 +746,7 @@ mod tests {
             Err(e) => println!("OpenCL error, CL_PROGRAM_IL: {}", error_text(e)),
         };
 
-        #[cfg(feature = "CL_VERSION_2_2")]
+        #[cfg(any(feature = "CL_VERSION_2_2", feature = "dynamic"))]
         match get_program_info(program, CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
             Ok(value) => {
                 let value = cl_uint::from(value);
@@ -757,7 +758,7 @@ mod tests {
             ),
         };
 
-        #[cfg(feature = "CL_VERSION_2_2")]
+        #[cfg(any(feature = "CL_VERSION_2_2", feature = "dynamic"))]
         match get_program_info(program, CL_PROGRAM_SCOPE_GLOBAL_CTORS_PRESENT) {
             Ok(value) => {
                 let value = cl_uint::from(value);
@@ -769,7 +770,7 @@ mod tests {
             ),
         };
 
-        #[cfg(feature = "CL_VERSION_1_2")]
+        #[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
         if let Err(e) = unsafe { unload_platform_compiler(platform_id) } {
             println!("OpenCL error, clUnloadPlatformCompiler: {}", error_text(e));
         }

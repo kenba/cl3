@@ -91,7 +91,7 @@ pub fn create_sampler(
 ///
 /// returns a Result containing the new `OpenCL` `sampler` object
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub fn create_sampler_with_properties(
     context: cl_context,

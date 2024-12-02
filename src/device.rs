@@ -559,7 +559,7 @@ pub const CL_DEVICE_PARTITION_BY_COUNTS_LIST_END: cl_device_partition_property =
 pub const CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN: cl_device_partition_property = 0x1088;
 
 // helper function for create_sub_devices
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 fn count_sub_devices(
     in_device: cl_device_id,
@@ -591,7 +591,7 @@ fn count_sub_devices(
 ///
 /// returns a Result containing a vector of available sub-device ids
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 #[allow(clippy::cast_possible_truncation)]
 pub fn create_sub_devices(
@@ -632,7 +632,7 @@ pub fn create_sub_devices(
 /// # Safety
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
     let status: cl_int = cl_call!(clRetainDevice(device));
@@ -654,7 +654,7 @@ pub unsafe fn retain_device(device: cl_device_id) -> Result<(), cl_int> {
 /// # Safety
 ///
 /// This function is unsafe because it changes the `OpenCL` object reference count.
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
     let status: cl_int = cl_call!(clReleaseDevice(device));
@@ -675,7 +675,7 @@ pub unsafe fn release_device(device: cl_device_id) -> Result<(), cl_int> {
 ///   device command queue.
 ///
 /// returns an empty Result or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_2_1")]
+#[cfg(any(feature = "CL_VERSION_2_1", feature = "dynamic"))]
 #[inline]
 pub fn set_default_device_command_queue(
     context: cl_context,
@@ -704,7 +704,7 @@ pub fn set_default_device_command_queue(
 ///
 /// returns a Result containing `device_timestamp` and `host_timestamp` in a 2D array
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_2_1")]
+#[cfg(any(feature = "CL_VERSION_2_1", feature = "dynamic"))]
 #[inline]
 pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], cl_int> {
     let mut device_timestamp: cl_ulong = 0;
@@ -731,7 +731,7 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
 ///
 /// returns a Result containing `host_timestamp`
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_2_1")]
+#[cfg(any(feature = "CL_VERSION_2_1", feature = "dynamic"))]
 #[inline]
 pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
     let mut host_timestamp: cl_ulong = 0;
@@ -1852,7 +1852,7 @@ mod tests {
     }
 
     #[test]
-    #[cfg(feature = "CL_VERSION_3_0")]
+    #[cfg(any(feature = "CL_VERSION_3_0", feature = "dynamic"))]
     fn test_get_device_info_3_0() {
         let platform_ids = get_platform_ids().unwrap();
 
@@ -1963,7 +1963,7 @@ mod tests {
         assert!(!value.is_empty());
     }
 
-    #[cfg(feature = "CL_VERSION_1_2")]
+    #[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
     #[test]
     fn test_get_sub_devices() {
         let platform_ids = get_platform_ids().unwrap();

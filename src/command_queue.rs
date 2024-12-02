@@ -102,7 +102,7 @@ pub unsafe fn create_command_queue(
 /// # Safety
 ///
 /// This is unsafe when device is not a member of context.
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn create_command_queue_with_properties(
     context: cl_context,
@@ -401,7 +401,7 @@ pub unsafe fn enqueue_write_buffer_rect(
     }
 }
 
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_fill_buffer(
     command_queue: cl_command_queue,
@@ -568,7 +568,7 @@ pub unsafe fn enqueue_write_image(
     }
 }
 
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_fill_image(
     command_queue: cl_command_queue,
@@ -785,7 +785,7 @@ pub unsafe fn enqueue_unmap_mem_object(
     }
 }
 
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_migrate_mem_object(
     command_queue: cl_command_queue,
@@ -909,7 +909,7 @@ pub unsafe fn enqueue_native_kernel(
     }
 }
 
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_marker_with_wait_list(
     command_queue: cl_command_queue,
@@ -930,7 +930,7 @@ pub unsafe fn enqueue_marker_with_wait_list(
     }
 }
 
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_barrier_with_wait_list(
     command_queue: cl_command_queue,
@@ -951,7 +951,7 @@ pub unsafe fn enqueue_barrier_with_wait_list(
     }
 }
 
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_svm_free(
     command_queue: cl_command_queue,
@@ -987,7 +987,7 @@ pub unsafe fn enqueue_svm_free(
     }
 }
 
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_svm_mem_cpy(
     command_queue: cl_command_queue,
@@ -1016,7 +1016,7 @@ pub unsafe fn enqueue_svm_mem_cpy(
     }
 }
 
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_svm_mem_fill(
     command_queue: cl_command_queue,
@@ -1045,7 +1045,7 @@ pub unsafe fn enqueue_svm_mem_fill(
     }
 }
 
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_svm_map(
     command_queue: cl_command_queue,
@@ -1074,7 +1074,7 @@ pub unsafe fn enqueue_svm_map(
     }
 }
 
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_svm_unmap(
     command_queue: cl_command_queue,
@@ -1097,7 +1097,7 @@ pub unsafe fn enqueue_svm_unmap(
     }
 }
 
-#[cfg(feature = "CL_VERSION_2_1")]
+#[cfg(any(feature = "CL_VERSION_2_1", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_svm_migrate_mem(
     command_queue: cl_command_queue,

@@ -125,7 +125,7 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
 ///
 /// returns a Result containing the new `OpenCL` kernel object
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_2_1")]
+#[cfg(any(feature = "CL_VERSION_2_1", feature = "dynamic"))]
 #[inline]
 pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
@@ -216,7 +216,7 @@ pub unsafe fn set_kernel_arg(
 /// # Safety
 ///
 /// This function is unsafe because arg must match the kernel argument.
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn set_kernel_arg_svm_pointer(
     kernel: cl_kernel,
@@ -244,7 +244,7 @@ pub unsafe fn set_kernel_arg_svm_pointer(
 /// # Safety
 ///
 /// This function is unsafe because param must match the kernel argument.
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn set_kernel_exec_info(
     kernel: cl_kernel,
@@ -302,7 +302,7 @@ pub fn get_kernel_info(kernel: cl_kernel, param_name: cl_kernel_info) -> Result<
 
 /// Get data about arguments of an `OpenCL` kernel.
 /// Calls clGetKernelArgInfo to get the desired data about arguments of the kernel.
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 pub fn get_kernel_arg_data(
     kernel: cl_kernel,
     arg_indx: cl_uint,
@@ -324,7 +324,7 @@ pub fn get_kernel_arg_data(
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 pub fn get_kernel_arg_info(
     kernel: cl_kernel,
     arg_indx: cl_uint,
@@ -436,7 +436,7 @@ pub fn get_kernel_work_group_info(
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_2_1")]
+#[cfg(any(feature = "CL_VERSION_2_1", feature = "dynamic"))]
 pub fn get_kernel_sub_group_info(
     kernel: cl_kernel,
     device: cl_device_id,
@@ -632,7 +632,7 @@ mod tests {
         let value = String::from(value);
         println!("CL_KERNEL_ATTRIBUTES: {}", value);
 
-        #[cfg(feature = "CL_VERSION_1_2")]
+        #[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
         match get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_ADDRESS_QUALIFIER) {
             Ok(value) => {
                 let value = cl_uint::from(value);
@@ -644,7 +644,7 @@ mod tests {
             ),
         }
 
-        #[cfg(feature = "CL_VERSION_1_2")]
+        #[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
         match get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_ACCESS_QUALIFIER) {
             Ok(value) => {
                 let value = cl_uint::from(value);
@@ -656,7 +656,7 @@ mod tests {
             ),
         }
 
-        #[cfg(feature = "CL_VERSION_1_2")]
+        #[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
         match get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_TYPE_NAME) {
             Ok(value) => {
                 let value = String::from(value);
@@ -666,7 +666,7 @@ mod tests {
             Err(e) => println!("OpenCL error, CL_KERNEL_ARG_TYPE_NAME: {}", error_text(e)),
         }
 
-        #[cfg(feature = "CL_VERSION_1_2")]
+        #[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
         match get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_TYPE_QUALIFIER) {
             Ok(value) => {
                 let value = cl_ulong::from(value);
@@ -678,7 +678,7 @@ mod tests {
             ),
         }
 
-        #[cfg(feature = "CL_VERSION_1_2")]
+        #[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
         match get_kernel_arg_info(kernel, 0, CL_KERNEL_ARG_NAME) {
             Ok(value) => {
                 let value = String::from(value);

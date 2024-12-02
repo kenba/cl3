@@ -142,7 +142,7 @@ pub unsafe fn create_sub_buffer(
 /// # Safety
 ///
 /// This function is unsafe because incorrect `flags` can cause undefined behaviour.
-#[cfg(feature = "CL_VERSION_1_2")]
+#[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]
 #[inline]
 pub unsafe fn create_image(
     context: cl_context,
@@ -185,7 +185,7 @@ pub unsafe fn create_image(
 /// # Safety
 ///
 /// This function is unsafe because incorrect `flags` can cause undefined behaviour.
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn create_pipe(
     context: cl_context,
@@ -229,7 +229,7 @@ pub unsafe fn create_pipe(
 /// # Safety
 ///
 /// This function is unsafe because incorrect `flags` can cause undefined behaviour.
-#[cfg(feature = "CL_VERSION_3_0")]
+#[cfg(any(feature = "CL_VERSION_3_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn create_buffer_with_properties(
     context: cl_context,
@@ -277,7 +277,7 @@ pub unsafe fn create_buffer_with_properties(
 ///
 /// This function is unsafe because incorrect `flags` can cause undefined behaviour.
 #[inline]
-#[cfg(feature = "CL_VERSION_3_0")]
+#[cfg(any(feature = "CL_VERSION_3_0", feature = "dynamic"))]
 pub unsafe fn create_image_with_properties(
     context: cl_context,
     properties: *const cl_mem_properties,
@@ -515,7 +515,7 @@ pub fn get_image_info(image: cl_mem, param_name: cl_image_info) -> Result<InfoTy
 
 /// Get data about an `OpenCL` pipe object.
 /// Calls `clGetPipeInfo` to get the desired data about the pipe object.
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 pub fn get_pipe_data(pipe: cl_mem, param_name: cl_pipe_info) -> Result<Vec<u8>, cl_int> {
     api_info_size!(get_size, clGetPipeInfo);
     let size = get_size(pipe, param_name)?;
@@ -533,7 +533,7 @@ pub fn get_pipe_data(pipe: cl_mem, param_name: cl_pipe_info) -> Result<Vec<u8>, 
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 pub fn get_pipe_info(pipe: cl_mem, param_name: cl_pipe_info) -> Result<InfoType, cl_int> {
     match param_name {
         CL_PIPE_PACKET_SIZE | CL_PIPE_MAX_PACKETS => {
@@ -601,7 +601,7 @@ pub unsafe fn set_mem_object_destructor_callback(
 /// # Safety
 ///
 /// This function is unsafe because `flags` must be valid.
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn svm_alloc(
     context: cl_context,
@@ -627,7 +627,7 @@ pub unsafe fn svm_alloc(
 /// # Safety
 ///
 /// This function is unsafe because `svm_pointer` is no longer valid after it is called.
-#[cfg(feature = "CL_VERSION_2_0")]
+#[cfg(any(feature = "CL_VERSION_2_0", feature = "dynamic"))]
 #[inline]
 pub unsafe fn svm_free(context: cl_context, svm_pointer: *mut c_void) -> Result<(), cl_int> {
     cl_call!(clSVMFree(context, svm_pointer));

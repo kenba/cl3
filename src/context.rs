@@ -197,7 +197,7 @@ pub fn get_context_info(
 /// * `user_data` - passed as the `user_data` argument when `pfn_notify` is called.
 ///
 /// returns an empty Result or the error code from the `OpenCL` C API function.
-#[cfg(feature = "CL_VERSION_3_0")]
+#[cfg(any(feature = "CL_VERSION_3_0", feature = "dynamic"))]
 #[inline]
 pub fn set_context_destructor_callback(
     context: cl_context,
