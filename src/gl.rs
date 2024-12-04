@@ -387,7 +387,7 @@ pub unsafe fn create_from_gl_texture_3d(
 ///
 /// returns a Result containing the desired information in an `InfoType` enum
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "cl_khr_gl_sharing")]
+#[cfg(any(feature = "cl_khr_gl_sharing", feature = "dynamic"))]
 pub fn get_gl_context_info_khr(
     properties: *mut cl_context_properties,
     param_name: cl_gl_context_info,
@@ -496,7 +496,7 @@ pub fn get_gl_context_info_khr(
 ///
 /// returns a Result containing the new `OpenCL` event
 /// or the error code from the `OpenCL` C API function.
-#[cfg(feature = "cl_khr_gl_event")]
+#[cfg(any(feature = "cl_khr_gl_event", feature = "dynamic"))]
 #[inline]
 pub fn create_event_from_gl_sync_khr(
     context: cl_context,

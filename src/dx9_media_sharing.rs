@@ -30,7 +30,7 @@ use libc::c_void;
 #[allow(unused_imports)]
 use std::ptr;
 
-#[cfg(feature = "cl_intel_dx9_media_sharing")]
+#[cfg(any(feature = "cl_intel_dx9_media_sharing", feature = "dynamic"))]
 pub unsafe fn get_device_ids_from_dx9_intel(
     platform: cl_platform_id,
     dx9_device_source: cl_dx9_device_source_intel,
@@ -72,7 +72,7 @@ pub unsafe fn get_device_ids_from_dx9_intel(
     }
 }
 
-#[cfg(feature = "cl_intel_dx9_media_sharing")]
+#[cfg(any(feature = "cl_intel_dx9_media_sharing", feature = "dynamic"))]
 pub unsafe fn create_from_dx9_media_surface_intel(
     context: cl_context,
     flags: cl_mem_flags,
@@ -96,7 +96,7 @@ pub unsafe fn create_from_dx9_media_surface_intel(
     }
 }
 
-#[cfg(feature = "cl_intel_dx9_media_sharing")]
+#[cfg(any(feature = "cl_intel_dx9_media_sharing", feature = "dynamic"))]
 pub unsafe fn enqueue_acquire_dx9_objects_intel(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
@@ -120,7 +120,7 @@ pub unsafe fn enqueue_acquire_dx9_objects_intel(
     }
 }
 
-#[cfg(feature = "cl_intel_dx9_media_sharing")]
+#[cfg(any(feature = "cl_intel_dx9_media_sharing", feature = "dynamic"))]
 pub unsafe fn enqueue_release_dx9_objects_intel(
     command_queue: cl_command_queue,
     num_objects: cl_uint,
@@ -146,7 +146,8 @@ pub unsafe fn enqueue_release_dx9_objects_intel(
 
 #[cfg(any(
     feature = "cl_khr_dx9_media_sharing",
-    feature = "cl_intel_dx9_media_sharing"
+    feature = "cl_intel_dx9_media_sharing",
+    feature = "dynamic"
 ))]
 pub unsafe fn get_supported_dx9_media_surface_formats_intel(
     context: cl_context,

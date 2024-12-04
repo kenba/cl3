@@ -29,7 +29,7 @@ use libc::c_void;
 #[allow(unused_imports)]
 use std::ptr;
 
-#[cfg(feature = "cl_khr_d3d11_sharing")]
+#[cfg(any(feature = "cl_khr_d3d11_sharing", feature = "dynamic"))]
 pub unsafe fn get_supported_d3d11_texture_formats_intel(
     context: cl_context,
     flags: cl_mem_flags,

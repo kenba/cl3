@@ -41,7 +41,7 @@ use std::ptr;
 /// # Safety
 ///
 /// This is unsafe because `cl_context` is a raw pointer.
-#[cfg(feature = "cl_khr_egl_image")]
+#[cfg(any(feature = "cl_khr_egl_image", feature = "dynamic"))]
 #[inline]
 pub unsafe fn create_from_egl_image(
     context: cl_context,
@@ -82,7 +82,7 @@ pub unsafe fn create_from_egl_image(
 /// # Safety
 ///
 /// This is unsafe because `command_queue` is a raw pointer.
-#[cfg(feature = "cl_khr_egl_image")]
+#[cfg(any(feature = "cl_khr_egl_image", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_acquire_egl_objects(
     command_queue: cl_command_queue,
@@ -123,7 +123,7 @@ pub unsafe fn enqueue_acquire_egl_objects(
 /// # Safety
 ///
 /// This is unsafe because `command_queue` is a raw pointer.
-#[cfg(feature = "cl_khr_egl_image")]
+#[cfg(any(feature = "cl_khr_egl_image", feature = "dynamic"))]
 #[inline]
 pub unsafe fn enqueue_release_egl_objects(
     command_queue: cl_command_queue,
@@ -162,7 +162,7 @@ pub unsafe fn enqueue_release_egl_objects(
 /// # Safety
 ///
 /// This is unsafe because context is a raw pointer.
-#[cfg(feature = "cl_khr_egl_event")]
+#[cfg(any(feature = "cl_khr_egl_event", feature = "dynamic"))]
 #[inline]
 pub unsafe fn create_event_from_egl_sync_khr(
     context: cl_context,
