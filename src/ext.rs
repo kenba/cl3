@@ -568,7 +568,10 @@ pub unsafe fn remap_command_buffer_khr(
     }
 }
 
-#[cfg(any(feature = "cl_khr_command_buffer_mutable_dispatch", feature = "dynamic"))]
+#[cfg(any(
+    feature = "cl_khr_command_buffer_mutable_dispatch",
+    feature = "dynamic"
+))]
 pub unsafe fn update_mutable_commands_khr(
     command_buffer: cl_command_buffer_khr,
     mutable_config: *const cl_mutable_base_config_khr,
@@ -581,7 +584,10 @@ pub unsafe fn update_mutable_commands_khr(
     }
 }
 
-#[cfg(any(feature = "cl_khr_command_buffer_mutable_dispatch", feature = "dynamic"))]
+#[cfg(any(
+    feature = "cl_khr_command_buffer_mutable_dispatch",
+    feature = "dynamic"
+))]
 pub fn get_command_buffer_mutable_dispatch_data(
     command: cl_mutable_command_khr,
     param_name: cl_mutable_command_info_khr,
@@ -1793,7 +1799,10 @@ pub unsafe fn enqueue_mem_advise_intel(
     }
 }
 
-#[cfg(any(feature = "cl_intel_create_buffer_with_properties", feature = "dynamic"))]
+#[cfg(any(
+    feature = "cl_intel_create_buffer_with_properties",
+    feature = "dynamic"
+))]
 pub unsafe fn create_buffer_with_properties_intel(
     context: cl_context,
     properties: *const cl_mem_properties_intel,

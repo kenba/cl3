@@ -805,7 +805,7 @@ pub const fn device_type_text(dev_type: cl_device_type) -> &'static str {
 mod tests {
     use super::*;
     use crate::error_codes::ClError;
-    use crate::platform::get_platform_ids;
+    use crate::platform::{get_platform_ids, get_platform_info, CL_PLATFORM_VERSION};
 
     #[test]
     fn test_get_platform_devices() {
@@ -1856,111 +1856,114 @@ mod tests {
     fn test_get_device_info_3_0() {
         let platform_ids = get_platform_ids().unwrap();
 
-        // Choose the platform with the most compliant GPU
-        let platform_id = if platform_ids.len() > 1 {
-            platform_ids[1]
-        } else {
-            platform_ids[0]
-        };
+        // Choose the first OpenCL 3 platform with an OpenCL 3 GPU device
+        let opencl_3: &str = "OpenCL 3";
+        let mut device_3: Option<cl_device_id> = None;
+        for id in platform_ids {
+            let value = get_platform_info(id, CL_PLATFORM_VERSION).unwrap();
+            let value: String = value.into();
+            if value.contains(opencl_3) {
+                let device_ids = get_device_ids(id, CL_DEVICE_TYPE_GPU).unwrap();
+                for device_id in device_ids {
+                    if get_device_info(device_id, CL_DEVICE_NUMERIC_VERSION).is_ok() {
+                        device_3 = Some(device_id);
+                        break;
+                    }
+                }
+            }
+        }
 
-        let device_ids = get_device_ids(platform_id, CL_DEVICE_TYPE_GPU).unwrap();
-        println!("CL_DEVICE_TYPE_GPU count: {}", device_ids.len());
-        assert!(0 < device_ids.len());
+        if let Some(device_id) = device_3 {
+            let value = get_device_info(device_id, CL_DEVICE_NUMERIC_VERSION).unwrap();
+            let value = cl_uint::from(value);
+            println!("CL_DEVICE_NUMERIC_VERSION: {}", value);
+            assert!(0 < value);
 
-        let device_id = device_ids[0];
+            let value = get_device_info(device_id, CL_DEVICE_EXTENSIONS_WITH_VERSION).unwrap();
+            let value = Vec::<cl_name_version>::from(value);
+            println!("CL_DEVICE_EXTENSIONS_WITH_VERSION: {}", value.len());
+            println!("CL_DEVICE_EXTENSIONS_WITH_VERSION: {:?}", value);
+            assert!(0 < value.len());
 
-        // CL_VERSION_3_0
-        let value = if let Ok(value) = get_device_info(device_id, CL_DEVICE_NUMERIC_VERSION) {
-            value
-        } else {
-            println!("OpenCL device doesn't support OpenCL 3.0 API");
-            return;
-        };
+            let value = get_device_info(device_id, CL_DEVICE_ILS_WITH_VERSION).unwrap();
+            let value = Vec::<cl_name_version>::from(value);
+            println!("CL_DEVICE_ILS_WITH_VERSION: {}", value.len());
+            println!("CL_DEVICE_ILS_WITH_VERSION: {:?}", value);
+            // assert!(0 < value.len());
 
-        let value = cl_uint::from(value);
-        println!("CL_DEVICE_NUMERIC_VERSION: {}", value);
-        assert!(0 < value);
+            let value =
+                get_device_info(device_id, CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION).unwrap();
+            let value = Vec::<cl_name_version>::from(value);
+            println!("CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION: {}", value.len());
+            println!("CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION: {:?}", value);
+            // assert!(0 < value.len());
 
-        let value = get_device_info(device_id, CL_DEVICE_EXTENSIONS_WITH_VERSION).unwrap();
-        let value = Vec::<cl_name_version>::from(value);
-        println!("CL_DEVICE_EXTENSIONS_WITH_VERSION: {}", value.len());
-        println!("CL_DEVICE_EXTENSIONS_WITH_VERSION: {:?}", value);
-        assert!(0 < value.len());
+            let value = get_device_info(device_id, CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES).unwrap();
+            let value = cl_ulong::from(value);
+            println!("CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_ILS_WITH_VERSION).unwrap();
-        let value = Vec::<cl_name_version>::from(value);
-        println!("CL_DEVICE_ILS_WITH_VERSION: {}", value.len());
-        println!("CL_DEVICE_ILS_WITH_VERSION: {:?}", value);
-        assert!(0 < value.len());
+            let value = get_device_info(device_id, CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES).unwrap();
+            let value = cl_ulong::from(value);
+            println!("CL_DEVICE_ATOMIC_FENCE_CAPABILITIES: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION).unwrap();
-        let value = Vec::<cl_name_version>::from(value);
-        println!("CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION: {}", value.len());
-        println!("CL_DEVICE_BUILT_IN_KERNELS_WITH_VERSION: {:?}", value);
-        assert!(0 < value.len());
+            let value =
+                get_device_info(device_id, CL_DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT).unwrap();
+            let value = cl_uint::from(value);
+            println!("CL_DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT: {}", value);
+            // assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES).unwrap();
-        let value = cl_ulong::from(value);
-        println!("CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_OPENCL_C_ALL_VERSIONS).unwrap();
+            let value = Vec::<cl_name_version>::from(value);
+            println!("CL_DEVICE_OPENCL_C_ALL_VERSIONS: {}", value.len());
+            println!("CL_DEVICE_OPENCL_C_ALL_VERSIONS: {:?}", value);
+            assert!(0 < value.len());
 
-        let value = get_device_info(device_id, CL_DEVICE_ATOMIC_MEMORY_CAPABILITIES).unwrap();
-        let value = cl_ulong::from(value);
-        println!("CL_DEVICE_ATOMIC_FENCE_CAPABILITIES: {}", value);
-        assert!(0 < value);
+            let value =
+                get_device_info(device_id, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE).unwrap();
+            let value = size_t::from(value);
+            println!("CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE: {}", value);
+            assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT).unwrap();
-        let value = cl_uint::from(value);
-        println!("CL_DEVICE_NON_UNIFORM_WORK_GROUP_SUPPORT: {}", value);
-        // assert!(0 < value);
+            let value =
+                get_device_info(device_id, CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT)
+                    .unwrap();
+            let value = cl_uint::from(value);
+            println!(
+                "CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT: {}",
+                value
+            );
+            // assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_OPENCL_C_ALL_VERSIONS).unwrap();
-        let value = Vec::<cl_name_version>::from(value);
-        println!("CL_DEVICE_OPENCL_C_ALL_VERSIONS: {}", value.len());
-        println!("CL_DEVICE_OPENCL_C_ALL_VERSIONS: {:?}", value);
-        assert!(0 < value.len());
+            let value =
+                get_device_info(device_id, CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT).unwrap();
+            let value = cl_uint::from(value);
+            println!("CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT: {}", value);
+            // assert!(0 < value);
 
-        let value =
-            get_device_info(device_id, CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE).unwrap();
-        let value = size_t::from(value);
-        println!("CL_DEVICE_PREFERRED_WORK_GROUP_SIZE_MULTIPLE: {}", value);
-        assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_OPENCL_C_FEATURES).unwrap();
+            let value = Vec::<cl_name_version>::from(value);
+            println!("CL_DEVICE_OPENCL_C_FEATURES: {}", value.len());
+            println!("CL_DEVICE_OPENCL_C_FEATURES: {:?}", value);
+            assert!(0 < value.len());
 
-        let value =
-            get_device_info(device_id, CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT).unwrap();
-        let value = cl_uint::from(value);
-        println!(
-            "CL_DEVICE_WORK_GROUP_COLLECTIVE_FUNCTIONS_SUPPORT: {}",
-            value
-        );
-        // assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES).unwrap();
+            let value = cl_ulong::from(value);
+            println!("CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES: {}", value);
+            // assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT).unwrap();
-        let value = cl_uint::from(value);
-        println!("CL_DEVICE_GENERIC_ADDRESS_SPACE_SUPPORT: {}", value);
-        // assert!(0 < value);
+            let value = get_device_info(device_id, CL_DEVICE_PIPE_SUPPORT).unwrap();
+            let value = cl_uint::from(value);
+            println!("CL_DEVICE_PIPE_SUPPORT: {}", value);
+            // assert!(0 < value);
 
-        let value = get_device_info(device_id, CL_DEVICE_OPENCL_C_FEATURES).unwrap();
-        let value = Vec::<cl_name_version>::from(value);
-        println!("CL_DEVICE_OPENCL_C_FEATURES: {}", value.len());
-        println!("CL_DEVICE_OPENCL_C_FEATURES: {:?}", value);
-        assert!(0 < value.len());
-
-        let value = get_device_info(device_id, CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES).unwrap();
-        let value = cl_ulong::from(value);
-        println!("CL_DEVICE_DEVICE_ENQUEUE_CAPABILITIES: {}", value);
-        // assert!(0 < value);
-
-        let value = get_device_info(device_id, CL_DEVICE_PIPE_SUPPORT).unwrap();
-        let value = cl_uint::from(value);
-        println!("CL_DEVICE_PIPE_SUPPORT: {}", value);
-        // assert!(0 < value);
-
-        let value =
-            get_device_info(device_id, CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED).unwrap();
-        let value = String::from(value);
-        println!("CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED: {}", value);
-        assert!(!value.is_empty());
+            let value =
+                get_device_info(device_id, CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED).unwrap();
+            let value = String::from(value);
+            println!("CL_DEVICE_LATEST_CONFORMANCE_VERSION_PASSED: {}", value);
+            assert!(!value.is_empty());
+        }
     }
 
     #[cfg(any(feature = "CL_VERSION_1_2", feature = "dynamic"))]

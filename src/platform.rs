@@ -219,18 +219,19 @@ mod tests {
     fn test_get_platform_info_3_0() {
         let platform_ids = get_platform_ids().unwrap();
 
-        // Choose the first platform
-        let platform_id = platform_ids[0];
-
-        let value = get_platform_info(platform_id, CL_PLATFORM_VERSION).unwrap();
-        let value: String = value.into();
-        println!("CL_PLATFORM_VERSION: {}", value);
-        assert!(!value.is_empty());
-
+        // Choose the first platform with an OpenCL 3 version
         let opencl_3: &str = "OpenCL 3";
-        let is_opencl_3: bool = value.contains(opencl_3);
+        let mut platform_3: Option<cl_platform_id> = None;
+        for id in platform_ids {
+            let value = get_platform_info(id, CL_PLATFORM_VERSION).unwrap();
+            let value: String = value.into();
+            if value.contains(opencl_3) {
+                platform_3 = Some(id);
+                break;
+            }
+        }
 
-        if is_opencl_3 {
+        if let Some(platform_id) = platform_3 {
             let value = get_platform_info(platform_id, CL_PLATFORM_NUMERIC_VERSION).unwrap();
             let value = cl_uint::from(value);
             println!("CL_PLATFORM_NUMERIC_VERSION: {}", value);
