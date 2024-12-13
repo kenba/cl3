@@ -38,50 +38,55 @@ They contain Rust adapter functions for the OpenCL API C functions defined
 in those sections with their associated types and constants.  
 For more information see the Rust [documentation](https://docs.rs/cl3/).
 
-The API for OpenCL versions and extensions are controlled by Rust features such as "CL_VERSION_2_0" and "cl_khr_gl_sharing". To enable an OpenCL version, the feature for that version and **all** previous OpenCL versions must be enabled, e.g. for "CL_VERSION_2_0"; "CL_VERSION_1_1" and "CL_VERSION_1_2" must also be enabled.
-
-The default features are "CL_VERSION_1_1" and "CL_VERSION_1_2".
-
-Rust deprecation warnings are given for OpenCL API functions that are deprecated by an enabled OpenCL version e.g., `clCreateCommandQueue` is deprecated whenever "CL_VERSION_2_0" is enabled.
-
 ## Use
 
 Ensure that an OpenCL Installable Client Driver (ICD) and the appropriate OpenCL
 hardware driver(s) are installed, see
 [OpenCL Installation](https://github.com/kenba/cl3/tree/main/docs/opencl_installation.md).
 
-`cl3` supports OpenCL 1.2 and 2.0 ICD loaders by default. If you have an
-OpenCL 2.0 ICD loader then add the following to your project's `Cargo.toml`:
+`cl3` can support `dynamic` or `static` linking.
+
+### Dynamic Linking
+
+`dynamic` linking is much simpler than static linking.
+
+It can be enabled by adding the following to your project's `Cargo.toml`:
 
 ```toml
 [dependencies]
-cl3 = "0.9"
+cl3 = { version = "0.11", features = ["dynamic"] }
 ```
 
-If your OpenCL ICD loader supports higher versions of OpenCL then add the
-appropriate features to cl3, e.g. for an OpenCL 2.1 ICD loader add the
-following to your project's `Cargo.toml` instead:
+### Static Linking
+
+The `static` API for OpenCL versions and extensions are controlled by Rust features such as "CL_VERSION_2_0" or "cl_khr_gl_sharing". To enable an OpenCL version, the feature for `static`,
+the OpenCL version and **all** previous OpenCL versions must be enabled, e.g. for "CL_VERSION_2_0":
+"static", "CL_VERSION_1_1" and "CL_VERSION_1_2" must also be enabled.
+
+Rust deprecation warnings are given for OpenCL API functions that are deprecated by an enabled OpenCL version e.g., `clCreateCommandQueue` is deprecated whenever "CL_VERSION_2_0" is enabled.
+
+`static` linking requires the specified features to be present in the
+ICD loader. It is difficult to know in advance what features will be
+available. For example to statically link the features of an OpenCL 2.0
+ICD loader add the following to your project's `Cargo.toml`:
 
 ```toml
 [dependencies.cl3]
-version = "0.9"
-features = ["CL_VERSION_1_1", "CL_VERSION_1_2", "CL_VERSION_2_0", "CL_VERSION_2_1"]
+version = "0.11"
+features = ["static", "CL_VERSION_1_1", "CL_VERSION_1_2", "CL_VERSION_2_0"]
 ```
+
+#### OpenCL extensions
 
 OpenCL extensions can also be enabled by adding their features, e.g.:
 
 ```toml
 [dependencies.cl3]
-version = "0.9"
-features = ["cl_khr_gl_sharing", "cl_khr_dx9_media_sharing"]
+version = "0.11"
+features = ["static", "CL_VERSION_1_1", "CL_VERSION_1_2", "cl_khr_gl_sharing", "cl_khr_dx9_media_sharing"]
 ```
 
-Whichever version of OpenCL ICD loader you use, add the following to your
-crate root (`lib.rs` or `main.rs`):
-
-```rust
-extern crate cl3;
-```
+However, it is much simpler to enable OpenCL extensions by using the `dynamic` linking feature.
 
 ## Tests
 
@@ -102,6 +107,8 @@ run them:
 ```shell
 cargo test -- --test-threads=1 --show-output --ignored
 ```
+
+Note: the tests run using the `dynamic` feature.
 
 ## Examples
 

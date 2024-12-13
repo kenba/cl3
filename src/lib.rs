@@ -40,17 +40,6 @@
 //! The exception is `svm_free`, which just provides a safe wrapper for the
 //! `clSVMFree` C API function.
 //!
-//! The API for `OpenCL` versions and extensions are controlled by Rust features such as
-//! "`CL_VERSION_2_0`" and "`cl_khr_gl_sharing`". To enable an `OpenCL` version, the feature
-//! for that version and **all** previous `OpenCL` versions must be enabled,
-//! e.g. for "`CL_VERSION_2_0`"; "`CL_VERSION_1_1`" and "`CL_VERSION_1_2`" must also be enabled.
-//!
-//! The default features are "`CL_VERSION_1_1`" and "`CL_VERSION_1_2`".
-//!
-//! Rust deprecation warnings are given for `OpenCL` API functions that are
-//! deprecated by an enabled `OpenCL` version e.g., `clCreateCommandQueue` is
-//! deprecated whenever "`CL_VERSION_2_0`" is enabled.
-//!
 //! Most of the modules are named after their equivalent `OpenCL` "API" sections in
 //! [cl.h](https://github.com/KhronosGroup/OpenCL-Headers/blob/master/CL/cl.h).
 //! They contain Rust adapter functions for the `OpenCL` API C functions defined
