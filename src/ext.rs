@@ -612,7 +612,7 @@ pub unsafe fn set_mem_object_destructor_apple(
     }
 }
 
-#[cfg(feature = "cl_khr_icd")]
+#[cfg(any(feature = "cl_khr_icd", feature = "dynamic"))]
 #[allow(clippy::uninit_vec)]
 pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
@@ -1937,7 +1937,7 @@ pub fn get_image_requirements_info_ext(
     }
 }
 
-#[cfg(feature = "cl_loader_info")]
+#[cfg(any(feature = "cl_loader_info", feature = "dynamic"))]
 pub fn get_icd_loader_info_oclicd(param_name: cl_icdl_info) -> Result<Vec<u8>, cl_int> {
     // get the size
     let mut size: size_t = 0;

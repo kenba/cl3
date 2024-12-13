@@ -107,7 +107,7 @@ pub mod ext;
 pub mod gl;
 pub mod info_type;
 pub mod kernel;
-#[cfg(feature = "cl_loader_layers")]
+#[cfg(any(feature = "cl_loader_layers", feature = "dynamic"))]
 pub mod layer;
 pub mod macros;
 pub mod memory;
