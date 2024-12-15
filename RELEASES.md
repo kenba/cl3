@@ -1,5 +1,11 @@
 # Releases
 
+## Version 0.11.0 (2024-12-15)
+
+### New Features
+
+* Issue [#36](https://github.com/kenba/cl3/issues/36) Support dynamic linking.
+
 ## Version 0.10.0 (2024-03-31)
 
 ### Bug fixes
