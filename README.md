@@ -48,13 +48,13 @@ hardware driver(s) are installed, see
 
 ### Dynamic Linking
 
-`dynamic` linking is much simpler than static linking.
+`dynamic` linking is much simpler than static linking, so it is the default.
 
-It can be enabled by adding the following to your project's `Cargo.toml`:
+`dynamic` linking is enabled by adding the following to your project's `Cargo.toml`:
 
 ```toml
 [dependencies]
-cl3 = { version = "0.11", features = ["dynamic"] }
+cl3 = "0.11"
 ```
 
 ### Static Linking
