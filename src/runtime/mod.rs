@@ -1225,6 +1225,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
+            properties: *const cl_command_properties_khr,
             num_sync_points_in_wait_list: cl_uint,
             sync_point_wait_list: *const cl_sync_point_khr,
             sync_point: *mut cl_sync_point_khr,
@@ -1236,6 +1237,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
+            properties: *const cl_command_properties_khr,
             src_buffer: cl_mem,
             dst_buffer: cl_mem,
             src_offset: size_t,
@@ -1252,6 +1254,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
+            properties: *const cl_command_properties_khr,
             src_buffer: cl_mem,
             dst_buffer: cl_mem,
             src_origin: *const size_t,
@@ -1272,6 +1275,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
+            properties: *const cl_command_properties_khr,
             src_buffer: cl_mem,
             dst_image: cl_mem,
             src_offset: size_t,
@@ -1288,6 +1292,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
+            properties: *const cl_command_properties_khr,
             src_image: cl_mem,
             dst_image: cl_mem,
             src_origin: *const size_t,
@@ -1304,6 +1309,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
+            properties: *const cl_command_properties_khr,
             src_image: cl_mem,
             dst_buffer: cl_mem,
             src_origin: *const size_t,
@@ -1320,6 +1326,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
+            properties: *const cl_command_properties_khr,
             buffer: cl_mem,
             pattern: *const c_void,
             pattern_size: size_t,
@@ -1336,6 +1343,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
+            properties: *const cl_command_properties_khr,
             image: cl_mem,
             fill_color: *const c_void,
             origin: *const size_t,
@@ -1351,7 +1359,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
-            properties: *const cl_ndrange_kernel_command_properties_khr,
+            properties: *const cl_command_properties_khr,
             kernel: cl_kernel,
             work_dim: cl_uint,
             global_work_offset: *const size_t,
@@ -1368,6 +1376,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
+            properties: *const cl_command_properties_khr,
             dst_ptr: *mut c_void,
             src_ptr: *const c_void,
             size: size_t,
@@ -1382,6 +1391,7 @@ pub struct OpenCl {
         fn(
             command_buffer: cl_command_buffer_khr,
             command_queue: cl_command_queue,
+            properties: *const cl_command_properties_khr,
             svm_ptr: *mut c_void,
             pattern: *const c_void,
             pattern_size: size_t,
@@ -1419,7 +1429,9 @@ pub struct OpenCl {
     clUpdateMutableCommandsKHR: Option<
         fn(
             command_buffer: cl_command_buffer_khr,
-            mutable_config: *const cl_mutable_base_config_khr,
+            num_configs: cl_uint,
+            config_types: *const cl_command_buffer_update_type_khr,
+            configs: *mut *const c_void,
         ) -> cl_int,
     >,
 
@@ -1969,6 +1981,9 @@ pub struct OpenCl {
     >,
 
     clSetContentSizeBufferPoCL: Option<fn(buffer: cl_mem, content_size_buffer: cl_mem) -> cl_int>,
+
+    clCancelCommandsIMG:
+        Option<fn(event_list: *const cl_event, num_events_in_list: cl_uint) -> cl_int>,
 
     // OpenGL APIs
     clCreateFromGLBuffer: Option<

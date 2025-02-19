@@ -122,6 +122,7 @@ pub unsafe fn enqueue_command_buffer_khr(
 pub unsafe fn command_barrier_with_wait_list_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
+    properties: *const cl_command_properties_khr,
     sync_point_wait_list: &[cl_sync_point_khr],
     sync_point: *mut cl_sync_point_khr,
     mutable_handle: *mut cl_mutable_command_khr,
@@ -129,6 +130,7 @@ pub unsafe fn command_barrier_with_wait_list_khr(
     let status: cl_int = cl_call!(clCommandBarrierWithWaitListKHR(
         command_buffer,
         command_queue,
+        properties,
         sync_point_wait_list.len() as cl_uint,
         sync_point_wait_list.as_ptr(),
         sync_point,
@@ -146,6 +148,7 @@ pub unsafe fn command_barrier_with_wait_list_khr(
 pub unsafe fn command_copy_buffer_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
+    properties: *const cl_command_properties_khr,
     src_buffer: cl_mem,
     dst_buffer: cl_mem,
     src_offset: size_t,
@@ -158,6 +161,7 @@ pub unsafe fn command_copy_buffer_khr(
     let status: cl_int = cl_call!(clCommandCopyBufferKHR(
         command_buffer,
         command_queue,
+        properties,
         src_buffer,
         dst_buffer,
         src_offset,
@@ -180,6 +184,7 @@ pub unsafe fn command_copy_buffer_khr(
 pub unsafe fn command_copy_buffer_rect_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
+    properties: *const cl_command_properties_khr,
     src_buffer: cl_mem,
     dst_buffer: cl_mem,
     src_origin: *const size_t,
@@ -196,6 +201,7 @@ pub unsafe fn command_copy_buffer_rect_khr(
     let status: cl_int = cl_call!(clCommandCopyBufferRectKHR(
         command_buffer,
         command_queue,
+        properties,
         src_buffer,
         dst_buffer,
         src_origin,
@@ -222,6 +228,7 @@ pub unsafe fn command_copy_buffer_rect_khr(
 pub unsafe fn command_copy_buffer_to_image_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
+    properties: *const cl_command_properties_khr,
     src_buffer: cl_mem,
     dst_image: cl_mem,
     src_offset: size_t,
@@ -234,6 +241,7 @@ pub unsafe fn command_copy_buffer_to_image_khr(
     let status: cl_int = cl_call!(clCommandCopyBufferToImageKHR(
         command_buffer,
         command_queue,
+        properties,
         src_buffer,
         dst_image,
         src_offset,
@@ -256,6 +264,7 @@ pub unsafe fn command_copy_buffer_to_image_khr(
 pub unsafe fn command_copy_image_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
+    properties: *const cl_command_properties_khr,
     src_image: cl_mem,
     dst_image: cl_mem,
     src_origin: *const size_t,
@@ -268,6 +277,7 @@ pub unsafe fn command_copy_image_khr(
     let status: cl_int = cl_call!(clCommandCopyImageKHR(
         command_buffer,
         command_queue,
+        properties,
         src_image,
         dst_image,
         src_origin,
@@ -290,6 +300,7 @@ pub unsafe fn command_copy_image_khr(
 pub unsafe fn command_copy_image_to_buffer_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
+    properties: *const cl_command_properties_khr,
     src_image: cl_mem,
     dst_buffer: cl_mem,
     src_origin: *const size_t,
@@ -302,6 +313,7 @@ pub unsafe fn command_copy_image_to_buffer_khr(
     let status: cl_int = cl_call!(clCommandCopyImageToBufferKHR(
         command_buffer,
         command_queue,
+        properties,
         src_image,
         dst_buffer,
         src_origin,
@@ -324,6 +336,7 @@ pub unsafe fn command_copy_image_to_buffer_khr(
 pub unsafe fn command_fill_buffer_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
+    properties: *const cl_command_properties_khr,
     buffer: cl_mem,
     pattern: *const c_void,
     pattern_size: size_t,
@@ -336,6 +349,7 @@ pub unsafe fn command_fill_buffer_khr(
     let status: cl_int = cl_call!(clCommandFillBufferKHR(
         command_buffer,
         command_queue,
+        properties,
         buffer,
         pattern,
         pattern_size,
@@ -358,6 +372,7 @@ pub unsafe fn command_fill_buffer_khr(
 pub unsafe fn command_fill_image_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
+    properties: *const cl_command_properties_khr,
     image: cl_mem,
     fill_color: *const c_void,
     origin: *const size_t,
@@ -369,6 +384,7 @@ pub unsafe fn command_fill_image_khr(
     let status: cl_int = cl_call!(clCommandFillImageKHR(
         command_buffer,
         command_queue,
+        properties,
         image,
         fill_color,
         origin,
@@ -390,7 +406,7 @@ pub unsafe fn command_fill_image_khr(
 pub unsafe fn command_nd_range_kernel_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
-    properties: *const cl_ndrange_kernel_command_properties_khr,
+    properties: *const cl_command_properties_khr,
     kernel: cl_kernel,
     work_dim: cl_uint,
     global_work_offset: *const size_t,
@@ -426,6 +442,7 @@ pub unsafe fn command_nd_range_kernel_khr(
 pub unsafe fn command_svm_memcpy_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
+    properties: *const cl_command_properties_khr,
     dst_ptr: *mut c_void,
     src_ptr: *const c_void,
     size: size_t,
@@ -436,6 +453,7 @@ pub unsafe fn command_svm_memcpy_khr(
     let status: cl_int = cl_call!(clCommandSVMMemcpyKHR(
         command_buffer,
         command_queue,
+        properties,
         dst_ptr,
         src_ptr,
         size,
@@ -456,6 +474,7 @@ pub unsafe fn command_svm_memcpy_khr(
 pub unsafe fn command_svm_mem_fill_khr(
     command_buffer: cl_command_buffer_khr,
     command_queue: cl_command_queue,
+    properties: *const cl_command_properties_khr,
     svm_ptr: *mut c_void,
     pattern: *const c_void,
     pattern_size: size_t,
@@ -467,6 +486,7 @@ pub unsafe fn command_svm_mem_fill_khr(
     let status: cl_int = cl_call!(clCommandSVMMemFillKHR(
         command_buffer,
         command_queue,
+        properties,
         svm_ptr,
         pattern,
         pattern_size,
@@ -574,9 +594,16 @@ pub unsafe fn remap_command_buffer_khr(
 ))]
 pub unsafe fn update_mutable_commands_khr(
     command_buffer: cl_command_buffer_khr,
-    mutable_config: *const cl_mutable_base_config_khr,
+    num_configs: cl_uint,
+    config_types: *const cl_command_buffer_update_type_khr,
+    configs: *mut *const c_void,
 ) -> Result<(), cl_int> {
-    let status: cl_int = cl_call!(clUpdateMutableCommandsKHR(command_buffer, mutable_config));
+    let status: cl_int = cl_call!(clUpdateMutableCommandsKHR(
+        command_buffer,
+        num_configs,
+        config_types,
+        configs
+    ));
     if CL_SUCCESS == status {
         Ok(())
     } else {
@@ -1976,6 +2003,19 @@ pub fn set_content_size_buffer_pocl(
     content_size_buffer: cl_mem,
 ) -> Result<(), cl_int> {
     let status = unsafe { cl_call!(clSetContentSizeBufferPoCL(buffer, content_size_buffer)) };
+    if CL_SUCCESS == status {
+        Ok(())
+    } else {
+        Err(status)
+    }
+}
+
+#[cfg(any(feature = "cl_img_cancel_command", feature = "dynamic"))]
+pub fn cancel_commands_img(
+    event_list: *const cl_event,
+    num_events_in_list: cl_uint,
+) -> Result<(), cl_int> {
+    let status = unsafe { cl_call!(clCancelCommandsIMG(event_list, num_events_in_list)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {
