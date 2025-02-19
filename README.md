@@ -54,7 +54,7 @@ hardware driver(s) are installed, see
 
 ```toml
 [dependencies]
-cl3 = "0.11"
+cl3 = "0.12"
 ```
 
 ### Static Linking
@@ -72,7 +72,7 @@ ICD loader add the following to your project's `Cargo.toml`:
 
 ```toml
 [dependencies.cl3]
-version = "0.11"
+version = "0.12"
 features = ["static", "CL_VERSION_1_1", "CL_VERSION_1_2", "CL_VERSION_2_0"]
 ```
 
@@ -82,7 +82,7 @@ OpenCL extensions can also be enabled by adding their features, e.g.:
 
 ```toml
 [dependencies.cl3]
-version = "0.11"
+version = "0.12"
 features = ["static", "CL_VERSION_1_1", "CL_VERSION_1_2", "cl_khr_gl_sharing", "cl_khr_dx9_media_sharing"]
 ```
 

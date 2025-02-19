@@ -1,5 +1,11 @@
 # Releases
 
+## Version 0.12.0 (2025-02-19)
+
+### Changes
+
+* Up to date with OpenCL-Headers tag v2024.10.24.
+
 ## Version 0.11.0 (2024-12-15)
 
 ### New Features
