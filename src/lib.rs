@@ -73,7 +73,7 @@ extern crate opencl_sys;
 #[cfg(feature = "dynamic")]
 mod runtime;
 #[cfg(feature = "dynamic")]
-pub use runtime::{is_opencl_runtime_available, load_library, OpenCl, OpenClRuntime};
+pub use runtime::{OpenCl, OpenClRuntime, is_opencl_runtime_available, load_library};
 
 #[macro_use]
 #[cfg(feature = "dynamic")]

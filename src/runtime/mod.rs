@@ -30,7 +30,7 @@ use opencl_sys::cl_layer::*;
 use opencl_sys::*;
 
 mod utils;
-pub use utils::{is_opencl_runtime_available, load_library, OpenClRuntime};
+pub use utils::{OpenClRuntime, is_opencl_runtime_available, load_library};
 
 /// Wrapper for the `OpenCL` API functions.
 ///

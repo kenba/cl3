@@ -17,8 +17,8 @@
 pub use opencl_sys::cl_egl::*;
 
 pub use opencl_sys::{
-    cl_command_queue, cl_context, cl_event, cl_int, cl_mem, cl_mem_flags, cl_uint,
-    CL_INVALID_VALUE, CL_SUCCESS,
+    CL_INVALID_VALUE, CL_SUCCESS, cl_command_queue, cl_context, cl_event, cl_int, cl_mem,
+    cl_mem_flags, cl_uint,
 };
 
 #[allow(unused_imports)]

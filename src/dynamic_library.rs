@@ -15,7 +15,7 @@
 //! `OpenCL` dynamic library function call.
 
 use crate::error_codes::DLOPEN_RUNTIME_LOAD_FAILED;
-use crate::runtime::{load_library, OpenClRuntime};
+use crate::runtime::{OpenClRuntime, load_library};
 
 pub fn load_dynamic_runtime() -> Result<&'static OpenClRuntime, i32> {
     load_library()

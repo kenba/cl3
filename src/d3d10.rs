@@ -21,7 +21,7 @@
 
 pub use opencl_sys::cl_d3d10::*;
 pub use opencl_sys::{
-    cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint, CL_INVALID_VALUE, CL_SUCCESS,
+    CL_INVALID_VALUE, CL_SUCCESS, cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint,
 };
 
 #[allow(unused_imports)]

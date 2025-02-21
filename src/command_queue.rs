@@ -23,13 +23,13 @@
 )]
 
 pub use opencl_sys::{
-    cl_bool, cl_command_queue, cl_command_queue_info, cl_command_queue_properties, cl_context,
-    cl_device_id, cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_mem_migration_flags,
-    cl_queue_properties, cl_uint, cl_ulong, CL_BLOCKING, CL_INVALID_VALUE, CL_NON_BLOCKING,
-    CL_QUEUE_CONTEXT, CL_QUEUE_DEVICE, CL_QUEUE_DEVICE_DEFAULT, CL_QUEUE_ON_DEVICE,
-    CL_QUEUE_ON_DEVICE_DEFAULT, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, CL_QUEUE_PROFILING_ENABLE,
-    CL_QUEUE_PROPERTIES, CL_QUEUE_PROPERTIES_ARRAY, CL_QUEUE_REFERENCE_COUNT, CL_QUEUE_SIZE,
-    CL_SUCCESS,
+    CL_BLOCKING, CL_INVALID_VALUE, CL_NON_BLOCKING, CL_QUEUE_CONTEXT, CL_QUEUE_DEVICE,
+    CL_QUEUE_DEVICE_DEFAULT, CL_QUEUE_ON_DEVICE, CL_QUEUE_ON_DEVICE_DEFAULT,
+    CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, CL_QUEUE_PROFILING_ENABLE, CL_QUEUE_PROPERTIES,
+    CL_QUEUE_PROPERTIES_ARRAY, CL_QUEUE_REFERENCE_COUNT, CL_QUEUE_SIZE, CL_SUCCESS, cl_bool,
+    cl_command_queue, cl_command_queue_info, cl_command_queue_properties, cl_context, cl_device_id,
+    cl_event, cl_int, cl_kernel, cl_map_flags, cl_mem, cl_mem_migration_flags, cl_queue_properties,
+    cl_uint, cl_ulong,
 };
 
 use super::info_type::InfoType;
@@ -1130,7 +1130,7 @@ pub unsafe fn enqueue_svm_migrate_mem(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
+    use crate::device::{CL_DEVICE_TYPE_GPU, get_device_ids};
     use crate::error_codes::error_text;
     use crate::platform::get_platform_ids;
 

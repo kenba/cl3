@@ -19,10 +19,9 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref)]
 
 pub use opencl_sys::{
-    cl_context, cl_context_info, cl_context_properties, cl_device_id, cl_device_type, cl_int,
-    cl_uint, CL_CONTEXT_DEVICES, CL_CONTEXT_INTEROP_USER_SYNC, CL_CONTEXT_NUM_DEVICES,
-    CL_CONTEXT_PLATFORM, CL_CONTEXT_PROPERTIES, CL_CONTEXT_REFERENCE_COUNT, CL_INVALID_VALUE,
-    CL_SUCCESS,
+    CL_CONTEXT_DEVICES, CL_CONTEXT_INTEROP_USER_SYNC, CL_CONTEXT_NUM_DEVICES, CL_CONTEXT_PLATFORM,
+    CL_CONTEXT_PROPERTIES, CL_CONTEXT_REFERENCE_COUNT, CL_INVALID_VALUE, CL_SUCCESS, cl_context,
+    cl_context_info, cl_context_properties, cl_device_id, cl_device_type, cl_int, cl_uint,
 };
 
 use super::info_type::InfoType;
@@ -220,7 +219,7 @@ pub fn set_context_destructor_callback(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
+    use crate::device::{CL_DEVICE_TYPE_GPU, get_device_ids};
     use crate::platform::get_platform_ids;
 
     #[test]

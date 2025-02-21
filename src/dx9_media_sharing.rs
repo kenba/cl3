@@ -22,7 +22,7 @@
 
 pub use opencl_sys::cl_dx9_media_sharing::*;
 pub use opencl_sys::{
-    cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint, CL_INVALID_VALUE, CL_SUCCESS,
+    CL_INVALID_VALUE, CL_SUCCESS, cl_context, cl_int, cl_mem_flags, cl_mem_object_type, cl_uint,
 };
 
 #[allow(unused_imports)]

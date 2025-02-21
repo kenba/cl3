@@ -14,7 +14,7 @@
 
 use std::sync::OnceLock;
 
-use dlopen2::{wrapper::Container, Error};
+use dlopen2::{Error, wrapper::Container};
 
 use super::OpenCl;
 

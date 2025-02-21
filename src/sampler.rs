@@ -19,11 +19,11 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
 pub use opencl_sys::{
+    CL_INVALID_VALUE, CL_SAMPLER_ADDRESSING_MODE, CL_SAMPLER_CONTEXT, CL_SAMPLER_FILTER_MODE,
+    CL_SAMPLER_LOD_MAX, CL_SAMPLER_LOD_MIN, CL_SAMPLER_MIP_FILTER_MODE,
+    CL_SAMPLER_NORMALIZED_COORDS, CL_SAMPLER_PROPERTIES, CL_SAMPLER_REFERENCE_COUNT, CL_SUCCESS,
     cl_addressing_mode, cl_bool, cl_context, cl_filter_mode, cl_int, cl_sampler, cl_sampler_info,
-    cl_sampler_properties, cl_uint, cl_ulong, CL_INVALID_VALUE, CL_SAMPLER_ADDRESSING_MODE,
-    CL_SAMPLER_CONTEXT, CL_SAMPLER_FILTER_MODE, CL_SAMPLER_LOD_MAX, CL_SAMPLER_LOD_MIN,
-    CL_SAMPLER_MIP_FILTER_MODE, CL_SAMPLER_NORMALIZED_COORDS, CL_SAMPLER_PROPERTIES,
-    CL_SAMPLER_REFERENCE_COUNT, CL_SUCCESS,
+    cl_sampler_properties, cl_uint, cl_ulong,
 };
 
 use super::info_type::InfoType;

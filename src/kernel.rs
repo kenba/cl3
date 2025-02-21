@@ -23,14 +23,11 @@
 )]
 
 pub use opencl_sys::{
-    cl_device_id, cl_int, cl_kernel, cl_kernel_arg_access_qualifier, cl_kernel_arg_info,
-    cl_kernel_exec_info, cl_kernel_info, cl_kernel_sub_group_info, cl_kernel_work_group_info,
-    cl_program, cl_uint, cl_ulong, CL_INVALID_VALUE, CL_KERNEL_ARG_ACCESS_NONE,
-    CL_KERNEL_ARG_ACCESS_QUALIFIER, CL_KERNEL_ARG_ACCESS_READ_ONLY,
-    CL_KERNEL_ARG_ACCESS_READ_WRITE, CL_KERNEL_ARG_ACCESS_WRITE_ONLY,
-    CL_KERNEL_ARG_ADDRESS_CONSTANT, CL_KERNEL_ARG_ADDRESS_GLOBAL, CL_KERNEL_ARG_ADDRESS_LOCAL,
-    CL_KERNEL_ARG_ADDRESS_PRIVATE, CL_KERNEL_ARG_ADDRESS_QUALIFIER, CL_KERNEL_ARG_NAME,
-    CL_KERNEL_ARG_TYPE_CONST, CL_KERNEL_ARG_TYPE_NAME, CL_KERNEL_ARG_TYPE_NONE,
+    CL_INVALID_VALUE, CL_KERNEL_ARG_ACCESS_NONE, CL_KERNEL_ARG_ACCESS_QUALIFIER,
+    CL_KERNEL_ARG_ACCESS_READ_ONLY, CL_KERNEL_ARG_ACCESS_READ_WRITE,
+    CL_KERNEL_ARG_ACCESS_WRITE_ONLY, CL_KERNEL_ARG_ADDRESS_CONSTANT, CL_KERNEL_ARG_ADDRESS_GLOBAL,
+    CL_KERNEL_ARG_ADDRESS_LOCAL, CL_KERNEL_ARG_ADDRESS_PRIVATE, CL_KERNEL_ARG_ADDRESS_QUALIFIER,
+    CL_KERNEL_ARG_NAME, CL_KERNEL_ARG_TYPE_CONST, CL_KERNEL_ARG_TYPE_NAME, CL_KERNEL_ARG_TYPE_NONE,
     CL_KERNEL_ARG_TYPE_PIPE, CL_KERNEL_ARG_TYPE_QUALIFIER, CL_KERNEL_ARG_TYPE_RESTRICT,
     CL_KERNEL_ARG_TYPE_VOLATILE, CL_KERNEL_ATTRIBUTES, CL_KERNEL_COMPILE_NUM_SUB_GROUPS,
     CL_KERNEL_COMPILE_WORK_GROUP_SIZE, CL_KERNEL_CONTEXT,
@@ -40,13 +37,15 @@ pub use opencl_sys::{
     CL_KERNEL_MAX_SUB_GROUP_SIZE_FOR_NDRANGE, CL_KERNEL_NUM_ARGS,
     CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, CL_KERNEL_PRIVATE_MEM_SIZE, CL_KERNEL_PROGRAM,
     CL_KERNEL_REFERENCE_COUNT, CL_KERNEL_SUB_GROUP_COUNT_FOR_NDRANGE, CL_KERNEL_WORK_GROUP_SIZE,
-    CL_SUCCESS,
+    CL_SUCCESS, cl_device_id, cl_int, cl_kernel, cl_kernel_arg_access_qualifier,
+    cl_kernel_arg_info, cl_kernel_exec_info, cl_kernel_info, cl_kernel_sub_group_info,
+    cl_kernel_work_group_info, cl_program, cl_uint, cl_ulong,
 };
 
 use super::info_type::InfoType;
 use super::{
-    api2_info_size, api2_info_value, api2_info_vector, api_info_size, api_info_value,
-    api_info_vector,
+    api_info_size, api_info_value, api_info_vector, api2_info_size, api2_info_value,
+    api2_info_vector,
 };
 use libc::{c_void, intptr_t, size_t};
 use std::ffi::CStr;
@@ -560,7 +559,7 @@ pub fn get_kernel_sub_group_info(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, CL_DEVICE_TYPE_GPU};
+    use crate::device::{CL_DEVICE_TYPE_GPU, get_device_ids};
     use crate::error_codes::error_text;
     use crate::platform::get_platform_ids;
     use crate::program::{build_program, create_program_with_source, release_program};

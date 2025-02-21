@@ -14,8 +14,8 @@
 
 use libc::{intptr_t, size_t};
 use opencl_sys::{
-    cl_image_format, cl_int, cl_name_version, cl_uchar, cl_uint, cl_ulong, CL_LUID_SIZE_KHR,
-    CL_UUID_SIZE_KHR,
+    CL_LUID_SIZE_KHR, CL_UUID_SIZE_KHR, cl_image_format, cl_int, cl_name_version, cl_uchar,
+    cl_uint, cl_ulong,
 };
 use std::fmt;
 
@@ -325,12 +325,12 @@ impl InfoType {
 #[cfg(test)]
 mod tests {
     use crate::device::{
-        get_device_ids, get_device_info, CL_DEVICE_MAX_WORK_ITEM_SIZES, CL_DEVICE_NAME,
-        CL_DEVICE_PARTITION_PROPERTIES, CL_DEVICE_TYPE, CL_DEVICE_TYPE_ALL, CL_DEVICE_VENDOR_ID,
-        CL_DRIVER_VERSION,
+        CL_DEVICE_MAX_WORK_ITEM_SIZES, CL_DEVICE_NAME, CL_DEVICE_PARTITION_PROPERTIES,
+        CL_DEVICE_TYPE, CL_DEVICE_TYPE_ALL, CL_DEVICE_VENDOR_ID, CL_DRIVER_VERSION, get_device_ids,
+        get_device_info,
     };
     use crate::platform::{
-        get_platform_ids, get_platform_info, CL_PLATFORM_NAME, CL_PLATFORM_VERSION,
+        CL_PLATFORM_NAME, CL_PLATFORM_VERSION, get_platform_ids, get_platform_info,
     };
 
     #[test]

@@ -19,21 +19,21 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::wildcard_in_or_patterns)]
 
 pub use opencl_sys::{
-    cl_context, cl_device_id, cl_int, cl_platform_id, cl_program, cl_program_build_info,
-    cl_program_info, cl_uchar, cl_uint, CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE,
-    CL_BUILD_SUCCESS, CL_FALSE, CL_INVALID_VALUE, CL_PROGRAM_BINARIES, CL_PROGRAM_BINARY_SIZES,
-    CL_PROGRAM_BINARY_TYPE, CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT,
-    CL_PROGRAM_BINARY_TYPE_EXECUTABLE, CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_NONE,
+    CL_BUILD_ERROR, CL_BUILD_IN_PROGRESS, CL_BUILD_NONE, CL_BUILD_SUCCESS, CL_FALSE,
+    CL_INVALID_VALUE, CL_PROGRAM_BINARIES, CL_PROGRAM_BINARY_SIZES, CL_PROGRAM_BINARY_TYPE,
+    CL_PROGRAM_BINARY_TYPE_COMPILED_OBJECT, CL_PROGRAM_BINARY_TYPE_EXECUTABLE,
+    CL_PROGRAM_BINARY_TYPE_LIBRARY, CL_PROGRAM_BINARY_TYPE_NONE,
     CL_PROGRAM_BUILD_GLOBAL_VARIABLE_TOTAL_SIZE, CL_PROGRAM_BUILD_LOG, CL_PROGRAM_BUILD_OPTIONS,
     CL_PROGRAM_BUILD_STATUS, CL_PROGRAM_CONTEXT, CL_PROGRAM_DEVICES, CL_PROGRAM_IL,
     CL_PROGRAM_KERNEL_NAMES, CL_PROGRAM_NUM_DEVICES, CL_PROGRAM_NUM_KERNELS,
-    CL_PROGRAM_REFERENCE_COUNT, CL_PROGRAM_SOURCE, CL_SUCCESS, CL_TRUE,
+    CL_PROGRAM_REFERENCE_COUNT, CL_PROGRAM_SOURCE, CL_SUCCESS, CL_TRUE, cl_context, cl_device_id,
+    cl_int, cl_platform_id, cl_program, cl_program_build_info, cl_program_info, cl_uchar, cl_uint,
 };
 
 use super::info_type::InfoType;
 use super::{
-    api2_info_size, api2_info_value, api2_info_vector, api_info_size, api_info_value,
-    api_info_vector,
+    api_info_size, api_info_value, api_info_vector, api2_info_size, api2_info_value,
+    api2_info_vector,
 };
 use libc::{c_char, c_uchar, c_void, intptr_t, size_t};
 use std::ffi::CStr;
@@ -606,7 +606,7 @@ pub fn get_program_build_info(
 mod tests {
     use super::*;
     use crate::context::{create_context, release_context};
-    use crate::device::{get_device_ids, CL_DEVICE_TYPE_ALL};
+    use crate::device::{CL_DEVICE_TYPE_ALL, get_device_ids};
     #[allow(unused_imports)]
     use crate::error_codes::error_text;
     use crate::platform::get_platform_ids;

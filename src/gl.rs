@@ -19,15 +19,16 @@
 #![allow(clippy::not_unsafe_ptr_arg_deref, clippy::missing_safety_doc)]
 
 pub use opencl_sys::{
-    cl_GLenum, cl_GLint, cl_GLsync, cl_GLuint, cl_command_queue, cl_context, cl_context_properties,
-    cl_event, cl_gl_context_info, cl_gl_object_type, cl_gl_platform_info, cl_gl_texture_info,
-    cl_int, cl_mem, cl_mem_flags, cl_uint, CL_CGL_SHAREGROUP_KHR,
-    CL_COMMAND_GL_FENCE_SYNC_OBJECT_KHR, CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR,
-    CL_DEVICES_FOR_GL_CONTEXT_KHR, CL_EGL_DISPLAY_KHR, CL_GLX_DISPLAY_KHR, CL_GL_CONTEXT_KHR,
-    CL_GL_MIPMAP_LEVEL, CL_GL_NUM_SAMPLES, CL_GL_OBJECT_BUFFER, CL_GL_OBJECT_RENDERBUFFER,
-    CL_GL_OBJECT_TEXTURE1D, CL_GL_OBJECT_TEXTURE1D_ARRAY, CL_GL_OBJECT_TEXTURE2D,
-    CL_GL_OBJECT_TEXTURE2D_ARRAY, CL_GL_OBJECT_TEXTURE3D, CL_GL_OBJECT_TEXTURE_BUFFER,
-    CL_GL_TEXTURE_TARGET, CL_INVALID_VALUE, CL_KHR_GL_SHARING, CL_SUCCESS, CL_WGL_HDC_KHR,
+    CL_CGL_SHAREGROUP_KHR, CL_COMMAND_GL_FENCE_SYNC_OBJECT_KHR,
+    CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR, CL_DEVICES_FOR_GL_CONTEXT_KHR, CL_EGL_DISPLAY_KHR,
+    CL_GL_CONTEXT_KHR, CL_GL_MIPMAP_LEVEL, CL_GL_NUM_SAMPLES, CL_GL_OBJECT_BUFFER,
+    CL_GL_OBJECT_RENDERBUFFER, CL_GL_OBJECT_TEXTURE_BUFFER, CL_GL_OBJECT_TEXTURE1D,
+    CL_GL_OBJECT_TEXTURE1D_ARRAY, CL_GL_OBJECT_TEXTURE2D, CL_GL_OBJECT_TEXTURE2D_ARRAY,
+    CL_GL_OBJECT_TEXTURE3D, CL_GL_TEXTURE_TARGET, CL_GLX_DISPLAY_KHR, CL_INVALID_VALUE,
+    CL_KHR_GL_SHARING, CL_SUCCESS, CL_WGL_HDC_KHR, cl_GLenum, cl_GLint, cl_GLsync, cl_GLuint,
+    cl_command_queue, cl_context, cl_context_properties, cl_event, cl_gl_context_info,
+    cl_gl_object_type, cl_gl_platform_info, cl_gl_texture_info, cl_int, cl_mem, cl_mem_flags,
+    cl_uint,
 };
 
 use super::info_type::InfoType;

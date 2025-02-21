@@ -18,22 +18,22 @@
 extern crate cl3;
 
 use cl3::command_queue::{
-    create_command_queue, enqueue_nd_range_kernel, enqueue_read_buffer, enqueue_write_buffer,
-    finish, release_command_queue, CL_QUEUE_PROFILING_ENABLE,
+    CL_QUEUE_PROFILING_ENABLE, create_command_queue, enqueue_nd_range_kernel, enqueue_read_buffer,
+    enqueue_write_buffer, finish, release_command_queue,
 };
 use cl3::context::{create_context, release_context};
 use cl3::device::{
-    get_device_ids, get_device_info, CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR, CL_DEVICE_VENDOR_ID,
+    CL_DEVICE_TYPE_GPU, CL_DEVICE_VENDOR, CL_DEVICE_VENDOR_ID, get_device_ids, get_device_info,
 };
 use cl3::event::{
-    get_event_profiling_info, release_event, wait_for_events, CL_PROFILING_COMMAND_END,
-    CL_PROFILING_COMMAND_START,
+    CL_PROFILING_COMMAND_END, CL_PROFILING_COMMAND_START, get_event_profiling_info, release_event,
+    wait_for_events,
 };
 use cl3::kernel::{create_kernel, release_kernel, set_kernel_arg};
-use cl3::memory::{create_buffer, release_mem_object, CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY};
-use cl3::platform::{get_platform_ids, get_platform_info, CL_PLATFORM_NAME};
+use cl3::memory::{CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY, create_buffer, release_mem_object};
+use cl3::platform::{CL_PLATFORM_NAME, get_platform_ids, get_platform_info};
 use cl3::program::{build_program, create_program_with_source, release_program};
-use cl3::types::{cl_event, cl_float, cl_mem, CL_BLOCKING, CL_NON_BLOCKING};
+use cl3::types::{CL_BLOCKING, CL_NON_BLOCKING, cl_event, cl_float, cl_mem};
 use libc::{c_void, size_t};
 use std::ffi::CString;
 use std::mem;
