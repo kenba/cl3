@@ -10,7 +10,7 @@ readme = "README.md"
 keywords = ["opencl", "gpu", "gpgpu", "ffi", "api"]
 categories = ["api-bindings", "asynchronous", "external-ffi-bindings"]
 license = "Apache-2.0"
-edition = "2021"
+edition = "2024"
 
 [features]
 
