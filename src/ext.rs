@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2024 Via Technology Ltd.
+// Copyright (c) 2021-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ pub use opencl_sys::*;
 use super::info_type::InfoType;
 #[allow(unused_imports)]
 use super::{api_info_size, api_info_value, api_info_vector};
+#[allow(unused_imports)]
+use super::error_codes::DLOPEN_FUNCTION_NOT_AVAILABLE;
 #[allow(unused_imports)]
 use libc::{c_char, c_int, c_void, intptr_t, size_t};
 #[allow(unused_imports)]
@@ -668,6 +670,26 @@ pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
         }
     } else {
         Ok(Vec::default())
+    }
+}
+
+#[cfg(any(feature = "cl_khr_icd", feature = "dynamic"))]
+pub fn icd_get_function_address_for_platform_khr(platform: cl_platform_id, func_name: *const c_char) -> Result<*mut c_void, cl_int> {
+    let ptr = unsafe { cl_call!(clIcdGetFunctionAddressForPlatformKHR(platform, func_name)) };
+    if ptr.is_null() {
+        Err(DLOPEN_FUNCTION_NOT_AVAILABLE)
+    } else {
+        Ok(ptr)
+    }
+}
+
+#[cfg(any(feature = "cl_khr_icd", feature = "dynamic"))]
+pub fn icd_set_platform_dispatch_data_khr(platform: cl_platform_id, dispatch_data: *mut c_void) -> Result<(), cl_int> {
+    let status = unsafe { cl_call!(clIcdSetPlatformDispatchDataKHR(platform, dispatch_data)) };
+    if CL_SUCCESS == status {
+        Ok(())
+    } else {
+        Err(status)
     }
 }
 
@@ -2016,6 +2038,19 @@ pub fn cancel_commands_img(
     num_events_in_list: cl_uint,
 ) -> Result<(), cl_int> {
     let status = unsafe { cl_call!(clCancelCommandsIMG(event_list, num_events_in_list)) };
+    if CL_SUCCESS == status {
+        Ok(())
+    } else {
+        Err(status)
+    }
+}
+
+#[cfg(any(feature = "cl_qcom_perf_hint", feature = "dynamic"))]
+pub fn set_perf_hint_qcom(
+    context: cl_context,
+    perf_hint: cl_perf_hint_qcom,
+) -> Result<(), cl_int> {
+    let status = unsafe { cl_call!(clSetPerfHintQCOM(context, perf_hint)) };
     if CL_SUCCESS == status {
         Ok(())
     } else {

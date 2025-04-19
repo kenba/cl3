@@ -64,8 +64,10 @@ cl_khr_d3d11_sharing = ["opencl-sys/cl_khr_d3d11_sharing"]
 
 cl_loader_info = ["opencl-sys/cl_loader_info"]
 cl_pocl_content_size = ["opencl-sys/cl_pocl_content_size"]
+cl_ext_buffer_device_address = ["opencl-sys/cl_ext_buffer_device_address"]
 cl_loader_layers = ["opencl-sys/cl_loader_layers"]
 cl_img_cancel_command = ["opencl-sys/cl_img_cancel_command"]
+cl_qcom_perf_hint = ["opencl-sys/cl_qcom_perf_hint"]
 
 # Use dynamic linking instead of static linking
 dynamic = []
@@ -76,7 +78,7 @@ default = ["dynamic"]
 [dependencies]
 dlopen2 = "0.7"
 libc = "0.2"
-opencl-sys = "0.5"
+opencl-sys = "0.6"
 
 thiserror = "2.0"
 

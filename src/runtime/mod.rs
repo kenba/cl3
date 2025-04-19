@@ -1473,6 +1473,20 @@ pub struct OpenCl {
         ) -> cl_int,
     >,
 
+    clIcdGetFunctionAddressForPlatformKHR: Option<
+        fn(
+            platform: cl_platform_id,
+            func_name: *const c_char,
+        ) -> *mut c_void,
+    >,
+
+    clIcdSetPlatformDispatchDataKHR: Option<
+        fn(
+            platform: cl_platform_id,
+            dispatch_data: *mut c_void,
+        ) -> cl_int,
+    >,
+
     clCreateProgramWithILKHR: Option<
         fn(
             context: cl_context,
@@ -1984,6 +1998,9 @@ pub struct OpenCl {
 
     clCancelCommandsIMG:
         Option<fn(event_list: *const cl_event, num_events_in_list: cl_uint) -> cl_int>,
+
+    clSetPerfHintQCOM:
+        Option<fn(context: cl_context, perf_hint: cl_perf_hint_qcom) -> cl_int>,
 
     // OpenGL APIs
     clCreateFromGLBuffer: Option<
