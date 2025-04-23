@@ -32,7 +32,7 @@ pub fn load_library() -> &'static Result<OpenClRuntime, Error> {
     } else if cfg!(target_os = "macos") {
         "/System/Library/Frameworks/OpenCL.framework/OpenCL"
     } else {
-        "libOpenCL.so"
+        "libOpenCL.so.1"
     };
 
     OPENCL_RUNTIME.get_or_init(|| {
