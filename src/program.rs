@@ -244,10 +244,15 @@ pub fn build_program(
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
     let status: cl_int = unsafe {
+        let devices_ptr = if devices.is_empty() {
+            ptr::null()
+        } else {
+            devices.as_ptr()
+        };
         cl_call!(clBuildProgram(
             program,
             devices.len() as cl_uint,
-            devices.as_ptr(),
+            devices_ptr,
             options.as_ptr(),
             pfn_notify,
             user_data,
@@ -293,6 +298,11 @@ pub fn compile_program(
 ) -> Result<(), cl_int> {
     assert!(input_headers.len() == header_include_names.len());
     let status: cl_int = unsafe {
+        let devices_ptr = if devices.is_empty() {
+            ptr::null()
+        } else {
+            devices.as_ptr()
+        };
         let input_headers_ptr = if input_headers.is_empty() {
             ptr::null()
         } else {
@@ -306,7 +316,7 @@ pub fn compile_program(
         cl_call!(clCompileProgram(
             program,
             devices.len() as cl_uint,
-            devices.as_ptr(),
+            devices_ptr,
             options.as_ptr(),
             input_headers.len() as cl_uint,
             input_headers_ptr,
@@ -355,11 +365,16 @@ pub unsafe fn link_program(
     user_data: *mut c_void,
 ) -> Result<cl_program, cl_int> {
     assert!(!input_programs.is_empty());
+    let devices_ptr = if devices.is_empty() {
+        ptr::null()
+    } else {
+        devices.as_ptr()
+    };
     let mut status: cl_int = CL_INVALID_VALUE;
     let programme: cl_program = cl_call!(clLinkProgram(
         context,
         devices.len() as cl_uint,
-        devices.as_ptr(),
+        devices_ptr,
         options.as_ptr(),
         input_programs.len() as cl_uint,
         input_programs.as_ptr(),
@@ -678,7 +693,8 @@ mod tests {
         assert!(0 < value.len());
 
         let options = CString::default();
-        build_program(program, &device_ids, &options, None, ptr::null_mut()).unwrap();
+        let empty_device_ids = Vec::new();
+        build_program(program, &empty_device_ids, &options, None, ptr::null_mut()).unwrap();
 
         let value = get_program_build_info(program, device_id, CL_PROGRAM_BUILD_STATUS).unwrap();
         let value: cl_int = From::from(value);
