@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2024 Via Technology Ltd.
+// Copyright (c) 2023-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ pub fn get_layer_data(param_name: cl_layer_info) -> Result<Vec<u8>, cl_int> {
             param_name,
             0,
             ptr::null_mut(),
-            &mut size
+            &raw mut size
         ))
     };
     if CL_SUCCESS == status {
@@ -69,8 +69,8 @@ pub fn init_layer(target_dispatch: &[cl_icd_dispatch]) -> Result<&[cl_icd_dispat
     let status = cl_call!(cl_layer::clInitLayer(
         target_dispatch.len() as cl_uint,
         target_dispatch.as_ptr(),
-        &mut num_entries_ret,
-        &mut layer_dispatch_ret,
+        &raw mut num_entries_ret,
+        &raw mut layer_dispatch_ret,
     ));
     if CL_SUCCESS == status {
         let slice =

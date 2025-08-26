@@ -76,7 +76,7 @@ dynamic = []
 default = ["dynamic"]
 
 [dependencies]
-dlopen2 = "0.7"
+dlopen2 = "0.8"
 libc = "0.2"
 opencl-sys = "0.6"
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2025 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -75,7 +75,13 @@ pub unsafe fn create_buffer(
     host_ptr: *mut c_void,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem: cl_mem = cl_call!(clCreateBuffer(context, flags, size, host_ptr, &mut status));
+    let mem: cl_mem = cl_call!(clCreateBuffer(
+        context,
+        flags,
+        size,
+        host_ptr,
+        &raw mut status
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -113,7 +119,7 @@ pub unsafe fn create_sub_buffer(
         flags,
         buffer_create_type,
         buffer_create_info,
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -158,7 +164,7 @@ pub unsafe fn create_image(
         image_format,
         image_desc,
         host_ptr,
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -201,7 +207,7 @@ pub unsafe fn create_pipe(
         pipe_packet_size,
         pipe_max_packets,
         ptr::null(),
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -245,7 +251,7 @@ pub unsafe fn create_buffer_with_properties(
         flags,
         size,
         host_ptr,
-        &mut status
+        &raw mut status
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -294,7 +300,7 @@ pub unsafe fn create_image_with_properties(
         image_format,
         image_desc,
         host_ptr,
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -356,7 +362,7 @@ fn count_supported_image_formats(
             image_type,
             0,
             ptr::null_mut(),
-            &mut count
+            &raw mut count
         ))
     };
     if CL_SUCCESS == status {

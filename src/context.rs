@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Via Technology Ltd.
+// Copyright (c) 2020-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ pub fn create_context(
             devices.as_ptr(),
             pfn_notify,
             user_data,
-            &mut status,
+            &raw mut status,
         ))
     };
     if CL_SUCCESS == status {
@@ -94,7 +94,7 @@ pub fn create_context_from_type(
             device_type,
             pfn_notify,
             user_data,
-            &mut status
+            &raw mut status
         ))
     };
     if CL_SUCCESS == status {

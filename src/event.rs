@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Via Technology Ltd. All Rights Reserved.
+// Copyright (c) 2020-2025 Via Technology Ltd. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ pub fn get_event_info(event: cl_event, param_name: cl_event_info) -> Result<Info
 #[inline]
 pub fn create_user_event(context: cl_context) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let event: cl_event = unsafe { cl_call!(clCreateUserEvent(context, &mut status)) };
+    let event: cl_event = unsafe { cl_call!(clCreateUserEvent(context, &raw mut status)) };
     if CL_SUCCESS == status {
         Ok(event)
     } else {

@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Via Technology Ltd.
+// Copyright (c) 2020-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ pub unsafe fn create_command_queue(
         context,
         device,
         properties,
-        &mut status
+        &raw mut status
     ));
     if CL_SUCCESS == status {
         Ok(queue)
@@ -114,7 +114,7 @@ pub unsafe fn create_command_queue_with_properties(
         context,
         device,
         properties,
-        &mut status
+        &raw mut status
     ));
     if CL_SUCCESS == status {
         Ok(queue)
@@ -282,7 +282,7 @@ pub unsafe fn enqueue_read_buffer(
         ptr,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -322,7 +322,7 @@ pub unsafe fn enqueue_read_buffer_rect(
         ptr,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -352,7 +352,7 @@ pub unsafe fn enqueue_write_buffer(
         ptr,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -392,7 +392,7 @@ pub unsafe fn enqueue_write_buffer_rect(
         ptr,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -423,7 +423,7 @@ pub unsafe fn enqueue_fill_buffer(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -453,7 +453,7 @@ pub unsafe fn enqueue_copy_buffer(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -491,7 +491,7 @@ pub unsafe fn enqueue_copy_buffer_rect(
         dst_slice_pitch,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -525,7 +525,7 @@ pub unsafe fn enqueue_read_image(
         ptr,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -559,7 +559,7 @@ pub unsafe fn enqueue_write_image(
         ptr,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -588,7 +588,7 @@ pub unsafe fn enqueue_fill_image(
         region,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -618,7 +618,7 @@ pub unsafe fn enqueue_copy_image(
         region,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -648,7 +648,7 @@ pub unsafe fn enqueue_copy_image_to_buffer(
         dst_offset,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -678,7 +678,7 @@ pub unsafe fn enqueue_copy_buffer_to_image(
         region,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -712,8 +712,8 @@ pub unsafe fn enqueue_map_buffer(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
-        &mut status,
+        &raw mut event,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -751,8 +751,8 @@ pub unsafe fn enqueue_map_image(
         image_slice_pitch,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
-        &mut status,
+        &raw mut event,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -776,7 +776,7 @@ pub unsafe fn enqueue_unmap_mem_object(
         mapped_ptr,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -803,7 +803,7 @@ pub unsafe fn enqueue_migrate_mem_object(
         flags,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -833,7 +833,7 @@ pub unsafe fn enqueue_nd_range_kernel(
         local_work_dims,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -868,7 +868,7 @@ pub unsafe fn enqueue_task(
         kernel,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -900,7 +900,7 @@ pub unsafe fn enqueue_native_kernel(
         args_mem_loc,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -921,7 +921,7 @@ pub unsafe fn enqueue_marker_with_wait_list(
         command_queue,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -942,7 +942,7 @@ pub unsafe fn enqueue_barrier_with_wait_list(
         command_queue,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -978,7 +978,7 @@ pub unsafe fn enqueue_svm_free(
         user_data,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1007,7 +1007,7 @@ pub unsafe fn enqueue_svm_mem_cpy(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1036,7 +1036,7 @@ pub unsafe fn enqueue_svm_mem_fill(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1065,7 +1065,7 @@ pub unsafe fn enqueue_svm_map(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1088,7 +1088,7 @@ pub unsafe fn enqueue_svm_unmap(
         svm_ptr,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1117,7 +1117,7 @@ pub unsafe fn enqueue_svm_migrate_mem(
         flags,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)

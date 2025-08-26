@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Via Technology Ltd.
+// Copyright (c) 2020-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -153,7 +153,7 @@ pub fn get_device_ids(
             device_type,
             0,
             ptr::null_mut(),
-            &mut count
+            &raw mut count
         ))
     };
 
@@ -575,7 +575,7 @@ fn count_sub_devices(
             properties.as_ptr(),
             0,
             ptr::null_mut(),
-            &mut count,
+            &raw mut count,
         ))
     };
     if CL_SUCCESS == status {
@@ -715,8 +715,8 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
     let status: cl_int = unsafe {
         cl_call!(clGetDeviceAndHostTimer(
             device,
-            &mut device_timestamp,
-            &mut host_timestamp
+            &raw mut device_timestamp,
+            &raw mut host_timestamp
         ))
     };
     if CL_SUCCESS == status {
@@ -738,7 +738,7 @@ pub fn get_device_and_host_timer(device: cl_device_id) -> Result<[cl_ulong; 2], 
 #[inline]
 pub fn get_host_timer(device: cl_device_id) -> Result<cl_ulong, cl_int> {
     let mut host_timestamp: cl_ulong = 0;
-    let status: cl_int = unsafe { cl_call!(clGetHostTimer(device, &mut host_timestamp)) };
+    let status: cl_int = unsafe { cl_call!(clGetHostTimer(device, &raw mut host_timestamp)) };
     if CL_SUCCESS == status {
         Ok(host_timestamp)
     } else {

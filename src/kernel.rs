@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Via Technology Ltd.
+// Copyright (c) 2020-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,8 +63,13 @@ use std::ptr;
 #[inline]
 pub fn create_kernel(program: cl_program, kernel_name: &CStr) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let kernel: cl_kernel =
-        unsafe { cl_call!(clCreateKernel(program, kernel_name.as_ptr(), &mut status)) };
+    let kernel: cl_kernel = unsafe {
+        cl_call!(clCreateKernel(
+            program,
+            kernel_name.as_ptr(),
+            &raw mut status
+        ))
+    };
     if CL_SUCCESS == status {
         Ok(kernel)
     } else {
@@ -79,7 +84,7 @@ fn count_kernels_in_program(program: cl_program) -> Result<cl_uint, cl_int> {
             program,
             0,
             ptr::null_mut(),
-            &mut count
+            &raw mut count
         ))
     };
     if CL_SUCCESS == status {
@@ -128,7 +133,7 @@ pub fn create_kernels_in_program(program: cl_program) -> Result<Vec<cl_kernel>, 
 #[inline]
 pub fn clone_kernel(source_kernel: cl_kernel) -> Result<cl_kernel, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let kernel: cl_kernel = unsafe { cl_call!(clCloneKernel(source_kernel, &mut status)) };
+    let kernel: cl_kernel = unsafe { cl_call!(clCloneKernel(source_kernel, &raw mut status)) };
     if CL_SUCCESS == status {
         Ok(kernel)
     } else {
@@ -451,7 +456,7 @@ pub fn get_kernel_sub_group_info(
         | CL_KERNEL_COMPILE_NUM_SUB_GROUPS => {
             // get the value
             let mut data: size_t = 0;
-            let data_ptr: *mut size_t = &mut data;
+            let data_ptr: *mut size_t = &raw mut data;
             let status = unsafe {
                 cl_call!(clGetKernelSubGroupInfo(
                     kernel,
@@ -482,7 +487,7 @@ pub fn get_kernel_sub_group_info(
                     input_value,
                     0,
                     ptr::null_mut(),
-                    &mut size,
+                    &raw mut size,
                 ))
             };
             if CL_SUCCESS == status {
@@ -523,7 +528,7 @@ pub fn get_kernel_sub_group_info(
                     input_value,
                     0,
                     ptr::null_mut(),
-                    &mut size,
+                    &raw mut size,
                 ))
             };
             if CL_SUCCESS == status {

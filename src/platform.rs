@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Via Technology Ltd.
+// Copyright (c) 2020-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ use std::ptr;
 pub fn get_platform_ids() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
     let mut count: cl_uint = 0;
-    let mut status = unsafe { cl_call!(clGetPlatformIDs(0, ptr::null_mut(), &mut count)) };
+    let mut status = unsafe { cl_call!(clGetPlatformIDs(0, ptr::null_mut(), &raw mut count)) };
 
     if CL_SUCCESS != status {
         Err(status)

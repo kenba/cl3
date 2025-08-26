@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Via Technology Ltd.
+// Copyright (c) 2020-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ pub fn create_sampler(
             normalize_coords,
             addressing_mode,
             filter_mode,
-            &mut status,
+            &raw mut status,
         ))
     };
     if CL_SUCCESS == status {
@@ -102,7 +102,7 @@ pub fn create_sampler_with_properties(
         cl_call!(clCreateSamplerWithProperties(
             context,
             properties,
-            &mut status
+            &raw mut status
         ))
     };
     if CL_SUCCESS == status {

@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2024 Via Technology Ltd.
+// Copyright (c) 2021-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ pub unsafe fn get_supported_d3d10_texture_formats_intel(
         image_type,
         0,
         ptr::null_mut(),
-        &mut count,
+        &raw mut count,
     ));
     if CL_SUCCESS != status {
         Err(status)

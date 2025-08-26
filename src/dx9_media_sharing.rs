@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2024 Via Technology Ltd.
+// Copyright (c) 2021-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ pub unsafe fn get_device_ids_from_dx9_intel(
         dx9_device_set,
         0,
         ptr::null_mut(),
-        &mut count,
+        &raw mut count,
     ));
     if CL_SUCCESS != status {
         Err(status)
@@ -87,7 +87,7 @@ pub unsafe fn create_from_dx9_media_surface_intel(
         resource,
         shared_handle,
         plane,
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -111,7 +111,7 @@ pub unsafe fn enqueue_acquire_dx9_objects_intel(
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -135,7 +135,7 @@ pub unsafe fn enqueue_release_dx9_objects_intel(
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -164,7 +164,7 @@ pub unsafe fn get_supported_dx9_media_surface_formats_intel(
             plane,
             0,
             ptr::null_mut(),
-            &mut count,
+            &raw mut count,
         )
     );
     if CL_SUCCESS != status {

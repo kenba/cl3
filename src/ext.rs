@@ -51,7 +51,7 @@ pub fn create_command_buffer_khr(
             queues.len() as cl_uint,
             queues.as_ptr(),
             properties,
-            &mut status,
+            &raw mut status,
         ))
     };
     if CL_SUCCESS == status {
@@ -110,7 +110,7 @@ pub unsafe fn enqueue_command_buffer_khr(
         command_buffer,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -581,7 +581,7 @@ pub unsafe fn remap_command_buffer_khr(
         num_handles,
         handles,
         handles_ret,
-        &mut errcode_ret,
+        &raw mut errcode_ret,
     ));
     if CL_SUCCESS == errcode_ret {
         Ok(cmd_buffer)
@@ -646,7 +646,8 @@ pub unsafe fn set_mem_object_destructor_apple(
 pub fn icd_get_platform_ids_khr() -> Result<Vec<cl_platform_id>, cl_int> {
     // Get the number of platforms
     let mut count: cl_uint = 0;
-    let mut status = unsafe { cl_call!(clIcdGetPlatformIDsKHR(0, ptr::null_mut(), &mut count)) };
+    let mut status =
+        unsafe { cl_call!(clIcdGetPlatformIDsKHR(0, ptr::null_mut(), &raw mut count)) };
 
     if CL_SUCCESS != status {
         Err(status)
@@ -707,7 +708,7 @@ pub fn create_program_with_il_khr(context: cl_context, il: &[u8]) -> Result<cl_p
             context,
             il.as_ptr().cast::<c_void>(),
             il.len() as size_t,
-            &mut status,
+            &raw mut status,
         ))
     };
     if CL_SUCCESS == status {
@@ -739,7 +740,7 @@ pub fn create_command_queue_with_properties_khr(
             context,
             device,
             properties,
-            &mut status
+            &raw mut status
         ))
     };
     if CL_SUCCESS == status {
@@ -782,7 +783,7 @@ fn count_sub_devices_ext(
             properties.as_ptr(),
             0,
             ptr::null_mut(),
-            &mut count,
+            &raw mut count,
         ))
     };
     if CL_SUCCESS == status {
@@ -838,7 +839,7 @@ pub unsafe fn enqueue_migrate_mem_object_ext(
         flags,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -856,7 +857,7 @@ pub fn get_device_image_info_qcom(
     param_name: cl_image_pitch_info_qcom,
 ) -> Result<cl_uint, cl_int> {
     let mut data: cl_uint = 0;
-    let data_ptr: *mut cl_uint = &mut data;
+    let data_ptr: *mut cl_uint = &raw mut data;
     let status = unsafe {
         cl_call!(clGetDeviceImageInfoQCOM(
             device,
@@ -891,7 +892,7 @@ pub unsafe fn enqueue_acquire_gralloc_objects_img(
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -915,7 +916,7 @@ pub unsafe fn enqueue_release_gralloc_objects_img(
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -945,7 +946,7 @@ pub unsafe fn enqueue_generate_mipmap_img(
         mip_region,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -969,7 +970,7 @@ pub fn get_kernel_sub_group_info_khr(
             // Assumes other cl_kernel_sub_group_info values return a size_t
             // get the value
             let mut data: size_t = 0;
-            let data_ptr: *mut size_t = &mut data;
+            let data_ptr: *mut size_t = &raw mut data;
             let status = unsafe {
                 cl_call!(clGetKernelSubGroupInfoKHR(
                     kernel,
@@ -1007,7 +1008,7 @@ pub fn get_kernel_suggested_local_work_size_khr(
             work_dim,
             global_work_offset,
             global_work_size,
-            &mut suggested_local_work_size,
+            &raw mut suggested_local_work_size,
         ))
     };
     if CL_SUCCESS == status {
@@ -1032,7 +1033,7 @@ pub unsafe fn enqueue_acquire_external_mem_objects_khr(
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1056,7 +1057,7 @@ pub unsafe fn enqueue_release_external_mem_objects_khr(
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1080,12 +1081,12 @@ pub fn get_semaphore_handle_for_type_khr(
             handle_type,
             0,
             ptr::null_mut(),
-            &mut size,
+            &raw mut size,
         ))
     };
     if CL_SUCCESS == status {
         let mut data: cl_semaphore_khr = ptr::null_mut();
-        let data_ptr: *mut cl_semaphore_khr = &mut data;
+        let data_ptr: *mut cl_semaphore_khr = &raw mut data;
         let status: cl_int = unsafe {
             cl_call!(clGetSemaphoreHandleForTypeKHR(
                 sema_object,
@@ -1134,7 +1135,7 @@ pub fn create_semaphore_with_properties_khr(
         cl_call!(clCreateSemaphoreWithPropertiesKHR(
             context,
             sema_props,
-            &mut status
+            &raw mut status
         ))
     };
     if CL_SUCCESS == status {
@@ -1161,7 +1162,7 @@ pub unsafe fn enqueue_wait_semaphores_khr(
         sema_payload_list,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1187,7 +1188,7 @@ pub unsafe fn enqueue_signal_semaphores_khr(
         sema_payload_list,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1242,7 +1243,7 @@ pub unsafe fn import_memory_arm(
         properties,
         memory,
         size,
-        &mut status
+        &raw mut status
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -1298,7 +1299,7 @@ pub unsafe fn enqueue_svm_free_arm(
         user_data,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1326,7 +1327,7 @@ pub unsafe fn enqueue_svm_mem_cpy_arm(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1354,7 +1355,7 @@ pub unsafe fn enqueue_svm_mem_fill_arm(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1382,7 +1383,7 @@ pub unsafe fn enqueue_svm_map_arm(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1404,7 +1405,7 @@ pub unsafe fn enqueue_svm_unmap_arm(
         svm_ptr,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1464,7 +1465,7 @@ pub fn create_accelerator_intel(
             accelerator_type,
             descriptor_size,
             descriptor,
-            &mut status,
+            &raw mut status,
         ))
     };
     if CL_SUCCESS == status {
@@ -1544,7 +1545,7 @@ pub unsafe fn host_mem_alloc_intel(
         properties,
         size,
         alignment,
-        &mut status
+        &raw mut status
     ));
     if CL_SUCCESS == status {
         Ok(())
@@ -1568,7 +1569,7 @@ pub unsafe fn device_mem_alloc_intel(
         properties,
         size,
         alignment,
-        &mut status
+        &raw mut status
     ));
     if CL_SUCCESS == status {
         Ok(())
@@ -1592,7 +1593,7 @@ pub unsafe fn shared_mem_alloc_intel(
         properties,
         size,
         alignment,
-        &mut status
+        &raw mut status
     ));
     if CL_SUCCESS == status {
         Ok(())
@@ -1628,7 +1629,7 @@ fn mem_alloc_info_intel<T: Default>(
     param_id: cl_mem_info_intel,
 ) -> Result<T, cl_int> {
     let mut data: T = T::default();
-    let data_ptr: *mut T = &mut data;
+    let data_ptr: *mut T = &raw mut data;
     let status = unsafe {
         cl_call!(clGetMemAllocInfoINTEL(
             context,
@@ -1676,7 +1677,7 @@ pub fn get_mem_alloc_info_intel(
                     param_name,
                     0,
                     ptr::null_mut(),
-                    &mut size
+                    &raw mut size
                 ))
             };
             if CL_SUCCESS != status {
@@ -1737,7 +1738,7 @@ pub unsafe fn enqueue_mem_set_intel(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1765,7 +1766,7 @@ pub unsafe fn enqueue_mem_fill_intel(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1793,7 +1794,7 @@ pub unsafe fn enqueue_mem_copy_intel(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1819,7 +1820,7 @@ pub unsafe fn enqueue_migrate_mem_intel(
         flags,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1845,7 +1846,7 @@ pub unsafe fn enqueue_mem_advise_intel(
         advice,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1872,7 +1873,7 @@ pub unsafe fn create_buffer_with_properties_intel(
         flags,
         size,
         host_ptr,
-        &mut status
+        &raw mut status
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -1902,7 +1903,7 @@ pub unsafe fn enqueue_read_host_pipe_intel(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1932,7 +1933,7 @@ pub unsafe fn enqueue_write_host_pipe_intel(
         size,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -1962,7 +1963,7 @@ pub fn get_image_requirements_info_ext(
             param_name,
             0,
             ptr::null_mut(),
-            &mut size,
+            &raw mut size,
         ))
     };
     if CL_SUCCESS == status {
@@ -2001,7 +2002,7 @@ pub fn get_icd_loader_info_oclicd(param_name: cl_icdl_info) -> Result<Vec<u8>, c
             param_name,
             0,
             ptr::null_mut(),
-            &mut size
+            &raw mut size
         ))
     };
     if CL_SUCCESS == status {

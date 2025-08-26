@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2024 Via Technology Ltd.
+// Copyright (c) 2021-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +56,12 @@ pub unsafe fn create_from_gl_buffer(
     bufobj: cl_GLuint,
 ) -> Result<cl_mem, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
-    let mem = cl_call!(clCreateFromGLBuffer(context, flags, bufobj, &mut status));
+    let mem = cl_call!(clCreateFromGLBuffer(
+        context,
+        flags,
+        bufobj,
+        &raw mut status
+    ));
     if CL_SUCCESS == status {
         Ok(mem)
     } else {
@@ -95,7 +100,7 @@ pub unsafe fn create_from_gl_texture(
         texture_target,
         miplevel,
         texture,
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -127,7 +132,7 @@ pub unsafe fn create_from_gl_render_buffer(
         context,
         flags,
         renderbuffer,
-        &mut status
+        &raw mut status
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -151,8 +156,8 @@ pub fn get_gl_object_info(memobj: cl_mem) -> Result<(cl_GLuint, cl_GLuint), cl_i
     let status = unsafe {
         cl_call!(clGetGLObjectInfo(
             memobj,
-            &mut object_type,
-            &mut object_name
+            &raw mut object_type,
+            &raw mut object_name
         ))
     };
     if CL_SUCCESS == status {
@@ -230,7 +235,7 @@ pub unsafe fn enqueue_acquire_gl_objects(
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -265,7 +270,7 @@ pub unsafe fn enqueue_release_gl_objects(
         mem_objects,
         num_events_in_wait_list,
         event_wait_list,
-        &mut event,
+        &raw mut event,
     ));
     if CL_SUCCESS == status {
         Ok(event)
@@ -318,7 +323,7 @@ pub unsafe fn create_from_gl_texture_2d(
         texture_target,
         miplevel,
         texture,
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -370,7 +375,7 @@ pub unsafe fn create_from_gl_texture_3d(
         texture_target,
         miplevel,
         texture,
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(mem)
@@ -396,7 +401,7 @@ pub fn get_gl_context_info_khr(
     match param_name {
         CL_CURRENT_DEVICE_FOR_GL_CONTEXT_KHR => {
             let mut data: intptr_t = 0;
-            let data_ptr: *mut intptr_t = &mut data;
+            let data_ptr: *mut intptr_t = &raw mut data;
             let status = unsafe {
                 cl_call!(clGetGLContextInfoKHR(
                     properties,
@@ -422,7 +427,7 @@ pub fn get_gl_context_info_khr(
                     param_name,
                     0,
                     ptr::null_mut(),
-                    &mut size
+                    &raw mut size
                 ))
             };
             if CL_SUCCESS != status {
@@ -459,7 +464,7 @@ pub fn get_gl_context_info_khr(
                     param_name,
                     0,
                     ptr::null_mut(),
-                    &mut size
+                    &raw mut size
                 ))
             };
             if CL_SUCCESS != status {
@@ -505,7 +510,7 @@ pub fn create_event_from_gl_sync_khr(
 ) -> Result<cl_event, cl_int> {
     let mut status: cl_int = CL_INVALID_VALUE;
     let event: cl_event =
-        unsafe { cl_call!(clCreateEventFromGLsyncKHR(context, sync, &mut status)) };
+        unsafe { cl_call!(clCreateEventFromGLsyncKHR(context, sync, &raw mut status)) };
     if CL_SUCCESS == status {
         Ok(event)
     } else {

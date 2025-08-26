@@ -1,4 +1,4 @@
-// Copyright (c) 2020-2024 Via Technology Ltd.
+// Copyright (c) 2020-2025 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ pub fn create_program_with_source(
             sources.len() as cl_uint,
             sources.as_ptr().cast::<*const c_char>(),
             lengths.as_ptr(),
-            &mut status,
+            &raw mut status,
         ))
     };
 
@@ -107,7 +107,7 @@ pub unsafe fn create_program_with_binary(
         lengths.as_ptr(),
         binaries.as_ptr().cast::<*const c_uchar>(),
         binary_status.as_mut_ptr(),
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(program)
@@ -145,7 +145,7 @@ pub unsafe fn create_program_with_builtin_kernels(
         devices.len() as cl_uint,
         devices.as_ptr(),
         kernel_names.as_ptr(),
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(program)
@@ -173,7 +173,7 @@ pub fn create_program_with_il(context: cl_context, il: &[u8]) -> Result<cl_progr
             context,
             il.as_ptr().cast::<c_void>(),
             il.len() as size_t,
-            &mut status,
+            &raw mut status,
         ))
     };
     if CL_SUCCESS == status {
@@ -380,7 +380,7 @@ pub unsafe fn link_program(
         input_programs.as_ptr(),
         pfn_notify,
         user_data,
-        &mut status,
+        &raw mut status,
     ));
     if CL_SUCCESS == status {
         Ok(programme)
