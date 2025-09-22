@@ -1,5 +1,12 @@
 # Releases
 
+## Version 0.13.1 (2025-09-22)
+
+### Bug fixes
+
+* Issue [#39](https://github.com/kenba/cl3/issues/39) build_program does not accept NULL for 3rd argument.
+* PR [#38](https://github.com/kenba/cl3/pull/38) Use versioned library name for libOpenCL.so.
+
 ## Version 0.13.0 (2025-04-19)
 
 ### Changes
