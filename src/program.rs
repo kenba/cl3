@@ -296,7 +296,7 @@ pub fn compile_program(
     pfn_notify: Option<unsafe extern "C" fn(program: cl_program, user_data: *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<(), cl_int> {
-    assert!(input_headers.len() == header_include_names.len());
+    assert_eq!(input_headers.len(), header_include_names.len());
     let status: cl_int = unsafe {
         let devices_ptr = if devices.is_empty() {
             ptr::null()
