@@ -174,7 +174,7 @@ pub const fn error_text(error_code: cl_int) -> &'static str {
     }
 }
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Eq, PartialEq)]
 /// `ClError` is a newtype around the `OpenCL` `cl_int` error number
 pub struct ClError(pub cl_int);
 
