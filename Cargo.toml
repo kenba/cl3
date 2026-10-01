@@ -76,7 +76,7 @@ dynamic = []
 default = ["dynamic"]
 
 [dependencies]
-dlopen2 = "0.8"
+dlopen2 = "0.9"
 libc = "0.2"
 opencl-sys = "0.6"
 
@@ -90,6 +90,6 @@ path = "examples/clinfo.rs"
 enum_glob_use = "deny"
 missing_errors_doc = "allow"
 module_name_repetitions = "allow"
-nursery = { level = "deny", priority = -1 }
-pedantic =  { level = "deny", priority = -1 }
+nursery = "deny"
+pedantic = "deny"
 unwrap_used = "deny"
