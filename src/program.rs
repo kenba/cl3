@@ -364,7 +364,7 @@ pub unsafe fn link_program(
     pfn_notify: Option<unsafe extern "C" fn(program: cl_program, user_data: *mut c_void)>,
     user_data: *mut c_void,
 ) -> Result<cl_program, cl_int> {
-    assert!(!input_programs.is_empty());
+    assert_ne!(input_programs, []);
     let devices_ptr = if devices.is_empty() {
         ptr::null()
     } else {
