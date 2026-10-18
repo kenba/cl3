@@ -1,5 +1,15 @@
 # Releases
 
+## Version 0.13.2 (2026-010-19)
+
+### Changes
+
+* Up to date with OpenCL-Headers tag v2026.05.29.
+
+### New Features
+
+* Issue [#44](https://github.com/kenba/cl3/issues/44) Update for OpenCL 3.1.
+
 ## Version 0.13.1 (2025-09-22)
 
 ### Bug fixes
