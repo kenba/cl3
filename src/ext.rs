@@ -1,4 +1,4 @@
-// Copyright (c) 2021-2025 Via Technology Ltd.
+// Copyright (c) 2021-2026 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ use libc::{c_char, c_int, c_void, intptr_t, size_t};
 use std::mem;
 #[allow(unused_imports)]
 use std::ptr;
+
+pub const CL_KHR_ICD: &str = "cl_khr_icd";
 
 #[cfg(any(feature = "cl_khr_command_buffer", feature = "dynamic"))]
 #[allow(clippy::cast_possible_truncation)]
@@ -2034,6 +2036,126 @@ pub fn set_content_size_buffer_pocl(
     let status = unsafe { cl_call!(clSetContentSizeBufferPoCL(buffer, content_size_buffer)) };
     if CL_SUCCESS == status {
         Ok(())
+    } else {
+        Err(status)
+    }
+}
+
+#[cfg(any(
+    not(feature = "CL_NO_NON_ICD_DISPATCH_EXTENSION_PROTOTYPES"),
+    feature = "dynamic"
+))]
+pub unsafe fn svm_alloc_with_properties_khr(
+    context: cl_context,
+    properties: *const cl_svm_alloc_properties_khr,
+    svm_type_index: cl_uint,
+    size: size_t,
+) -> Result<cl_mem, cl_int> {
+    let mut status: cl_int = CL_INVALID_VALUE;
+    let mem: cl_mem = cl_call!(clSVMAllocWithPropertiesKHR(
+        context,
+        properties,
+        svm_type_index,
+        size,
+        &raw mut status
+    ));
+    if CL_SUCCESS == status {
+        Ok(mem)
+    } else {
+        Err(status)
+    }
+}
+
+#[cfg(any(
+    not(feature = "CL_NO_NON_ICD_DISPATCH_EXTENSION_PROTOTYPES"),
+    feature = "dynamic"
+))]
+pub unsafe fn svm_free_with_properties_khr(
+    context: cl_context,
+    properties: *const cl_svm_free_properties_khr,
+    flags: cl_svm_free_flags_khr,
+    ptr: *mut c_void,
+) -> Result<(), cl_int> {
+    let status = cl_call!(clSVMFreeWithPropertiesKHR(context, properties, flags, ptr));
+    if CL_SUCCESS == status {
+        Ok(())
+    } else {
+        Err(status)
+    }
+}
+
+#[cfg(any(
+    not(feature = "CL_NO_NON_ICD_DISPATCH_EXTENSION_PROTOTYPES"),
+    feature = "dynamic"
+))]
+pub fn get_svm_pointer_info_khr(
+    context: cl_context,
+    device: cl_device_id,
+    ptr: *const c_void,
+    param_name: cl_mem_info_intel,
+) -> Result<InfoType, cl_int> {
+    // get the size
+    let mut size: size_t = 0;
+    let status = unsafe {
+        cl_call!(clGetSVMPointerInfoKHR(
+            context,
+            device,
+            ptr,
+            param_name,
+            0,
+            ptr::null_mut(),
+            &raw mut size
+        ))
+    };
+    if CL_SUCCESS != status {
+        Err(status)
+    } else if 0 < size {
+        // Get the data.
+        let mut data: Vec<u8> = Vec::with_capacity(size);
+        let status = unsafe {
+            cl_call!(clGetSVMPointerInfoKHR(
+                context,
+                device,
+                ptr,
+                param_name,
+                size,
+                data.as_mut_ptr().cast::<c_void>(),
+                ptr::null_mut(),
+            ))
+        };
+        if CL_SUCCESS == status {
+            Ok(InfoType::VecUchar(data))
+        } else {
+            Err(status)
+        }
+    } else {
+        Ok(InfoType::VecUchar(Vec::default()))
+    }
+}
+
+#[cfg(any(
+    not(feature = "CL_NO_NON_ICD_DISPATCH_EXTENSION_PROTOTYPES"),
+    feature = "dynamic"
+))]
+pub unsafe fn get_svm_suggested_type_index_khr(
+    context: cl_context,
+    required_capabilities: cl_svm_capabilities_khr,
+    desired_capabilities: cl_svm_capabilities_khr,
+    properties: *const cl_svm_alloc_properties_khr,
+    size: size_t,
+) -> Result<cl_uint, cl_int> {
+    // get the index
+    let mut suggested_svm_type_index: cl_uint = 0;
+    let status = cl_call!(clGetSVMSuggestedTypeIndexKHR(
+        context,
+        required_capabilities,
+        desired_capabilities,
+        properties,
+        size,
+        &raw mut suggested_svm_type_index,
+    ));
+    if CL_SUCCESS == status {
+        Ok(suggested_svm_type_index)
     } else {
         Err(status)
     }

@@ -22,6 +22,11 @@ CL_VERSION_2_0 = ["opencl-sys/CL_VERSION_2_0"]
 CL_VERSION_2_1 = ["opencl-sys/CL_VERSION_2_1"]
 CL_VERSION_2_2 = ["opencl-sys/CL_VERSION_2_2"]
 CL_VERSION_3_0 = ["opencl-sys/CL_VERSION_3_0"]
+CL_VERSION_3_1 = ["opencl-sys/CL_VERSION_3_1"]
+
+CL_HAS_ANON_UNION = ["opencl-sys/CL_HAS_ANON_UNION"]
+CL_ENABLE_BETA_EXTENSIONS = ["opencl-sys/CL_ENABLE_BETA_EXTENSIONS"]
+CL_NO_NON_ICD_DISPATCH_EXTENSION_PROTOTYPES = ["opencl-sys/CL_NO_NON_ICD_DISPATCH_EXTENSION_PROTOTYPES"]
 
 cl_apple_setmemobjectdestructor = ["opencl-sys/cl_apple_setmemobjectdestructor"]
 cl_apple_contextloggingfunctions = ["opencl-sys/cl_apple_contextloggingfunctions"]

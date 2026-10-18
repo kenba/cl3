@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Via Technology Ltd.
+// Copyright (c) 2024-2026 Via Technology Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -986,6 +986,18 @@ pub struct OpenCl {
             num_events_in_wait_list: cl_uint,
             event_wait_list: *const cl_event,
             event: *mut cl_event,
+        ) -> cl_int,
+    >,
+
+    // CL_VERSION_3_1
+    clGetKernelSuggestedLocalWorkSize: Option<
+        fn(
+            command_queue: cl_command_queue,
+            kernel: cl_kernel,
+            work_dim: cl_uint,
+            global_work_offset: *const size_t,
+            global_work_size: *const size_t,
+            suggested_local_work_size: *mut size_t,
         ) -> cl_int,
     >,
 
@@ -1988,6 +2000,48 @@ pub struct OpenCl {
 
     clSetContentSizeBufferPoCL: Option<fn(buffer: cl_mem, content_size_buffer: cl_mem) -> cl_int>,
 
+    clSVMAllocWithPropertiesKHR: Option<
+        fn(
+            context: cl_context,
+            properties: *const cl_svm_alloc_properties_khr,
+            svm_type_index: cl_uint,
+            size: size_t,
+            errcode_ret: *mut cl_int,
+        ) -> cl_mem,
+    >,
+
+    clSVMFreeWithPropertiesKHR: Option<
+        fn(
+            context: cl_context,
+            properties: *const cl_svm_free_properties_khr,
+            flags: cl_svm_free_flags_khr,
+            ptr: *mut c_void,
+        ) -> cl_int,
+    >,
+
+    clGetSVMPointerInfoKHR: Option<
+        fn(
+            context: cl_context,
+            device: cl_device_id,
+            ptr: *const c_void,
+            param_name: cl_svm_pointer_info_khr,
+            param_value_size: size_t,
+            param_value: *mut c_void,
+            param_value_size_ret: *mut size_t,
+        ) -> cl_int,
+    >,
+
+    clGetSVMSuggestedTypeIndexKHR: Option<
+        fn(
+            context: cl_context,
+            required_capabilities: cl_svm_capabilities_khr,
+            desired_capabilities: cl_svm_capabilities_khr,
+            properties: *const cl_svm_alloc_properties_khr,
+            size: size_t,
+            suggested_svm_type_index: *mut cl_uint,
+        ) -> cl_int,
+    >,
+
     clCancelCommandsIMG:
         Option<fn(event_list: *const cl_event, num_events_in_list: cl_uint) -> cl_int>,
 
@@ -2128,4 +2182,16 @@ pub struct OpenCl {
             layer_dispatch_ret: *mut *const cl_icd_dispatch,
         ) -> cl_int,
     >,
+
+    clInitLayerWithProperties: Option<
+        fn(
+            num_entries: cl_uint,
+            target_dispatch: *const cl_icd_dispatch,
+            num_entries_ret: *mut cl_uint,
+            layer_dispatch_ret: *mut *const cl_icd_dispatch,
+            properties: *const cl_layer_properties,
+        ) -> cl_int,
+    >,
+
+    clDeinitLayer: Option<fn() -> cl_int>,
 }
