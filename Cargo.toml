@@ -4,7 +4,6 @@ version = "0.13.2"
 authors = ["Ken Barker <ken.barker@via-technology.aero>"]
 description = "A Rust implementation of the Khronos OpenCL 3.0 API and extensions."
 documentation = "https://docs.rs/cl3/"
-homepage = "https://github.com/kenba/cl3"
 repository = "https://github.com/kenba/cl3"
 readme = "README.md"
 keywords = ["opencl", "gpu", "gpgpu", "ffi", "api"]
